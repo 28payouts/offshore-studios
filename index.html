@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OFFSHORE STUDIOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="core.css">
+</head>
+<body>
+
+<!-- ═══════════ SIGN IN ═══════════ -->
+<div id="gate">
+  <canvas id="gatebg"></canvas>
+  <div class="gcard">
+    <div class="orb"><span class="vx v1"></span><span class="vx v2"></span><span class="vx v3"></span><span class="vcore"></span></div>
+    <h1>OFFSHORE <span class="grad">STUDIOS</span></h1>
+    <div class="gsub" id="gateSub">ONE PLATFORM · EVERY OFFSHORE SYSTEM</div>
+    <div class="gfields">
+      <input id="inEmail" type="email" placeholder="email" autocomplete="username">
+      <input id="inPass" type="password" placeholder="password" autocomplete="current-password">
+      <button id="btnIn">ENTER</button>
+    </div>
+    <div class="gmsg" id="gateMsg"></div>
+    <div class="gmode mono" id="gateMode"></div>
+  </div>
+</div>
+
+<!-- ═══════════ APP SHELL ═══════════ -->
+<div id="app" hidden>
+  <div id="statusbar" class="mono"></div>
+  <div class="frame">
+    <nav id="rail"></nav>
+    <main id="stage"></main>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="bus.js"></script>
+<script src="mod-home.js"></script>
+<script src="mod-livemind.js"></script>
+<script src="mod-agency.js"></script>
+<script src="mod-agents.js"></script>
+<script src="boot.js"></script>
+</body>
+</html>
