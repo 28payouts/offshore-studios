@@ -17,6 +17,7 @@ OS.register({
       <h2>${admin ? "The agency, at a glance." : "Your project with <span class='grad'>Offshore Studios</span>."}</h2>
       <p class="sub">${admin ? "Sites, clients, automations and billing — the business side of Offshore, in one view. Client portal accounts plug in here next." : "Your project status, deliverables and billing — live, in one place."}</p>
     </div>
+    ${admin ? `
     <div class="cards">
       <div class="card reveal"><div class="stat"><div class="k">Agency site</div><div class="v aq">LIVE</div>
         <div class="s">three.js · GSAP · Netlify</div></div>
@@ -27,7 +28,14 @@ OS.register({
         <div class="s">booked + proposed this month</div></div></div>
       <div class="card reveal"><div class="stat"><div class="k">AI automations</div><div class="v bio">2</div>
         <div class="s">booking agent · content engine</div></div></div>
-    </div>
+    </div>` : `
+    <div class="cards">
+      <div class="card reveal"><div class="stat"><div class="k">Your team</div><div class="v aq">ON IT</div>
+        <div class="s">Offshore Studios · design + build + AI</div></div>
+        <div style="margin-top:12px"><a class="btn ghost" href="${L.agencySite}" target="_blank">SEE OUR WORK ↗</a></div></div>
+      <div class="card reveal"><div class="stat"><div class="k">Direct line</div><div class="v">24h</div>
+        <div class="s">response time, always</div></div></div>
+    </div>`}
     ${admin ? `
     <div class="mhead reveal" style="margin-top:30px"><div class="eyebrow">Clients</div>
       <h2 style="font-size:1.3rem">Book of work <span class="chip warn" style="vertical-align:middle">DEMO DATA</span></h2></div>
