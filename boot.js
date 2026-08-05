@@ -50,9 +50,10 @@
       if (error) return deny(error.message);
       return enter(await profileOf(data.user));
     }
-    const hit = C.LOCAL_USERS.find(u => u.email === email && u.pass === pass);
+    const hit = C.LOCAL_USERS.find(u => u.email === email && u.pass === pass)
+      || OS.store.get("clients", []).find(u => u.email === email && u.pass === pass);
     if (!hit) return deny("ACCESS DENIED · UNKNOWN DIVER");
-    enter({ email: hit.email, name: hit.name, role: hit.role });
+    enter({ email: hit.email, name: hit.name, role: hit.role, accent: hit.accent, welcome: hit.welcome, bill: hit.bill, note: hit.note });
   }
   function deny(t) {
     const msg = $("gateMsg"); msg.className = "gmsg err"; msg.textContent = t;
@@ -63,6 +64,10 @@
   /* ── enter the shell ── */
   function enter(user) {
     OS.setUser(user);
+    /* personalization: the portal wears the client's color; admins wear their saved theme */
+    const lay = OS.store.get("layout_" + user.email, {});
+    const accent = user.accent || lay.accent;
+    if (accent) { document.documentElement.style.setProperty("--aqua", accent); document.documentElement.style.setProperty("--bio", accent); }
     $("gate").classList.add("open");
     const app = $("app"); app.hidden = false;
     buildRail(user); buildStatus(user);
@@ -71,20 +76,84 @@
     setTimeout(() => $("gate").remove(), 900);
   }
 
-  function visibleModules(user) { return C.MODULES.filter(m => m.roles.includes(user.role)); }
+  function visibleModules(user) {
+    let list = C.MODULES.filter(m => m.roles.includes(user.role));
+    /* admin's saved layout: custom order + hidden modules */
+    const lay = OS.store.get("layout_" + user.email, {});
+    if (lay.order) list = [...list].sort((a, b) => { const ia = lay.order.indexOf(a.id), ib = lay.order.indexOf(b.id); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); });
+    if (lay.hidden) list = list.filter(m => !lay.hidden.includes(m.id));
+    return list;
+  }
 
   function buildRail(user) {
     const rail = $("rail");
     rail.innerHTML = `<div class="grp">Offshore Studios</div>` +
       visibleModules(user).map(m =>
         `<button class="navbtn" data-id="${m.id}"><span class="ic">${m.icon}</span>${m.label}<span class="st" id="st-${m.id}"></span></button>`).join("") +
-      `<div class="grp">Session</div>
-       <button class="navbtn" id="btnOut"><span class="ic">⏻</span>Sign out</button>`;
+      `<div class="grp">Session</div>` +
+      (user.role === "admin" ? `<button class="navbtn" id="btnCust"><span class="ic">⚙</span>Customize</button>` : "") +
+      `<button class="navbtn" id="btnOut"><span class="ic">⏻</span>Sign out</button>`;
     rail.onclick = e => {
       const b = e.target.closest(".navbtn"); if (!b) return;
       if (b.id === "btnOut") { location.reload(); return; }
+      if (b.id === "btnCust") { openCustomize(user); return; }
       go(b.dataset.id);
     };
+  }
+
+  /* ── CUSTOMIZE: your dashboard, your rules ── */
+  function openCustomize(user) {
+    const key = "layout_" + user.email;
+    const lay = OS.store.get(key, {});
+    const all = C.MODULES.filter(m => m.roles.includes(user.role));
+    const order = (lay.order || all.map(m => m.id)).filter(id => all.some(m => m.id === id));
+    all.forEach(m => { if (!order.includes(m.id)) order.push(m.id); });
+    const hidden = new Set(lay.hidden || []);
+    let accent = lay.accent || "";
+    const ov = document.createElement("div"); ov.className = "custov";
+    const paint = () => {
+      ov.innerHTML = `<div class="custpanel">
+        <h3>⚙ Your dashboard, your rules</h3>
+        <p class="cs">reorder, hide, recolor — saved to your account only</p>
+        ${order.map((id, i) => { const m = all.find(x => x.id === id); return `
+          <div class="custrow ${hidden.has(id) ? "dim" : ""}">
+            <span>${m.icon} ${m.label}</span>
+            <span class="cbtns">
+              <button data-a="up" data-i="${i}" ${i === 0 ? "disabled" : ""}>↑</button>
+              <button data-a="dn" data-i="${i}" ${i === order.length - 1 ? "disabled" : ""}>↓</button>
+              <button data-a="tog" data-i="${i}">${hidden.has(id) ? "SHOW" : "HIDE"}</button>
+            </span>
+          </div>`; }).join("")}
+        <div style="display:flex;gap:8px;align-items:center;margin:12px 0 4px">
+          <span style="font-size:11px;color:var(--dim);letter-spacing:.1em">THEME</span>
+          ${["", "#00e8d0", "#4cdcff", "#a98bff", "#6ef2c0", "#ffc46b", "#ff7d9d"].map(c =>
+            `<span class="swatch ${accent === c ? "on" : ""}" data-c="${c}" style="background:${c || "linear-gradient(45deg,#00e8d0,#a98bff)"}"></span>`).join("")}
+        </div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn" data-a="save">SAVE</button>
+          <button class="btn ghost" data-a="reset">RESET</button>
+          <button class="btn ghost" data-a="close">CLOSE</button>
+        </div>
+      </div>`;
+      ov.onclick = e => {
+        if (e.target === ov) return ov.remove();
+        const sw = e.target.closest(".swatch"); if (sw) { accent = sw.dataset.c; paint(); return; }
+        const b = e.target.closest("button[data-a]"); if (!b) return;
+        const a = b.dataset.a, i = +b.dataset.i;
+        if (a === "up") { [order[i - 1], order[i]] = [order[i], order[i - 1]]; paint(); }
+        if (a === "dn") { [order[i + 1], order[i]] = [order[i], order[i + 1]]; paint(); }
+        if (a === "tog") { const id = order[i]; hidden.has(id) ? hidden.delete(id) : hidden.add(id); paint(); }
+        if (a === "reset") { OS.store.del(key); location.reload(); }
+        if (a === "close") ov.remove();
+        if (a === "save") {
+          OS.store.set(key, { order, hidden: [...hidden], accent });
+          if (accent) { document.documentElement.style.setProperty("--aqua", accent); document.documentElement.style.setProperty("--bio", accent); }
+          else { document.documentElement.style.removeProperty("--aqua"); document.documentElement.style.removeProperty("--bio"); }
+          buildRail(user); ov.remove();
+        }
+      };
+    };
+    paint(); document.body.appendChild(ov);
   }
 
   let current = null;

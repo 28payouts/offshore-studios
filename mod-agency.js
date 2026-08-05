@@ -37,12 +37,12 @@ OS.register({
         <span class="chip">${c.bill}</span></div>`).join("")}
     </div>` : `
     <div class="mhead reveal" style="margin-top:30px"><div class="eyebrow">Your project</div>
-      <h2 style="font-size:1.3rem">Status & billing</h2></div>
+      <h2 style="font-size:1.3rem">${user.welcome || "Status & billing"}</h2></div>
     <div class="cards">
-      <div class="card reveal"><h3>Current phase</h3><p class="cs">design → build → launch</p>
+      <div class="card reveal"><h3>Current phase</h3><p class="cs">${user.note || "design → build → launch"}</p>
         <span class="chip ok">IN BUILD</span><span class="chip">next review: this week</span></div>
       <div class="card reveal"><h3>Next bill</h3><p class="cs">transparent, no surprises</p>
-        <div class="stat"><div class="v">$450</div><div class="s">due 1 Aug · card on file</div></div></div>
+        <div class="stat"><div class="v">${(user.bill || "$450 · due 1 Aug").split("·")[0].trim()}</div><div class="s">${(user.bill || "$450 · due 1 Aug").split("·").slice(1).join("·").trim() || "on schedule"}</div></div></div>
     </div>`}`;
   }
 });

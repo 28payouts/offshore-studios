@@ -18,6 +18,14 @@ window.OS = (function () {
     setUser(u) { user = u; this.emit("user", u); },
     user() { return user; },
 
+    /* persistent store (localStorage now → Supabase tables when keys land).
+       Every module reads/writes through here so the swap is one change. */
+    store: {
+      get(k, d) { try { const v = JSON.parse(localStorage.getItem("os_" + k)); return v == null ? d : v; } catch (e) { return d; } },
+      set(k, v) { localStorage.setItem("os_" + k, JSON.stringify(v)); OS.emit("store:" + k, v); },
+      del(k) { localStorage.removeItem("os_" + k); }
+    },
+
     /* shared helpers */
     fmt(n) { return "$" + Math.round(n).toLocaleString(); },
     fmtM(n) { return Math.abs(n) >= 1e6 ? "$" + (n / 1e6).toFixed(2) + "M" : Math.abs(n) >= 1e4 ? "$" + Math.round(n / 1e3) + "k" : this.fmt(n); },

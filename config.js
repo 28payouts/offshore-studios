@@ -20,7 +20,9 @@ window.OS_CONFIG = {
      Add a module = add one file + one line here. Nothing else changes. */
   MODULES: [
     { id: "home",     label: "Command Center", icon: "◈", roles: ["admin"] },
+    { id: "claude",   label: "Claude",         icon: "✦", roles: ["admin"] },
     { id: "livemind", label: "The Live Mind",  icon: "〰", roles: ["admin","trading"] },
+    { id: "clients",  label: "Clients",        icon: "❖", roles: ["admin"] },
     { id: "agency",   label: "Studios Agency", icon: "◍", roles: ["admin","agency"] },
     { id: "agents",   label: "AI & Agents",    icon: "✳", roles: ["admin"] }
   ],
