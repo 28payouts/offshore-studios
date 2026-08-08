@@ -283,7 +283,6 @@ select.fin{appearance:none;cursor:pointer}
 #warpfx{position:fixed;inset:0;z-index:90;pointer-events:none}
 
 /* module arrival: drop out of warp */
-#stage.warpin>*{animation:none}
 #stage.warpin{animation:stagewarp .7s cubic-bezier(.2,.9,.25,1)}
 @keyframes stagewarp{from{transform:scale(1.12);filter:blur(10px) brightness(1.6);opacity:.2}
   to{transform:scale(1);filter:none;opacity:1}}
