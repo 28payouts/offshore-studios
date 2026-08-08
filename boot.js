@@ -70,8 +70,8 @@
     if (accent) { document.documentElement.style.setProperty("--aqua", accent); document.documentElement.style.setProperty("--bio", accent); }
     $("gate").classList.add("open");
     const app = $("app"); app.hidden = false;
-    buildRail(user); buildStatus(user);
-    const first = C.MODULES.find(m => m.roles.includes(user.role));
+    buildRail(user); buildStatus(user); startWorld();
+    const first = visibleModules(user)[0];
     go(first ? first.id : "livemind");
     setTimeout(() => $("gate").remove(), 900);
   }
@@ -87,18 +87,69 @@
 
   function buildRail(user) {
     const rail = $("rail");
-    rail.innerHTML = `<div class="grp">Offshore Studios</div>` +
+    rail.innerHTML =
       visibleModules(user).map(m =>
-        `<button class="navbtn" data-id="${m.id}"><span class="ic">${m.icon}</span>${m.label}<span class="st" id="st-${m.id}"></span></button>`).join("") +
-      `<div class="grp">Session</div>` +
-      (user.role === "admin" ? `<button class="navbtn" id="btnCust"><span class="ic">⚙</span>Customize</button>` : "") +
-      `<button class="navbtn" id="btnOut"><span class="ic">⏻</span>Sign out</button>`;
+        `<button class="navbtn" data-id="${m.id}"><span class="ic">${m.icon}</span><span class="lb">${m.label}</span><span class="st" id="st-${m.id}"></span></button>`).join("") +
+      (user.role === "admin" ? `<button class="navbtn" id="btnCust"><span class="ic">⚙</span><span class="lb">Customize</span></button>` : "") +
+      `<button class="navbtn" id="btnOut"><span class="ic">⏻</span><span class="lb">Sign out</span></button>`;
     rail.onclick = e => {
       const b = e.target.closest(".navbtn"); if (!b) return;
       if (b.id === "btnOut") { location.reload(); return; }
       if (b.id === "btnCust") { openCustomize(user); return; }
       go(b.dataset.id);
     };
+  }
+
+  /* ═══════════ THE LIVING WORLD — full-viewport ecosystem ═══════════
+     Bioluminescent current that breathes with the trading session:
+     hunting hours run fast and aqua; off-hours drift slow and violet. */
+  function startWorld() {
+    const c = $("bgfx"); if (!c) return;
+    const x = c.getContext("2d");
+    let W, H, mx = .5, my = .5;
+    const rs = () => { W = c.width = innerWidth; H = c.height = innerHeight; }; rs();
+    addEventListener("resize", rs);
+    addEventListener("pointermove", e => { mx = e.clientX / W; my = e.clientY / H; }, { passive: true });
+    const P = [...Array(120)].map(() => ({
+      x: Math.random(), y: Math.random(), z: .3 + Math.random() * .7,
+      s: .6 + Math.random() * 1.8, ph: Math.random() * 7, hue: Math.random()
+    }));
+    const AUR = [
+      { x: .15, y: .2, r: .5, c: "0,232,208", sp: .00011 },
+      { x: .85, y: .75, r: .45, c: "169,139,255", sp: .00008 },
+      { x: .55, y: .05, r: .38, c: "76,220,255", sp: .00014 }
+    ];
+    let t = 0;
+    const isLive = () => {
+      const n = OS.nyNow();
+      return n.wd !== "Sat" && n.wd !== "Sun" && ((n.dec >= 2 && n.dec < 5) || (n.dec >= 8.5 && n.dec < 11) || (n.dec >= 13.5 && n.dec < 16));
+    };
+    (function frame() {
+      if (!document.getElementById("bgfx")) return;
+      requestAnimationFrame(frame);
+      if (document.hidden) return;
+      t++;
+      const live = isLive(), speed = live ? 1.7 : 1, glow = live ? .16 : .1;
+      x.clearRect(0, 0, W, H);
+      /* aurora bands */
+      AUR.forEach((a, i) => {
+        const ax = (a.x + Math.sin(t * a.sp * 60 + i * 2) * .06 + (mx - .5) * .03 * (i + 1)) * W;
+        const ay = (a.y + Math.cos(t * a.sp * 47 + i) * .05 + (my - .5) * .03 * (i + 1)) * H;
+        const g = x.createRadialGradient(ax, ay, 0, ax, ay, a.r * Math.min(W, H));
+        g.addColorStop(0, `rgba(${a.c},${glow})`); g.addColorStop(1, "transparent");
+        x.fillStyle = g; x.fillRect(0, 0, W, H);
+      });
+      /* plankton current */
+      P.forEach(p => {
+        p.y -= .00016 * p.z * speed;
+        p.x += Math.sin(t * .004 + p.ph) * .00012 * speed;
+        if (p.y < -.02) { p.y = 1.02; p.x = Math.random(); }
+        const a = (.25 + Math.sin(t * .03 + p.ph) * .2) * p.z;
+        const px = (p.x + (mx - .5) * .022 * p.z) * W, py = (p.y + (my - .5) * .022 * p.z) * H;
+        x.fillStyle = p.hue > .82 ? `rgba(169,139,255,${a * .8})` : p.hue > .6 ? `rgba(76,220,255,${a * .7})` : `rgba(0,232,208,${a * .6})`;
+        x.beginPath(); x.arc(px, py, p.s * p.z, 0, 7); x.fill();
+      });
+    })();
   }
 
   /* ── CUSTOMIZE: your dashboard, your rules ── */
@@ -171,17 +222,42 @@
 
   function buildStatus(user) {
     const el = $("statusbar");
+    const canClaude = C.MODULES.some(m => m.id === "claude" && m.roles.includes(user.role));
+    /* static skeleton once — only the live values re-render (no flicker) */
+    el.innerHTML =
+      `<span class="brand"><svg width="26" height="14" viewBox="0 0 52 28"><polyline points="2,24 12,20 18,23 27,12 33,16 42,5 50,9" fill="none" stroke="url(#lg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/></linearGradient></defs></svg>OFFSHORE OS</span><span class="sep"></span>` +
+      `<span class="it">NY <b id="hudNY">--:--:--</b></span><span class="sep"></span>` +
+      `<span class="it"><span class="dot" id="hudDot"></span><span id="hudMind">…</span></span><span class="sep"></span>` +
+      `<span class="it">MODE <b class="${REAL ? "pos" : "wc"}">${REAL ? "SECURE" : "LOCAL"}</b></span>` +
+      `<span class="right">` +
+      (canClaude ? `<button class="qk" id="hudClaude">✦ CLAUDE</button>` : "") +
+      `<canvas id="hudwave"></canvas><span class="it">${user.role.toUpperCase()}</span><span class="it"><b>${user.name}</b></span></span>`;
+    const hc = document.getElementById("hudClaude");
+    if (hc) hc.onclick = () => OS.emit("nav:request", "claude");
     const tick = () => {
       const n = OS.nyNow();
       const live = n.wd !== "Sat" && n.wd !== "Sun" && ((n.dec >= 2 && n.dec < 5) || (n.dec >= 8.5 && n.dec < 11) || (n.dec >= 13.5 && n.dec < 16));
-      el.innerHTML =
-        `<span class="brand">◈ OFFSHORE STUDIOS</span><span class="sep"></span>` +
-        `<span class="it">NY <b>${String(n.h).padStart(2, "0")}:${String(n.m).padStart(2, "0")}:${String(n.s).padStart(2, "0")}</b></span><span class="sep"></span>` +
-        `<span class="it"><span class="dot ${live ? "on" : ""}"></span>LIVE MIND ${live ? "HUNTING" : "STANDING BY"}</span><span class="sep"></span>` +
-        `<span class="it">MODE <b class="${REAL ? "pos" : "wc"}">${REAL ? "SECURE" : "LOCAL"}</b></span>` +
-        `<span class="right"><span class="it">${user.role.toUpperCase()}</span><span class="it"><b>${user.name}</b></span></span>`;
+      const ny = document.getElementById("hudNY"); if (!ny) return;
+      ny.textContent = `${String(n.h).padStart(2, "0")}:${String(n.m).padStart(2, "0")}:${String(n.s).padStart(2, "0")}`;
+      document.getElementById("hudMind").textContent = "LIVE MIND " + (live ? "HUNTING" : "STANDING BY");
+      document.getElementById("hudDot").className = "dot" + (live ? " on" : "");
     };
     tick(); setInterval(tick, 1000);
+    /* heartbeat waveform */
+    const wc = document.getElementById("hudwave");
+    if (wc) {
+      const wx = wc.getContext("2d"); wc.width = 128; wc.height = 32;
+      let wt = 0;
+      setInterval(() => {
+        if (document.hidden || !document.getElementById("hudwave")) return;
+        wt++; wx.clearRect(0, 0, 128, 32);
+        for (let i = 0; i < 16; i++) {
+          const h = 4 + Math.abs(Math.sin(wt * .18 + i * .55)) * 18 * (.4 + Math.random() * .6);
+          wx.fillStyle = `rgba(0,232,208,${.35 + h / 40})`;
+          wx.fillRect(i * 8, 16 - h / 2, 4, h);
+        }
+      }, 90);
+    }
   }
 
   $("btnIn").onclick = signIn;

@@ -38,6 +38,14 @@ OS.register({
     </div>
 
     <div class="card reveal chatcard">
+      <div class="chathead">
+        <canvas id="clOrb"></canvas>
+        <div style="min-width:0">
+          <div style="font-family:var(--disp);font-weight:800;font-size:13px;letter-spacing:.12em">CLAUDE</div>
+          <div class="mono" id="clState" style="font-size:9px;letter-spacing:.24em;color:var(--dim)">LISTENING</div>
+        </div>
+        <canvas id="clWave"></canvas>
+      </div>
       <div class="chatlog" id="clLog"></div>
       <div class="chatbar">
         <input class="fin" id="clIn" placeholder="talk to me — 'how's the bot', 'take me to clients', anything">
@@ -70,15 +78,53 @@ OS.register({
     };
 
     /* word-streaming speech */
+    let speaking = false;
     const speak = txt => new Promise(res => {
+      speaking = true;
+      const st = el.querySelector("#clState"); if (st) { st.textContent = "SPEAKING"; st.style.color = "var(--aqua)"; }
       chat.push({ r: "a", t: "" }); const i = chat.length - 1, words = txt.split(" ");
       let w = 0;
       const t = setInterval(() => {
         chat[i].t = words.slice(0, ++w).join(" "); render();
-        if (w >= words.length) { clearInterval(t); OS.store.set("claude_chat", chat.slice(-40)); res(); }
+        if (w >= words.length) {
+          clearInterval(t); speaking = false;
+          if (st) { st.textContent = "LISTENING"; st.style.color = "var(--dim)"; }
+          OS.store.set("claude_chat", chat.slice(-40)); res();
+        }
       }, 34);
       this._timers.push(t);
     });
+
+    /* ── the face: breathing orb + voice waveform ── */
+    const oc = el.querySelector("#clOrb"), ox = oc.getContext("2d");
+    oc.width = oc.height = 116;
+    const wv = el.querySelector("#clWave"), wx = wv.getContext("2d");
+    const sizeWave = () => { const r = wv.getBoundingClientRect(); wv.width = Math.max(60, r.width * 2); wv.height = 68; }; sizeWave();
+    let ft = 0;
+    const face = setInterval(() => {
+      if (document.hidden || !document.contains(oc)) return;
+      ft++;
+      /* orb */
+      ox.clearRect(0, 0, 116, 116);
+      const R = 26 + Math.sin(ft * (speaking ? .5 : .12)) * (speaking ? 7 : 3);
+      const g = ox.createRadialGradient(58 - R * .3, 58 - R * .3, 0, 58, 58, R * 2.1);
+      g.addColorStop(0, "#fff"); g.addColorStop(.3, speaking ? "#a98bff" : "#00e8d0"); g.addColorStop(1, "transparent");
+      ox.fillStyle = g; ox.beginPath(); ox.arc(58, 58, R * 2.1, 0, 7); ox.fill();
+      ox.strokeStyle = "rgba(0,232,208,.5)"; ox.lineWidth = 1.6;
+      ox.beginPath(); ox.arc(58, 58, R + 12, ft * .06, ft * .06 + 3.6); ox.stroke();
+      ox.strokeStyle = "rgba(169,139,255,.45)";
+      ox.beginPath(); ox.arc(58, 58, R + 19, -ft * .045, -ft * .045 + 2.2); ox.stroke();
+      /* waveform */
+      wx.clearRect(0, 0, wv.width, wv.height);
+      const n = Math.floor(wv.width / 10);
+      for (let i = 0; i < n; i++) {
+        const amp = speaking ? (6 + Math.abs(Math.sin(ft * .5 + i * .6)) * 24 * (.35 + Math.random() * .65))
+          : (3 + Math.sin(ft * .1 + i * .4) * 3);
+        wx.fillStyle = speaking ? `rgba(169,139,255,${.4 + amp / 60})` : `rgba(0,232,208,.3)`;
+        wx.fillRect(i * 10, 34 - amp / 2, 5, amp);
+      }
+    }, 50);
+    this._timers.push(face);
 
     /* nav command extraction */
     const runCmds = txt => {
