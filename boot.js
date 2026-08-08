@@ -4,6 +4,65 @@
   const REAL = !!(C.SUPABASE_URL && C.SUPABASE_ANON_KEY);
   let sb = null;
 
+  /* ═══════════ CINEMATIC BOOT — the machine wakes up ═══════════ */
+  (function bootSequence() {
+    const b = document.createElement("div"); b.id = "bootseq";
+    b.innerHTML = `
+      <svg viewBox="0 0 52 28" class="blogo"><polyline points="2,24 12,20 18,23 27,12 33,16 42,5 50,9" fill="none" stroke="url(#blg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="blg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/></linearGradient></defs></svg>
+      <div class="btitle">${"OFFSHORE OS".split("").map((ch, i) => `<span style="animation-delay:${.9 + i * .05}s">${ch === " " ? "&nbsp;" : ch}</span>`).join("")}</div>
+      <div class="blines mono" id="blines"></div>
+      <div class="bskip mono">CLICK TO SKIP</div>`;
+    document.body.appendChild(b);
+    const LINES = ["WAKING THE WORLD…", "ENGINES E1–E4 · CHECK", "CLIENT VAULTS · SEALED", "COUNCIL · SEATED", "CLAUDE · ONLINE"];
+    const bl = b.querySelector("#blines");
+    let li = 0, killed = false;
+    const typeLine = () => {
+      if (killed || li >= LINES.length) return;
+      const row = document.createElement("div"); bl.appendChild(row);
+      const txt = LINES[li++]; let ci = 0;
+      const t = setInterval(() => {
+        row.textContent = txt.slice(0, ++ci) + (ci < txt.length ? "▌" : " ✓");
+        if (ci >= txt.length) { clearInterval(t); setTimeout(typeLine, 160); }
+      }, 22);
+    };
+    setTimeout(typeLine, 1100);
+    const kill = () => { if (killed) return; killed = true; b.classList.add("bout"); setTimeout(() => b.remove(), 700); };
+    b.addEventListener("click", kill);
+    setTimeout(kill, 4200);
+  })();
+
+  /* ═══════════ HYPERSPACE — the jump to your universe ═══════════ */
+  function runWarp(done) {
+    const c = document.createElement("canvas"); c.id = "warpfx";
+    document.body.appendChild(c);
+    const x = c.getContext("2d");
+    const W = c.width = innerWidth, H = c.height = innerHeight, cx = W / 2, cy = H / 2;
+    const S = [...Array(420)].map(() => ({ a: Math.random() * Math.PI * 2, d: Math.random() * Math.max(W, H) * .5, s: .5 + Math.random() * 1.5 }));
+    let t = 0;
+    (function frame() {
+      t++;
+      const acc = Math.min(1, t / 55);                 /* accelerate */
+      x.fillStyle = `rgba(1,7,13,${.35 - acc * .15})`; x.fillRect(0, 0, W, H);
+      S.forEach(st => {
+        st.d += (2 + st.d * .045) * (0.4 + acc * 2.4);
+        if (st.d > Math.max(W, H)) { st.d = Math.random() * 30; st.a = Math.random() * Math.PI * 2; }
+        const x1 = cx + Math.cos(st.a) * st.d, y1 = cy + Math.sin(st.a) * st.d;
+        const len = 2 + st.d * .12 * acc * 2;
+        const x2 = cx + Math.cos(st.a) * (st.d + len), y2 = cy + Math.sin(st.a) * (st.d + len);
+        const hue = st.a > Math.PI ? "169,139,255" : "0,232,208";
+        x.strokeStyle = `rgba(${hue},${.25 + acc * .6})`; x.lineWidth = st.s * (0.6 + acc);
+        x.beginPath(); x.moveTo(x1, y1); x.lineTo(x2, y2); x.stroke();
+      });
+      if (t < 95) requestAnimationFrame(frame);
+      else {
+        x.fillStyle = "rgba(234,252,255,.95)"; x.fillRect(0, 0, W, H);  /* arrival flash */
+        done();
+        c.style.transition = "opacity .8s"; c.style.opacity = "0";
+        setTimeout(() => c.remove(), 850);
+      }
+    })();
+  }
+
   /* ── gate background: drifting plankton ── */
   (function () {
     const c = $("gatebg"), x = c.getContext("2d");
@@ -48,12 +107,15 @@
     if (REAL) {
       const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
       if (error) return deny(error.message);
-      return enter(await profileOf(data.user));
+      const prof = await profileOf(data.user);
+      msg.textContent = "COORDINATES LOCKED · JUMPING";
+      return runWarp(() => enter(prof));
     }
     const hit = C.LOCAL_USERS.find(u => u.email === email && u.pass === pass)
       || OS.store.get("clients", []).find(u => u.email === email && u.pass === pass);
     if (!hit) return deny("ACCESS DENIED · UNKNOWN DIVER");
-    enter({ email: hit.email, name: hit.name, role: hit.role, accent: hit.accent, welcome: hit.welcome, bill: hit.bill, note: hit.note });
+    msg.textContent = "COORDINATES LOCKED · JUMPING";
+    runWarp(() => enter({ email: hit.email, name: hit.name, role: hit.role, accent: hit.accent, welcome: hit.welcome, bill: hit.bill, note: hit.note }));
   }
   function deny(t) {
     const msg = $("gateMsg"); msg.className = "gmsg err"; msg.textContent = t;
@@ -215,6 +277,7 @@
     current = id;
     document.querySelectorAll("#rail .navbtn").forEach(b => b.classList.toggle("on", b.dataset.id === id));
     const stage = $("stage"); stage.innerHTML = "";
+    stage.classList.remove("warpin"); void stage.offsetWidth; stage.classList.add("warpin");
     mod.mount(stage, user);
     OS.emit("nav", id);
   }

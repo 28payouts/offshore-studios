@@ -1,31 +1,32 @@
-/* ═══════════ MODULE · THE WORLD (admin home) ═══════════
-   Not a dashboard — a living orbital system. Every Offshore system is a
-   body in orbit around the core; your own projects join the world as new
-   orbs. Hover to feel them, click to dive in. */
+/* ═══════════ MODULE · THE UNIVERSE (admin home) ═══════════
+   Your empire as deep space. Every system is a PLANET around the sun-core:
+   shaded spheres, rings, atmospheres — your clients orbit the Clients world
+   as moons, your projects are born as new planets. Hover to wake a world,
+   click to jump in. */
 OS.register({
   id: "home",
   _raf: null, _timers: [],
   mount(el, user) {
-    const MODCOL = { livemind: "#00e8d0", claude: "#a98bff", clients: "#4cdcff", agency: "#6ef2c0", agents: "#ffc46b" };
     const projects = () => OS.store.get("projects", []);
+    const clients = () => OS.store.get("clients", []);
     let showForm = false, selected = null;
 
     el.innerHTML = `
     <div class="mhead reveal">
-      <div class="eyebrow">The World · ${user.name}</div>
-      <h2>Everything you run,<br><span class="grad">alive in orbit.</span></h2>
-      <p class="sub">Every system is a body around the core. Hover to wake one, click to dive in. Spawn new projects and watch the world grow.</p>
+      <div class="eyebrow">The Universe · ${user.name}</div>
+      <h2>Your empire,<br><span class="grad">seen from space.</span></h2>
+      <p class="sub">Every system is a world orbiting the core. Your clients ride the Clients world as moons. Spawn a project and watch a new planet ignite.</p>
     </div>
 
     <div id="orbwrap" class="reveal">
       <canvas id="orbmap"></canvas>
-      <div id="orbhint">HOVER A BODY · CLICK TO DIVE</div>
+      <div id="orbhint">HOVER A WORLD · CLICK TO JUMP</div>
     </div>
 
     <div id="projPanel"></div>
 
     <div style="display:flex;gap:10px;margin:4px 0 22px" class="reveal">
-      <button class="btn ghost" id="btnNewProj">✚ SPAWN A PROJECT INTO THE WORLD</button>
+      <button class="btn ghost" id="btnNewProj">✚ IGNITE A NEW PLANET</button>
     </div>
     <div id="projForm"></div>
 
@@ -33,8 +34,8 @@ OS.register({
       <div class="card"><div class="stat"><div class="k">Backtested · 10y</div><div class="v pos" data-count="10015774" data-fmt="m">$0</div><div class="s">verified bar-by-bar · frozen 27 Jul</div></div></div>
       <div class="card"><div class="stat"><div class="k">Win rate</div><div class="v" data-count="57.3" data-fmt="pct">0%</div><div class="s">4,267 trades · PF 2.00</div></div></div>
       <div class="card"><div class="stat"><div class="k">Max drawdown</div><div class="v wc" data-count="16.9" data-fmt="pct">0%</div><div class="s">never worse, ten years</div></div></div>
-      <div class="card"><div class="stat"><div class="k">Client portals</div><div class="v aq" data-count="${OS.store.get("clients", []).length}" data-fmt="n">0</div><div class="s">private worlds you've opened</div></div></div>
-      <div class="card"><div class="stat"><div class="k">Projects in orbit</div><div class="v bio" data-count="${projects().length}" data-fmt="n">0</div><div class="s">and room for infinity</div></div></div>
+      <div class="card"><div class="stat"><div class="k">Client moons</div><div class="v aq" data-count="${clients().length}" data-fmt="n">0</div><div class="s">in orbit around the Clients world</div></div></div>
+      <div class="card"><div class="stat"><div class="k">Planets ignited</div><div class="v bio" data-count="${projects().length}" data-fmt="n">0</div><div class="s">and room for a galaxy</div></div></div>
     </div>
 
     <div class="cards reveal" style="margin-top:15px;grid-template-columns:1fr 1fr">
@@ -47,14 +48,14 @@ OS.register({
       <div class="card">
         <h3>Next on the horizon</h3><p class="cs">the road we're on</p>
         <div style="font-size:12.5px;color:var(--mut);line-height:2">
-          ① Sim gate — 30–60 trades at ≥70–80% winner-capture<br>
-          ② Supabase keys → real client accounts everywhere<br>
-          ③ TradingView webhooks → the world feels real trades<br>
-          ④ Legs 5 & 6 (YM/RTY) validation</div>
+          ① PWA install — this becomes a real app icon<br>
+          ② Supabase keys → real accounts across every device<br>
+          ③ TradingView webhooks → the universe feels real trades<br>
+          ④ Client-side galaxy — their own beautiful worlds</div>
       </div>
     </div>`;
 
-    /* ── count-up choreography ── */
+    /* ── count-up ── */
     el.querySelectorAll("[data-count]").forEach(n => {
       const target = +n.dataset.count, fmt = n.dataset.fmt; let st = null;
       const step = ts => {
@@ -65,86 +66,156 @@ OS.register({
       requestAnimationFrame(step);
     });
 
-    /* ── THE ORBITAL WORLD ── */
+    /* ═══════════ THE UNIVERSE CANVAS ═══════════ */
     const cv = el.querySelector("#orbmap"), x = cv.getContext("2d");
     let W = 0, H = 0, DPR = Math.min(2, devicePixelRatio || 1), mx = -1, my = -1, t = 0;
     const size = () => { const r = cv.getBoundingClientRect(); W = cv.width = r.width * DPR; H = cv.height = r.height * DPR; };
     size(); addEventListener("resize", size);
 
+    /* starfield + nebulas (precomputed) */
+    const STARS = [...Array(160)].map(() => ({ x: Math.random(), y: Math.random(), s: Math.random() * 1.4 + .3, ph: Math.random() * 7, z: .4 + Math.random() * .6 }));
+    const NEB = [{ x: .18, y: .3, r: .34, c: "76,220,255" }, { x: .82, y: .62, r: .3, c: "169,139,255" }, { x: .5, y: .1, r: .26, c: "0,232,208" }];
+    let shoot = null;
+
+    /* worlds: modules + projects. Each world has a planetary character. */
+    const FLAVOR = {
+      livemind: { col: "#00e8d0", ring: true,  moons: 0 },
+      claude:   { col: "#a98bff", ring: false, moons: 1 },
+      table:    { col: "#ff7d9d", ring: true,  moons: 0 },
+      clients:  { col: "#4cdcff", ring: false, moons: 0 }, /* moons = real clients */
+      agency:   { col: "#6ef2c0", ring: true,  moons: 1 },
+      agents:   { col: "#ffc46b", ring: false, moons: 2 }
+    };
     const bodies = () => {
       const mods = window.OS_CONFIG.MODULES.filter(m => m.id !== "home" && m.roles.includes(user.role));
-      const list = mods.map((m, i) => ({
-        kind: "mod", id: m.id, label: m.label.toUpperCase(), icon: m.icon,
-        col: MODCOL[m.id] || "#4cdcff", a: (i / mods.length) * Math.PI * 2,
-        rx: .32 + (i % 2) * .08, ry: .30 + ((i + 1) % 2) * .07, sp: .0016 + i * .0004, r: 15
-      }));
+      const list = mods.map((m, i) => {
+        const f = FLAVOR[m.id] || { col: "#4cdcff", ring: false, moons: 0 };
+        return { kind: "mod", id: m.id, label: m.label.toUpperCase(), col: f.col, ring: f.ring,
+          moons: m.id === "clients" ? clients().map(c => c.accent || "#4cdcff").slice(0, 6) : Array(f.moons).fill("#8fb4c4"),
+          a: (i / mods.length) * Math.PI * 2 + .35, rx: .30 + (i % 3) * .06, ry: .27 + ((i + 1) % 3) * .05,
+          sp: .0013 + i * .00035, r: 17 + (i % 2) * 4 };
+      });
       projects().forEach((p, i) => list.push({
-        kind: "proj", id: "p" + i, pi: i, label: p.name.toUpperCase(), icon: "◇",
-        col: p.color || "#ffc46b", a: 1.1 + i * 1.9, rx: .44, ry: .40, sp: .001 + i * .0003, r: 11
+        kind: "proj", id: "p" + i, pi: i, label: p.name.toUpperCase(), col: p.color || "#ffc46b",
+        ring: i % 2 === 0, moons: [], a: 1.2 + i * 1.7, rx: .43, ry: .38, sp: .0009 + i * .00025, r: 12
       }));
       return list;
     };
     let B = bodies();
     OS.on("store:projects", () => { B = bodies(); });
+    OS.on("store:clients", () => { B = bodies(); });
+
+    /* draw one shaded planet with optional ring + moons */
+    const planet = (px, py, R, col, b) => {
+      /* atmosphere */
+      const at = x.createRadialGradient(px, py, R * .6, px, py, R * 2);
+      at.addColorStop(0, col + "40"); at.addColorStop(1, "transparent");
+      x.fillStyle = at; x.beginPath(); x.arc(px, py, R * 2, 0, 7); x.fill();
+      /* back moons + back ring */
+      const moonPos = (b.moons || []).map((mc, i) => {
+        const ma = t * (.02 + i * .006) + i * 2.1;
+        return { mc, mxp: px + Math.cos(ma) * R * 2.1, myp: py + Math.sin(ma) * R * .7, front: Math.sin(ma) >= 0 };
+      });
+      moonPos.filter(m => !m.front).forEach(m => { x.fillStyle = m.mc; x.beginPath(); x.arc(m.mxp, m.myp, R * .18, 0, 7); x.fill(); });
+      if (b.ring) { x.strokeStyle = col + "55"; x.lineWidth = 2.4 * DPR; x.save(); x.translate(px, py); x.rotate(-.35);
+        x.beginPath(); x.ellipse(0, 0, R * 1.75, R * .5, 0, Math.PI, Math.PI * 2); x.stroke(); x.restore(); }
+      /* sphere with light from upper-left */
+      const g = x.createRadialGradient(px - R * .45, py - R * .45, R * .1, px, py, R * 1.15);
+      g.addColorStop(0, "#f2ffff"); g.addColorStop(.28, col); g.addColorStop(.75, col + "88"); g.addColorStop(1, "#030d16");
+      x.fillStyle = g; x.beginPath(); x.arc(px, py, R, 0, 7); x.fill();
+      /* terminator shadow */
+      const sh = x.createRadialGradient(px + R * .7, py + R * .7, 0, px, py, R * 1.4);
+      sh.addColorStop(0, "rgba(1,7,13,.65)"); sh.addColorStop(.55, "transparent");
+      x.fillStyle = sh; x.beginPath(); x.arc(px, py, R, 0, 7); x.fill();
+      /* front ring + front moons */
+      if (b.ring) { x.strokeStyle = col + "AA"; x.lineWidth = 2.8 * DPR; x.save(); x.translate(px, py); x.rotate(-.35);
+        x.beginPath(); x.ellipse(0, 0, R * 1.75, R * .5, 0, 0, Math.PI); x.stroke(); x.restore(); }
+      moonPos.filter(m => m.front).forEach(m => {
+        const mg = x.createRadialGradient(m.mxp - 2, m.myp - 2, 0, m.mxp, m.myp, R * .26);
+        mg.addColorStop(0, "#fff"); mg.addColorStop(.5, m.mc); mg.addColorStop(1, "transparent");
+        x.fillStyle = mg; x.beginPath(); x.arc(m.mxp, m.myp, R * .26, 0, 7); x.fill();
+      });
+    };
 
     const draw = () => {
       this._raf = requestAnimationFrame(draw);
       if (document.hidden || !document.contains(cv)) return;
       t++; x.clearRect(0, 0, W, H);
-      const cx = W / 2, cy = H * .47, live = (() => { const n = OS.nyNow(); return n.wd !== "Sat" && n.wd !== "Sun" && ((n.dec >= 2 && n.dec < 5) || (n.dec >= 8.5 && n.dec < 11) || (n.dec >= 13.5 && n.dec < 16)); })();
+      const cx = W / 2, cy = H * .47;
+      const live = (() => { const n = OS.nyNow(); return n.wd !== "Sat" && n.wd !== "Sun" && ((n.dec >= 2 && n.dec < 5) || (n.dec >= 8.5 && n.dec < 11) || (n.dec >= 13.5 && n.dec < 16)); })();
 
-      /* orbit rings */
-      x.strokeStyle = "rgba(0,232,208,.06)"; x.lineWidth = 1;
-      [.32, .40, .44].forEach(rr => { x.beginPath(); x.ellipse(cx, cy, W * rr, H * (rr - .02), 0, 0, 7); x.stroke(); });
+      /* nebulas */
+      NEB.forEach((nb, i) => {
+        const g = x.createRadialGradient(nb.x * W, nb.y * H, 0, nb.x * W, nb.y * H, nb.r * W);
+        g.addColorStop(0, `rgba(${nb.c},${.05 + Math.sin(t * .004 + i) * .015})`); g.addColorStop(1, "transparent");
+        x.fillStyle = g; x.fillRect(0, 0, W, H);
+      });
+      /* stars */
+      STARS.forEach(s => {
+        const a = (.3 + Math.sin(t * .02 + s.ph) * .25) * s.z;
+        x.fillStyle = `rgba(234,252,255,${a})`;
+        x.beginPath(); x.arc(s.x * W, s.y * H, s.s * DPR * s.z, 0, 7); x.fill();
+      });
+      /* shooting star */
+      if (!shoot && Math.random() < .004) shoot = { x: Math.random() * W * .8, y: Math.random() * H * .3, vx: 9 * DPR, vy: 4 * DPR, life: 40 };
+      if (shoot) {
+        x.strokeStyle = "rgba(234,252,255,.8)"; x.lineWidth = 1.6 * DPR;
+        x.beginPath(); x.moveTo(shoot.x, shoot.y); x.lineTo(shoot.x - shoot.vx * 4, shoot.y - shoot.vy * 4); x.stroke();
+        shoot.x += shoot.vx; shoot.y += shoot.vy; if (--shoot.life <= 0) shoot = null;
+      }
+
+      /* orbit paths */
+      x.strokeStyle = "rgba(0,232,208,.05)"; x.lineWidth = 1;
+      [.30, .36, .43].forEach(rr => { x.beginPath(); x.ellipse(cx, cy, W * rr, H * (rr - .03), 0, 0, 7); x.stroke(); });
 
       let hover = null;
       B.forEach(b => {
         b.a += b.sp * (live ? 1.5 : 1);
         b.sx = cx + Math.cos(b.a) * W * b.rx;
         b.sy = cy + Math.sin(b.a) * H * b.ry;
-        const d = Math.hypot(mx - b.sx, my - b.sy);
-        b.hov = d < 44 * DPR; if (b.hov) hover = b;
+        b.hov = Math.hypot(mx - b.sx, my - b.sy) < 52 * DPR; if (b.hov) hover = b;
       });
       cv.style.cursor = hover ? "pointer" : "default";
 
-      /* strands + pulses */
+      /* ═ THE SUN-CORE ═ */
+      const br = (22 + Math.sin(t * .045) * 4) * DPR;
+      const halo = x.createRadialGradient(cx, cy, 0, cx, cy, br * 4.2);
+      halo.addColorStop(0, "rgba(255,255,255,.95)"); halo.addColorStop(.2, "rgba(0,232,208,.8)");
+      halo.addColorStop(.5, "rgba(0,232,208,.18)"); halo.addColorStop(1, "transparent");
+      x.fillStyle = halo; x.beginPath(); x.arc(cx, cy, br * 4.2, 0, 7); x.fill();
+      /* corona flares */
+      for (let i = 0; i < 7; i++) {
+        const fa = t * .006 + (i / 7) * Math.PI * 2, fl = br * (1.7 + Math.sin(t * .05 + i * 2) * .5);
+        x.strokeStyle = `rgba(0,232,208,${.28 + Math.sin(t * .07 + i) * .15})`; x.lineWidth = 2 * DPR; x.lineCap = "round";
+        x.beginPath(); x.moveTo(cx + Math.cos(fa) * br * 1.05, cy + Math.sin(fa) * br * 1.05);
+        x.lineTo(cx + Math.cos(fa) * fl, cy + Math.sin(fa) * fl); x.stroke();
+      }
+      x.fillStyle = "rgba(1,10,16,.8)"; x.font = `800 ${8 * DPR}px Unbounded`; x.textAlign = "center";
+      x.fillText("CORE", cx, cy + 3 * DPR);
+      x.fillStyle = "rgba(143,180,196,.85)"; x.font = `${7 * DPR}px "JetBrains Mono"`;
+      x.fillText(live ? "● HUNTING" : "○ STANDING BY", cx, cy + br * 2.4 + 12 * DPR);
+
+      /* gravity strands + pulses */
       B.forEach(b => {
         const g = x.createLinearGradient(cx, cy, b.sx, b.sy);
-        g.addColorStop(0, "rgba(0,232,208,.02)"); g.addColorStop(1, b.col + (b.hov ? "88" : "30"));
-        x.strokeStyle = g; x.lineWidth = b.hov ? 2.2 : 1.1;
-        const mxx = (cx + b.sx) / 2 + Math.sin(b.a * 2) * 26, myy = (cy + b.sy) / 2 + Math.cos(b.a * 2) * 26;
+        g.addColorStop(0, "rgba(0,232,208,.02)"); g.addColorStop(1, b.col + (b.hov ? "77" : "22"));
+        x.strokeStyle = g; x.lineWidth = b.hov ? 2 : 1;
+        const mxx = (cx + b.sx) / 2 + Math.sin(b.a * 2) * 30, myy = (cy + b.sy) / 2 + Math.cos(b.a * 2) * 30;
         x.beginPath(); x.moveTo(cx, cy); x.quadraticCurveTo(mxx, myy, b.sx, b.sy); x.stroke();
-        /* pulse train */
-        const pt = (t * .012 + b.a) % 1, ix = (1 - pt) * (1 - pt) * cx + 2 * (1 - pt) * pt * mxx + pt * pt * b.sx,
+        const pt = (t * .01 + b.a) % 1, ix = (1 - pt) * (1 - pt) * cx + 2 * (1 - pt) * pt * mxx + pt * pt * b.sx,
           iy = (1 - pt) * (1 - pt) * cy + 2 * (1 - pt) * pt * myy + pt * pt * b.sy;
-        x.fillStyle = b.col; x.beginPath(); x.arc(ix, iy, 2.6 * DPR * (b.hov ? 1.5 : 1), 0, 7); x.fill();
+        x.fillStyle = b.col; x.beginPath(); x.arc(ix, iy, 2.4 * DPR * (b.hov ? 1.6 : 1), 0, 7); x.fill();
       });
 
-      /* the core */
-      const br = (18 + Math.sin(t * .05) * 3) * DPR;
-      const cg = x.createRadialGradient(cx, cy, 0, cx, cy, br * 3.4);
-      cg.addColorStop(0, "rgba(190,255,244,.95)"); cg.addColorStop(.28, "rgba(0,232,208,.75)"); cg.addColorStop(1, "transparent");
-      x.fillStyle = cg; x.beginPath(); x.arc(cx, cy, br * 3.4, 0, 7); x.fill();
-      x.strokeStyle = "rgba(0,232,208,.5)"; x.lineWidth = 1.6;
-      x.beginPath(); x.arc(cx, cy, br + 9 * DPR, t * .02, t * .02 + 4); x.stroke();
-      x.strokeStyle = "rgba(169,139,255,.45)";
-      x.beginPath(); x.arc(cx, cy, br + 16 * DPR, -t * .014, -t * .014 + 2.4); x.stroke();
-      x.fillStyle = "#012"; x.font = `800 ${8.5 * DPR}px Unbounded`; x.textAlign = "center";
-      x.fillStyle = "rgba(1,10,16,.85)"; x.fillText("CORE", cx, cy + 3 * DPR);
-      x.fillStyle = "rgba(143,180,196,.8)"; x.font = `${7 * DPR}px "JetBrains Mono"`;
-      x.fillText(live ? "● HUNTING" : "○ STANDING BY", cx, cy + br * 2.1 + 12 * DPR);
-
-      /* bodies */
+      /* worlds */
       B.forEach(b => {
-        const R = b.r * DPR * (b.hov ? 1.45 : 1);
-        const g = x.createRadialGradient(b.sx - R * .3, b.sy - R * .3, 0, b.sx, b.sy, R * 2.6);
-        g.addColorStop(0, "#fff"); g.addColorStop(.25, b.col); g.addColorStop(1, "transparent");
-        x.fillStyle = g; x.beginPath(); x.arc(b.sx, b.sy, R * 2.6, 0, 7); x.fill();
-        x.fillStyle = "rgba(2,10,18,.9)"; x.font = `${13 * DPR}px sans-serif`; x.textAlign = "center";
-        x.fillText(b.icon, b.sx, b.sy + 4.5 * DPR);
-        x.fillStyle = b.hov ? "#eafcff" : "rgba(143,180,196,.75)";
-        x.font = `${b.hov ? 700 : 400} ${7.5 * DPR}px "JetBrains Mono"`;
-        x.fillText(b.label, b.sx, b.sy + R + 15 * DPR);
+        const R = b.r * DPR * (b.hov ? 1.35 : 1);
+        planet(b.sx, b.sy, R, b.col, b);
+        x.fillStyle = b.hov ? "#eafcff" : "rgba(143,180,196,.8)";
+        x.font = `${b.hov ? 700 : 400} ${7.5 * DPR}px "JetBrains Mono"`; x.textAlign = "center";
+        x.fillText(b.label, b.sx, b.sy + R * 2 + 14 * DPR);
+        if (b.hov) { x.fillStyle = b.col; x.font = `${6.5 * DPR}px "JetBrains Mono"`;
+          x.fillText(b.kind === "mod" ? "CLICK TO JUMP" : "CLICK TO OPEN", b.sx, b.sy + R * 2 + 26 * DPR); }
       });
     };
     draw();
@@ -157,17 +228,17 @@ OS.register({
       selected = hit.pi; renderProjPanel();
     });
 
-    /* ── project panel + spawn form ── */
+    /* ── planet panel + ignite form ── */
     const renderProjPanel = () => {
       const pp = el.querySelector("#projPanel"), P = projects();
       if (selected == null || !P[selected]) { pp.innerHTML = ""; return; }
       const p = P[selected];
       pp.innerHTML = `<div class="card reveal" style="margin-bottom:16px;border-color:${p.color}55">
-        <h3><span style="color:${p.color}">◇</span> ${p.name}</h3>
-        <p class="cs">${p.note || "a body in your world"}</p>
+        <h3><span style="color:${p.color}">◉</span> ${p.name}</h3>
+        <p class="cs">${p.note || "a world in your universe"}</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           ${p.link ? `<a class="btn ghost sm" href="${p.link}" target="_blank">OPEN ↗</a>` : ""}
-          <button class="btn ghost sm danger" id="projDel">REMOVE FROM ORBIT</button>
+          <button class="btn ghost sm danger" id="projDel">COLLAPSE THE PLANET</button>
           <button class="btn ghost sm" id="projClose">CLOSE</button>
         </div></div>`;
       pp.querySelector("#projDel").onclick = () => { OS.store.set("projects", P.filter((_, i) => i !== selected)); selected = null; renderProjPanel(); };
@@ -180,7 +251,7 @@ OS.register({
       if (!showForm) { f.innerHTML = ""; return; }
       let col = "#ffc46b";
       f.innerHTML = `<div class="card reveal" style="margin-bottom:22px;max-width:520px">
-        <h3>New body for the world</h3><p class="cs">name it, color it, watch it enter orbit</p>
+        <h3>Ignite a new planet</h3><p class="cs">name it, color it, watch it take orbit</p>
         <div class="cform">
           <input class="fin" id="pjName" placeholder="project name">
           <input class="fin" id="pjLink" placeholder="link (optional — site, repo, doc)">
@@ -189,7 +260,7 @@ OS.register({
             <span style="font-size:10px;color:var(--dim);letter-spacing:.14em">COLOR</span>
             ${["#ffc46b", "#00e8d0", "#4cdcff", "#a98bff", "#6ef2c0", "#ff7d9d"].map(c => `<span class="swatch" data-c="${c}" style="background:${c}"></span>`).join("")}
           </div>
-          <button class="btn" id="pjGo">LAUNCH INTO ORBIT</button>
+          <button class="btn" id="pjGo">IGNITE</button>
         </div></div>`;
       const sw = f.querySelectorAll(".swatch");
       const paint = () => sw.forEach(s => s.classList.toggle("on", s.dataset.c === col));
