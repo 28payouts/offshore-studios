@@ -7,6 +7,13 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="core.css?v=4">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="theme-color" content="#01070d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Offshore">
 </head>
 <body>
 
@@ -48,5 +55,17 @@
 <script src="mod-agency.js?v=3"></script>
 <script src="mod-agents.js?v=3"></script>
 <script src="boot.js?v=4"></script>
+<script>
+/* real software: register the service worker + surface the install prompt */
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault(); window.__installEvt = e;
+  const b = document.createElement("button");
+  b.id = "installBtn"; b.textContent = "⬇ INSTALL OFFSHORE OS";
+  b.style.cssText = "position:fixed;bottom:18px;right:18px;z-index:80;padding:13px 20px;border:0;border-radius:99px;font:700 10.5px 'Unbounded',sans-serif;letter-spacing:.2em;color:#012;cursor:pointer;background:linear-gradient(100deg,#00e8d0,#4cdcff);box-shadow:0 14px 40px -8px rgba(0,232,208,.6)";
+  b.onclick = async () => { b.remove(); window.__installEvt.prompt(); };
+  document.body.appendChild(b);
+});
+</script>
 </body>
 </html>
