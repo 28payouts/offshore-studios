@@ -85,16 +85,20 @@
   /* ── Higgsfield skybox hook: set window.OS_SKYBOX (or hardcode) to a hosted
         cinematic nebula and the whole app wears it behind the particle field ── */
   const applySky = url => {
-    const app = document.getElementById("app"); if (!app || !url) return;
+    if (!url) return;
     const img = new Image();
     img.onload = () => {
-      app.style.background = `linear-gradient(rgba(1,7,13,.72),rgba(1,7,13,.86)), url("${url}") center/cover fixed no-repeat`;
+      const app = document.getElementById("app");
+      if (app) app.style.background = `linear-gradient(rgba(1,7,13,.72),rgba(1,7,13,.86)), url("${url}") center/cover fixed no-repeat`;
+      const gate = document.getElementById("gate");
+      if (gate) gate.style.background = `linear-gradient(rgba(1,7,13,.5),rgba(1,7,13,.82)), url("${url}") center/cover no-repeat`;
     };
     img.src = url;
   };
   window.OS_setSkybox = applySky;
   /* Higgsfield-generated cinematic nebula (real AI art, hosted on their CDN) */
   window.OS_SKYBOX = window.OS_SKYBOX || "https://d8j0ntlcm91z4.cloudfront.net/user_3H4SzmK3yfFv5j6nbvNOM3d88rq/hf_20260809_151529_04d4ca59-bab1-490f-bd5b-c90de4408294.png";
-  const trySky = () => { if (document.getElementById("app") && !document.getElementById("app").hidden) applySky(window.OS_SKYBOX); else setTimeout(trySky, 1500); };
+  applySky(window.OS_SKYBOX);
+  const trySky = () => { const a = document.getElementById("app"); if (a && !a.hidden) applySky(window.OS_SKYBOX); else setTimeout(trySky, 1500); };
   trySky();
 })();

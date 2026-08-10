@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OFFSHORE OS — One universe. Every system.</title>
+<meta name="description" content="The living AI ecosystem: trading intelligence, agency, client worlds and an AI council — one installable OS.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<meta name="theme-color" content="#01070d">
+<style>
+:root{--ink:#eafcff;--mut:#8fb4c4;--dim:#4e7386;--aqua:#00e8d0;--cyan:#4cdcff;--vio:#a98bff;--bio:#6ef2c0;
+  --disp:'Unbounded',sans-serif;--body:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:#01070d;color:var(--ink);font-family:var(--body);overflow-x:hidden;cursor:none}
+::selection{background:rgba(0,232,208,.3)}
+.mono{font-family:var(--mono)}
+.grad{background:linear-gradient(100deg,var(--aqua),var(--cyan) 45%,var(--vio));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+/* nebula + stars */
+#sky{position:fixed;inset:0;z-index:-2;
+  background:linear-gradient(rgba(1,7,13,.55),rgba(1,7,13,.88)),
+  url("https://d8j0ntlcm91z4.cloudfront.net/user_3H4SzmK3yfFv5j6nbvNOM3d88rq/hf_20260809_151529_04d4ca59-bab1-490f-bd5b-c90de4408294.png") center/cover no-repeat fixed}
+#stars{position:fixed;inset:0;z-index:-1;pointer-events:none}
+#grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.05;mix-blend-mode:overlay}
+
+/* cursor */
+#cdot{position:fixed;width:8px;height:8px;border-radius:50%;background:#eafcff;z-index:99;pointer-events:none;
+  transform:translate(-50%,-50%);box-shadow:0 0 12px rgba(0,232,208,.9);transition:width .2s,height .2s}
+#cring{position:fixed;width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(0,232,208,.5);z-index:98;
+  pointer-events:none;transform:translate(-50%,-50%);transition:width .25s,height .25s,border-color .25s}
+#cdot.hot{width:14px;height:14px}#cring.hot{width:58px;height:58px;border-color:rgba(169,139,255,.85)}
+@media(pointer:coarse){#cdot,#cring{display:none}body{cursor:auto}}
+input,textarea{cursor:text}
+
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:14px;padding:16px 28px;
+  background:linear-gradient(180deg,rgba(1,7,13,.85),transparent);backdrop-filter:blur(6px)}
+nav .brand{font:800 12px var(--disp);letter-spacing:.2em;display:flex;align-items:center;gap:10px}
+nav .sp{flex:1}
+.pill{font:700 9.5px var(--disp);letter-spacing:.22em;padding:11px 18px;border-radius:99px;text-decoration:none;
+  color:var(--aqua);border:1px solid rgba(0,232,208,.35);transition:.3s}
+.pill:hover{background:rgba(0,232,208,.1)}
+.pill.solid{color:#012;border:0;background:linear-gradient(100deg,var(--aqua),var(--cyan));}
+.pill.solid:hover{transform:translateY(-2px);box-shadow:0 14px 34px -8px rgba(0,232,208,.55)}
+
+/* hero */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:110px 20px 60px}
+.hero .logo{width:150px;height:80px;overflow:visible;margin-bottom:26px}
+.hero .logo polyline{stroke-dasharray:120;stroke-dashoffset:120;animation:draw 2s .3s ease forwards;
+  filter:drop-shadow(0 0 16px rgba(0,232,208,.8))}
+@keyframes draw{to{stroke-dashoffset:0}}
+.kick{font:700 10px var(--mono);letter-spacing:.5em;color:var(--aqua);text-transform:uppercase;margin-bottom:20px;opacity:0;animation:up 1s .6s forwards}
+h1{font:800 clamp(2.2rem,7vw,4.6rem)/1.08 var(--disp);letter-spacing:-.01em;opacity:0;animation:up 1s .8s forwards}
+.hero p{max-width:640px;margin:24px auto 0;color:var(--mut);font-size:17px;line-height:1.8;opacity:0;animation:up 1s 1.05s forwards}
+.ctas{display:flex;gap:14px;margin-top:38px;flex-wrap:wrap;justify-content:center;opacity:0;animation:up 1s 1.25s forwards}
+.cta{font:700 11.5px var(--disp);letter-spacing:.24em;padding:17px 30px;border-radius:99px;text-decoration:none;transition:.3s}
+.cta.main{color:#012;background:linear-gradient(100deg,var(--aqua),var(--cyan) 55%,var(--vio));background-size:200% 100%;animation:flow 6s linear infinite}
+.cta.main:hover{transform:translateY(-3px);box-shadow:0 20px 50px -10px rgba(0,232,208,.6)}
+.cta.ghost{color:var(--aqua);border:1px solid rgba(0,232,208,.4)}
+.cta.ghost:hover{background:rgba(0,232,208,.09)}
+@keyframes flow{to{background-position:200% 0}}
+@keyframes up{from{opacity:0;transform:translateY(26px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
+.scrollhint{margin-top:64px;font:400 9px var(--mono);letter-spacing:.4em;color:var(--dim);animation:pulse 2.6s infinite}
+@keyframes pulse{50%{opacity:.3}}
+
+/* sections */
+section{max-width:1100px;margin:0 auto;padding:110px 26px}
+.eyebrow{font:700 9.5px var(--mono);letter-spacing:.42em;color:var(--aqua);text-transform:uppercase;margin-bottom:16px;
+  display:flex;align-items:center;gap:12px}
+.eyebrow::after{content:"";width:90px;height:1px;background:linear-gradient(90deg,var(--aqua),transparent)}
+h2{font:800 clamp(1.6rem,4vw,2.6rem)/1.15 var(--disp);margin-bottom:18px}
+section>p{color:var(--mut);font-size:15.5px;line-height:1.85;max-width:660px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:44px}
+.f{position:relative;background:rgba(7,26,42,.5);border:1px solid rgba(0,232,208,.14);border-radius:20px;padding:26px;
+  backdrop-filter:blur(12px);transition:.35s;overflow:hidden;opacity:0;transform:translateY(30px)}
+.f.in{opacity:1;transform:none;transition:opacity .8s,transform .8s cubic-bezier(.2,.8,.2,1)}
+.f:hover{transform:translateY(-5px);border-color:rgba(0,232,208,.4);box-shadow:0 24px 60px -20px rgba(0,232,208,.3)}
+.f .ic{font-size:26px;margin-bottom:14px;display:block}
+.f h3{font:700 15px var(--body);margin-bottom:8px}
+.f p{color:var(--mut);font-size:12.5px;line-height:1.75}
+.f .tag{display:inline-block;margin-top:14px;font:700 8.5px var(--mono);letter-spacing:.18em;color:var(--bio);
+  border:1px solid rgba(110,242,192,.35);border-radius:99px;padding:4px 10px}
+.f .tag.warn{color:#ffc46b;border-color:rgba(255,196,107,.35)}
+
+/* numbers strip */
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:44px}
+.n{text-align:center;padding:26px 10px;border-radius:18px;background:rgba(7,26,42,.4);border:1px solid rgba(0,232,208,.12)}
+.n b{display:block;font:800 2rem var(--disp)}
+.n span{font:400 10px var(--mono);letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.honest{margin-top:14px;font:400 10.5px var(--mono);color:var(--dim);letter-spacing:.06em}
+
+/* final cta */
+.final{text-align:center;padding:130px 26px 150px}
+.final h2{font-size:clamp(1.8rem,5vw,3.2rem)}
+footer{padding:40px 26px;text-align:center;font:400 10px var(--mono);letter-spacing:.2em;color:var(--dim);
+  border-top:1px solid rgba(0,232,208,.08)}
+</style>
+</head>
+<body>
+<div id="sky"></div><canvas id="stars"></canvas><canvas id="grain"></canvas>
+<div id="cring"></div><div id="cdot"></div>
+
+<nav>
+  <span class="brand"><svg width="30" height="16" viewBox="0 0 52 28"><polyline points="2,24 12,20 18,23 27,12 33,16 42,5 50,9" fill="none" stroke="url(#ng)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="ng" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/></linearGradient></defs></svg>OFFSHORE OS</span>
+  <span class="sp"></span>
+  <a class="pill" href="https://28payouts.github.io/livemind/">THE LIVE MIND</a>
+  <a class="pill solid" href="index.html">LAUNCH OS →</a>
+</nav>
+
+<div class="hero">
+  <svg class="logo" viewBox="0 0 52 28"><polyline points="2,24 12,20 18,23 27,12 33,16 42,5 50,9" fill="none" stroke="url(#hg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="hg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/></linearGradient></defs></svg>
+  <div class="kick">Offshore Studios presents</div>
+  <h1>One universe.<br><span class="grad">Every system.</span></h1>
+  <p>Trading intelligence, design agency, client worlds and an AI council — living together in one installable OS. Boot in, jump to hyperspace, and run your empire from space.</p>
+  <div class="ctas">
+    <a class="cta main" href="index.html">ENTER THE UNIVERSE</a>
+    <a class="cta ghost" href="index.html">⬇ INSTALL THE APP</a>
+  </div>
+  <div class="scrollhint">SCROLL · THE SYSTEMS AWAIT</div>
+</div>
+
+<section>
+  <div class="eyebrow">The Universe</div>
+  <h2>Your empire, <span class="grad">seen from space.</span></h2>
+  <p>Every system is a living planet orbiting your core — shaded worlds with rings, atmospheres and moons. Your clients orbit as moons in their own colors. Spawn a project and watch a new planet ignite in real time.</p>
+  <div class="grid">
+    <div class="f"><span class="ic">🚀</span><h3>Cinematic boot & hyperspace</h3><p>The OS wakes with a system-check sequence, then jumps through a star tunnel into your universe. Every module arrives out of warp.</p><span class="tag">LIVE</span></div>
+    <div class="f"><span class="ic">🪐</span><h3>Planets, not pages</h3><p>Hover a world and it wakes. Click and you jump in. Projects become planets, clients become moons — your business, made physical.</p><span class="tag">LIVE</span></div>
+    <div class="f"><span class="ic">⬡</span><h3>The Round Table</h3><p>Five AI minds — strategist, trader, market watcher, agency builder and the money mind — seated at one holographic table, debating how to grow your empire. Drop a topic and steer the council.</p><span class="tag">LIVE</span></div>
+    <div class="f"><span class="ic">✦</span><h3>Claude, resident</h3><p>An AI with a face — a breathing orb and voice waveform — wired into your systems, able to answer and to drive the entire OS for you.</p><span class="tag">LIVE</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="eyebrow">The Live Mind</div>
+  <h2>A trading intelligence with <span class="grad">a verified record.</span></h2>
+  <p>One bot, four engines across ES + NQ futures. Every trade in the record was replayed bar-by-bar against real market data. The rules are frozen — the simulator is earning its way to live capital through a strict performance gate.</p>
+  <div class="nums">
+    <div class="n"><b class="grad">$10.0M</b><span>backtested from $100k · 10y</span></div>
+    <div class="n"><b>57.3%</b><span>win rate · 4,267 trades</span></div>
+    <div class="n"><b>16.9%</b><span>max drawdown · never worse</span></div>
+    <div class="n"><b>2.00</b><span>profit factor</span></div>
+  </div>
+  <div class="honest">Backtested performance — verified bar-by-bar, and stated as a backtest, not live results. That honesty is the brand.</div>
+</section>
+
+<section>
+  <div class="eyebrow">Client Worlds</div>
+  <h2>Every client gets <span class="grad">their own world.</span></h2>
+  <p>Onboarding takes two minutes. Each client signs in through the same airlock and lands in a portal built only for them — their color, their greeting, their project, their billing. Private by design: your pipeline and other clients are invisible to them.</p>
+  <div class="grid">
+    <div class="f"><span class="ic">🎨</span><h3>Personal by default</h3><p>Portal color, greeting, status line and billing — set per client at onboarding. The app dresses itself in their identity.</p><span class="tag">LIVE</span></div>
+    <div class="f"><span class="ic">🔒</span><h3>Walled-off data</h3><p>Role-based access today; Supabase row-level security next — client data isolated at the database layer, encrypted passwords, signed sessions.</p><span class="tag warn">HARDENING</span></div>
+    <div class="f"><span class="ic">📲</span><h3>Real software</h3><p>Installs to the dock and home screen, opens fullscreen in its own window, works offline. One codebase, every device.</p><span class="tag">LIVE</span></div>
+    <div class="f"><span class="ic">🌌</span><h3>One app, every service</h3><p>Trading, design, marketing, ecom — clients come for one world and discover the galaxy. Offshore runs it all from a single OS.</p><span class="tag warn">EXPANDING</span></div>
+  </div>
+</section>
+
+<div class="final">
+  <div class="eyebrow" style="justify-content:center">Ready?</div>
+  <h2>The universe is <span class="grad">open.</span></h2>
+  <p style="color:var(--mut);max-width:520px;margin:18px auto 0;line-height:1.8">Launch in the browser, or install it as an app and keep the whole Offshore world one click from your dock.</p>
+  <div class="ctas" style="animation:none;opacity:1">
+    <a class="cta main" href="index.html">LAUNCH OFFSHORE OS</a>
+  </div>
+</div>
+
+<footer>OFFSHORE STUDIOS · TRADING × DESIGN × AI · BUILT IN THE DEEP</footer>
+
+<script>
+/* starfield */
+const sc=document.getElementById('stars'),sx=sc.getContext('2d');
+const srs=()=>{sc.width=innerWidth;sc.height=innerHeight};srs();addEventListener('resize',srs);
+const S=[...Array(170)].map(()=>({x:Math.random(),y:Math.random(),s:.3+Math.random()*1.5,p:Math.random()*7,z:.4+Math.random()*.6}));
+let t=0;
+(function loop(){requestAnimationFrame(loop);if(document.hidden)return;t++;sx.clearRect(0,0,sc.width,sc.height);
+  S.forEach(s=>{const a=(.3+Math.sin(t*.02+s.p)*.25)*s.z;sx.fillStyle=`rgba(234,252,255,${a})`;
+    sx.beginPath();sx.arc(s.x*sc.width,(s.y*sc.height+scrollY*.15*s.z)%sc.height,s.s*s.z,0,7);sx.fill();});
+})();
+/* grain */
+const g=document.getElementById('grain'),gx=g.getContext('2d');
+const grs=()=>{g.width=innerWidth/2;g.height=innerHeight/2};grs();addEventListener('resize',grs);
+const tl=document.createElement('canvas');tl.width=tl.height=128;const tx=tl.getContext('2d');
+setInterval(()=>{if(document.hidden)return;const d=tx.createImageData(128,128);
+  for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=46}
+  tx.putImageData(d,0,0);gx.clearRect(0,0,g.width,g.height);gx.fillStyle=gx.createPattern(tl,'repeat');gx.fillRect(0,0,g.width,g.height);},120);
+/* cursor */
+const cd=document.getElementById('cdot'),cr=document.getElementById('cring');
+let mx=-99,my=-99,rx=-99,ry=-99;
+addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';
+  const hot=!!e.target.closest('a,.f,button');cd.classList.toggle('hot',hot);cr.classList.toggle('hot',hot);},{passive:true});
+(function rl(){requestAnimationFrame(rl);rx+=(mx-rx)*.16;ry+=(my-ry)*.16;cr.style.left=rx+'px';cr.style.top=ry+'px'})();
+/* scroll reveals */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.15});
+document.querySelectorAll('.f').forEach(f=>io.observe(f));
+</script>
+</body>
+</html>
