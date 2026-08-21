@@ -48,9 +48,9 @@ OS.register({
       <div class="card">
         <h3>Next on the horizon</h3><p class="cs">the road we're on</p>
         <div style="font-size:12.5px;color:var(--mut);line-height:2">
-          ① PWA install — this becomes a real app icon<br>
-          ② Supabase keys → real accounts across every device<br>
-          ③ TradingView webhooks → the universe feels real trades<br>
+          ① Supabase keys → real accounts, sealed client vaults<br>
+          ② TradingView webhooks → real fills light up the Live Mind<br>
+          ③ Spline scenes → true 3D worlds beyond the canvas<br>
           ④ Client-side galaxy — their own beautiful worlds</div>
       </div>
     </div>`;
@@ -86,17 +86,32 @@ OS.register({
       agency:   { col: "#6ef2c0", ring: true,  moons: 1 },
       agents:   { col: "#ffc46b", ring: false, moons: 2 }
     };
+    /* Higgsfield-rendered worlds — real AI planet art, hotlinked from their CDN */
+    const HF = "https://d8j0ntlcm91z4.cloudfront.net/user_3H4SzmK3yfFv5j6nbvNOM3d88rq/";
+    const ART = {
+      livemind: HF + "hf_20260821_175515_f25e921c-0e59-4a4b-b82c-95be8cdeaa03.png",
+      claude:   HF + "hf_20260821_175515_0e57f17a-e1ff-4552-9a88-79c5bb294254.png",
+      table:    HF + "hf_20260821_175515_ac39776a-7b90-47ab-b274-95ad8c3a2811.png",
+      clients:  HF + "hf_20260821_175515_2505b7fc-ce7e-4b1b-a754-57c1ad89f6c5.png",
+      agency:   HF + "hf_20260821_175515_9be9daca-e377-4d99-b8b3-4fa694716da2.png",
+      agents:   HF + "hf_20260821_175515_cc9daaa4-9354-4b32-b933-adefb0b5b9ed.png"
+    };
+    const ARTPOOL = Object.values(ART);
+    const IMGS = {};
+    const pimg = u => { if (!IMGS[u]) { const i = new Image(); i.src = u; IMGS[u] = i; } return IMGS[u]; };
+    ARTPOOL.forEach(pimg); /* pre-warm */
     const bodies = () => {
       const mods = window.OS_CONFIG.MODULES.filter(m => m.id !== "home" && m.roles.includes(user.role));
       const list = mods.map((m, i) => {
         const f = FLAVOR[m.id] || { col: "#4cdcff", ring: false, moons: 0 };
-        return { kind: "mod", id: m.id, label: m.label.toUpperCase(), col: f.col, ring: f.ring,
+        return { kind: "mod", id: m.id, label: m.label.toUpperCase(), col: f.col, ring: f.ring, img: ART[m.id],
           moons: m.id === "clients" ? clients().map(c => c.accent || "#4cdcff").slice(0, 6) : Array(f.moons).fill("#8fb4c4"),
           a: (i / mods.length) * Math.PI * 2 + .35, rx: .30 + (i % 3) * .06, ry: .27 + ((i + 1) % 3) * .05,
           sp: .0013 + i * .00035, r: 17 + (i % 2) * 4 };
       });
       projects().forEach((p, i) => list.push({
         kind: "proj", id: "p" + i, pi: i, label: p.name.toUpperCase(), col: p.color || "#ffc46b",
+        img: ARTPOOL[i % ARTPOOL.length],
         ring: i % 2 === 0, moons: [], a: 1.2 + i * 1.7, rx: .43, ry: .38, sp: .0009 + i * .00025, r: 12
       }));
       return list;
@@ -119,14 +134,24 @@ OS.register({
       moonPos.filter(m => !m.front).forEach(m => { x.fillStyle = m.mc; x.beginPath(); x.arc(m.mxp, m.myp, R * .18, 0, 7); x.fill(); });
       if (b.ring) { x.strokeStyle = col + "55"; x.lineWidth = 2.4 * DPR; x.save(); x.translate(px, py); x.rotate(-.35);
         x.beginPath(); x.ellipse(0, 0, R * 1.75, R * .5, 0, Math.PI, Math.PI * 2); x.stroke(); x.restore(); }
-      /* sphere with light from upper-left */
-      const g = x.createRadialGradient(px - R * .45, py - R * .45, R * .1, px, py, R * 1.15);
-      g.addColorStop(0, "#f2ffff"); g.addColorStop(.28, col); g.addColorStop(.75, col + "88"); g.addColorStop(1, "#030d16");
-      x.fillStyle = g; x.beginPath(); x.arc(px, py, R, 0, 7); x.fill();
-      /* terminator shadow */
-      const sh = x.createRadialGradient(px + R * .7, py + R * .7, 0, px, py, R * 1.4);
-      sh.addColorStop(0, "rgba(1,7,13,.65)"); sh.addColorStop(.55, "transparent");
-      x.fillStyle = sh; x.beginPath(); x.arc(px, py, R, 0, 7); x.fill();
+      /* the world itself: Higgsfield AI render when loaded, shaded sphere as fallback */
+      const im = b.img ? pimg(b.img) : null;
+      if (im && im.complete && im.naturalWidth) {
+        x.save(); x.beginPath(); x.arc(px, py, R, 0, 7); x.clip();
+        x.drawImage(im, px - R * 1.02, py - R * 1.02, R * 2.04, R * 2.04);
+        x.restore();
+        /* soft accent rim so every world still wears its color */
+        const rim = x.createRadialGradient(px - R * .5, py - R * .5, R * .55, px, py, R * 1.02);
+        rim.addColorStop(0, "transparent"); rim.addColorStop(.85, "transparent"); rim.addColorStop(1, col + "66");
+        x.fillStyle = rim; x.beginPath(); x.arc(px, py, R, 0, 7); x.fill();
+      } else {
+        const g = x.createRadialGradient(px - R * .45, py - R * .45, R * .1, px, py, R * 1.15);
+        g.addColorStop(0, "#f2ffff"); g.addColorStop(.28, col); g.addColorStop(.75, col + "88"); g.addColorStop(1, "#030d16");
+        x.fillStyle = g; x.beginPath(); x.arc(px, py, R, 0, 7); x.fill();
+        const sh = x.createRadialGradient(px + R * .7, py + R * .7, 0, px, py, R * 1.4);
+        sh.addColorStop(0, "rgba(1,7,13,.65)"); sh.addColorStop(.55, "transparent");
+        x.fillStyle = sh; x.beginPath(); x.arc(px, py, R, 0, 7); x.fill();
+      }
       /* front ring + front moons */
       if (b.ring) { x.strokeStyle = col + "AA"; x.lineWidth = 2.8 * DPR; x.save(); x.translate(px, py); x.rotate(-.35);
         x.beginPath(); x.ellipse(0, 0, R * 1.75, R * .5, 0, 0, Math.PI); x.stroke(); x.restore(); }

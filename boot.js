@@ -4,31 +4,108 @@
   const REAL = !!(C.SUPABASE_URL && C.SUPABASE_ANON_KEY);
   let sb = null;
 
-  /* ═══════════ CINEMATIC BOOT — the machine wakes up ═══════════ */
+  /* ═══════════ CINEMATIC BOOT v5 — stardust converges into the wave ═══════════
+     No cheap typed-list boot. A field of stardust is pulled out of the dark and
+     forged into the Offshore wave; the signal lines print underneath; on exit the
+     wave detonates back into stars. Click anywhere to skip. */
   (function bootSequence() {
     const b = document.createElement("div"); b.id = "bootseq";
     b.innerHTML = `
-      <svg viewBox="0 0 52 28" class="blogo"><polyline points="2,24 12,20 18,23 27,12 33,16 42,5 50,9" fill="none" stroke="url(#blg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="blg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/></linearGradient></defs></svg>
-      <div class="btitle">${"OFFSHORE OS".split("").map((ch, i) => `<span style="animation-delay:${.9 + i * .05}s">${ch === " " ? "&nbsp;" : ch}</span>`).join("")}</div>
-      <div class="blines mono" id="blines"></div>
-      <div class="bskip mono">CLICK TO SKIP</div>`;
+      <canvas id="bootcv" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
+      <div class="btitle" style="position:relative;z-index:2">${"OFFSHORE OS".split("").map((ch, i) => `<span style="animation-delay:${1.6 + i * .05}s">${ch === " " ? "&nbsp;" : ch}</span>`).join("")}</div>
+      <div class="blines mono" id="blines" style="position:relative;z-index:2"></div>
+      <div class="bskip mono" style="z-index:2">CLICK TO SKIP</div>`;
     document.body.appendChild(b);
+
+    /* ── stardust forge ── */
+    const cv = b.querySelector("#bootcv"), x = cv.getContext("2d");
+    const W = cv.width = innerWidth * devicePixelRatio, H = cv.height = innerHeight * devicePixelRatio;
+    const DP = devicePixelRatio;
+    /* the wave, sampled into targets */
+    const PTS = [[2,24],[12,20],[18,23],[27,12],[33,16],[42,5],[50,9]];
+    const scale = Math.min(W * .34 / 52, H * .2 / 28), ox = W / 2 - 26 * scale, oy = H * .40 - 14 * scale;
+    const targets = [];
+    for (let s = 0; s < PTS.length - 1; s++) {
+      const [ax, ay] = PTS[s], [bx2, by2] = PTS[s + 1];
+      const segLen = Math.hypot(bx2 - ax, by2 - ay), n = Math.max(6, Math.round(segLen * 1.6));
+      for (let i = 0; i < n; i++) {
+        const f = i / n;
+        targets.push({ x: ox + (ax + (bx2 - ax) * f) * scale, y: oy + (ay + (by2 - ay) * f) * scale });
+      }
+    }
+    const P = targets.map((tg, i) => {
+      const a = Math.random() * Math.PI * 2, d = (0.4 + Math.random() * 0.7) * Math.max(W, H) * .6;
+      return { x: W / 2 + Math.cos(a) * d, y: H / 2 + Math.sin(a) * d, tx: tg.x, ty: tg.y,
+        delay: (i / targets.length) * 26 + Math.random() * 14, s: (1 + Math.random() * 1.8) * DP,
+        hue: Math.random() < .5 ? "0,232,208" : "169,139,255", vx: 0, vy: 0 };
+    });
+    let t = 0, killed = false, exploded = false;
+    (function frame() {
+      if (!document.contains(cv)) return;
+      requestAnimationFrame(frame);
+      t++;
+      x.fillStyle = "rgba(1,4,8,.26)"; x.fillRect(0, 0, W, H);   /* trails */
+      let locked = 0;
+      P.forEach(p => {
+        if (exploded) { p.x += p.vx; p.y += p.vy; p.vx *= 1.04; p.vy *= 1.04; }
+        else if (t > p.delay) {
+          const e = .085;                                        /* magnetic pull */
+          p.x += (p.tx - p.x) * e; p.y += (p.ty - p.y) * e;
+          if (Math.abs(p.tx - p.x) < 2 * DP && Math.abs(p.ty - p.y) < 2 * DP) locked++;
+        }
+        const a2 = exploded ? .9 : Math.min(1, Math.max(.12, 1 - Math.hypot(p.tx - p.x, p.ty - p.y) / (300 * DP)));
+        x.fillStyle = `rgba(${p.hue},${a2})`;
+        x.beginPath(); x.arc(p.x, p.y, p.s, 0, 7); x.fill();
+      });
+      /* once the wave is forged, stroke the spine + breathe a glow along it */
+      if (!exploded && locked > targets.length * .82) {
+        const g = x.createLinearGradient(ox, oy + 28 * scale, ox + 52 * scale, oy);
+        g.addColorStop(0, "#00e8d0"); g.addColorStop(1, "#a98bff");
+        x.strokeStyle = g; x.lineWidth = 2.4 * DP; x.lineCap = x.lineJoin = "round";
+        x.shadowColor = "rgba(0,232,208,.8)"; x.shadowBlur = 18 * DP;
+        x.beginPath(); PTS.forEach(([px2, py2], i) => { const X = ox + px2 * scale, Y = oy + py2 * scale; i ? x.lineTo(X, Y) : x.moveTo(X, Y); }); x.stroke();
+        x.shadowBlur = 0;
+        /* pulse of light travelling the wave */
+        const pf = (t * .016) % 1; let acc = 0, total = 0;
+        for (let s = 0; s < PTS.length - 1; s++) total += Math.hypot(PTS[s+1][0]-PTS[s][0], PTS[s+1][1]-PTS[s][1]);
+        for (let s = 0; s < PTS.length - 1; s++) {
+          const L = Math.hypot(PTS[s+1][0]-PTS[s][0], PTS[s+1][1]-PTS[s][1]);
+          if (pf * total <= acc + L) {
+            const f = (pf * total - acc) / L;
+            const X = ox + (PTS[s][0] + (PTS[s+1][0]-PTS[s][0]) * f) * scale, Y = oy + (PTS[s][1] + (PTS[s+1][1]-PTS[s][1]) * f) * scale;
+            const rg = x.createRadialGradient(X, Y, 0, X, Y, 26 * DP);
+            rg.addColorStop(0, "rgba(234,252,255,.95)"); rg.addColorStop(1, "transparent");
+            x.fillStyle = rg; x.beginPath(); x.arc(X, Y, 26 * DP, 0, 7); x.fill();
+            break;
+          }
+          acc += L;
+        }
+      }
+    })();
+
+    /* ── signal lines ── */
     const LINES = ["WAKING THE WORLD…", "ENGINES E1–E4 · CHECK", "CLIENT VAULTS · SEALED", "COUNCIL · SEATED", "CLAUDE · ONLINE"];
     const bl = b.querySelector("#blines");
-    let li = 0, killed = false;
+    let li = 0;
     const typeLine = () => {
       if (killed || li >= LINES.length) return;
       const row = document.createElement("div"); bl.appendChild(row);
       const txt = LINES[li++]; let ci = 0;
-      const t = setInterval(() => {
+      const tv = setInterval(() => {
         row.textContent = txt.slice(0, ++ci) + (ci < txt.length ? "▌" : " ✓");
-        if (ci >= txt.length) { clearInterval(t); setTimeout(typeLine, 160); }
-      }, 22);
+        if (ci >= txt.length) { clearInterval(tv); setTimeout(typeLine, 130); }
+      }, 18);
     };
-    setTimeout(typeLine, 1100);
-    const kill = () => { if (killed) return; killed = true; b.classList.add("bout"); setTimeout(() => b.remove(), 700); };
+    setTimeout(typeLine, 1500);
+
+    /* ── exit: the wave detonates back into stardust ── */
+    const kill = () => {
+      if (killed) return; killed = true; exploded = true;
+      P.forEach(p => { const a = Math.random() * Math.PI * 2, v = (1.5 + Math.random() * 5) * DP; p.vx = Math.cos(a) * v; p.vy = Math.sin(a) * v; });
+      b.classList.add("bout"); setTimeout(() => b.remove(), 750);
+    };
     b.addEventListener("click", kill);
-    setTimeout(kill, 4200);
+    setTimeout(kill, 4600);
   })();
 
   /* ═══════════ HYPERSPACE — the jump to your universe ═══════════ */
