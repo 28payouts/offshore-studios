@@ -20,6 +20,18 @@ OS.register({
       <div class="card reveal"><div class="stat"><div class="k">Max drawdown</div><div class="v wc">${V.dd}</div><div class="s">never worse, ten years</div></div></div>
       <div class="card reveal"><div class="stat"><div class="k">Sim gate</div><div class="v aq">0 / 60</div><div class="s">winner-capture unlocks live capital</div></div></div>
     </div>
+    <div class="card reveal" style="margin-top:13px;padding:0;overflow:hidden">
+      <div style="display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid rgba(120,180,200,.12);flex-wrap:wrap">
+        <div>
+          <div style="font:800 13px Unbounded;color:#eafcff">THE LIVE TAPE</div>
+          <div class="mono" style="font-size:9.5px;letter-spacing:.22em;color:var(--dim)">REAL MARKET · REAL TIME · THE WATER THE MIND HUNTS IN</div>
+        </div>
+        <div style="display:flex;gap:6px;margin-left:auto" id="lmSyms"></div>
+        <span class="chip warn">BOT MARKERS ARRIVE WITH THE WEBHOOK</span>
+      </div>
+      <div id="lmChart" style="height:520px;background:#01070d"></div>
+    </div>
+
     <div class="cards" style="margin-top:13px;grid-template-columns:1.25fr .75fr">
       <div class="card reveal">
         <h3>Sim desk <span class="chip off" style="float:right">AWAITING CONNECTION</span></h3>
@@ -66,6 +78,41 @@ OS.register({
       <a class="btn" href="${L.livemindSite}" target="_blank">OPEN THE FULL LIVE MIND SITE ↗</a>
       <span class="btn ghost">TALK TO THE MIND — inside the site's core</span>
     </div>`;
+
+    /* ── THE LIVE TAPE: real TradingView chart, live data, zero fakery ──
+       This is the actual market feed. When the webhook relay lands, the
+       bot's entries/exits print onto this same chart as markers. */
+    const SYMS = [["MES", "CME_MINI:MES1!"], ["ES", "CME_MINI:ES1!"], ["NQ", "CME_MINI:NQ1!"], ["MNQ", "CME_MINI:MNQ1!"]];
+    let curSym = OS.store.get("lm_symbol", "CME_MINI:MES1!");
+    const symRow = el.querySelector("#lmSyms");
+    const drawChart = () => {
+      const host = el.querySelector("#lmChart"); if (!host) return;
+      host.innerHTML = "";
+      const div = document.createElement("div");
+      div.id = "tvw_" + Date.now(); div.style.height = "100%";
+      host.appendChild(div);
+      const boot = () => new TradingView.widget({
+        container_id: div.id, autosize: true, symbol: curSym, interval: "1",
+        timezone: "America/New_York", theme: "dark", style: "1", locale: "en",
+        toolbar_bg: "#01070d", backgroundColor: "#01070d",
+        enable_publishing: false, hide_side_toolbar: true, allow_symbol_change: false,
+        save_image: false, studies: [], withdateranges: true
+      });
+      if (window.TradingView) boot();
+      else {
+        const s = document.createElement("script");
+        s.src = "https://s3.tradingview.com/tv.js"; s.onload = boot;
+        document.head.appendChild(s);
+      }
+    };
+    const paintSyms = () => {
+      symRow.innerHTML = SYMS.map(([l, v]) =>
+        `<button class="chip ${v === curSym ? "ok" : "off"}" data-s="${v}" style="cursor:pointer">${l}</button>`).join("");
+      symRow.querySelectorAll("[data-s]").forEach(b => b.onclick = () => {
+        curSym = b.dataset.s; OS.store.set("lm_symbol", curSym); paintSyms(); drawChart();
+      });
+    };
+    paintSyms(); drawChart();
 
     /* ── engine constellation ── */
     const ENG = [

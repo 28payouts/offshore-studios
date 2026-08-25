@@ -49,25 +49,19 @@
 <script src="mod-home.js?v=8"></script>
 <script src="mod-roundtable.js?v=4"></script>
 <script src="mod-claude.js?v=4"></script>
-<script src="mod-livemind.js?v=5"></script>
+<script src="mod-livemind.js?v=6"></script>
 <script src="mod-botlab.js?v=1"></script>
 <script src="mod-academy.js?v=3"></script>
 <script src="mod-clients.js?v=3"></script>
 <script src="mod-agency.js?v=4"></script>
 <script src="mod-agents.js?v=3"></script>
 <script src="boot.js?v=8"></script>
-<script src="fx.js?v=3"></script>
+<script src="fx.js?v=4"></script>
 <script>
-/* real software: register the service worker + surface the install prompt */
+/* real software: service worker keeps the app self-updating and offline-capable.
+   No install banner here — this IS the app; the landing site does the marketing. */
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
-window.addEventListener("beforeinstallprompt", e => {
-  e.preventDefault(); window.__installEvt = e;
-  const b = document.createElement("button");
-  b.id = "installBtn"; b.textContent = "⬇ INSTALL OFFSHORE OS";
-  b.style.cssText = "position:fixed;bottom:18px;right:18px;z-index:80;padding:13px 20px;border:0;border-radius:99px;font:700 10.5px 'Unbounded',sans-serif;letter-spacing:.2em;color:#012;cursor:pointer;background:linear-gradient(100deg,#00e8d0,#4cdcff);box-shadow:0 14px 40px -8px rgba(0,232,208,.6)";
-  b.onclick = async () => { b.remove(); window.__installEvt.prompt(); };
-  document.body.appendChild(b);
-});
+window.addEventListener("beforeinstallprompt", e => e.preventDefault());
 </script>
 </body>
 </html>

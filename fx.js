@@ -114,4 +114,16 @@
   });
   gsObs.observe(document.body, { childList: true });
   const existing = document.getElementById("galsel"); if (existing) showGal(existing);
+
+  /* ── SIDEBAR: labels float ABOVE everything ──
+     Cards create their own stacking contexts (3D tilt transforms), which could
+     swallow the rail tooltips. Lift the rail and its labels clear of the page
+     so hovering the dock always shows the full label over the content. */
+  const railFix = document.createElement("style");
+  railFix.textContent = `
+    #rail{z-index:46}
+    .navbtn .lb{z-index:220;box-shadow:0 14px 40px rgba(0,0,0,.55)}
+    .navbtn:hover{transform:translateX(2px)}
+    #rail:hover{border-color:rgba(0,232,208,.28);box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 30px -12px rgba(0,232,208,.35)}`;
+  document.head.appendChild(railFix);
 })();
