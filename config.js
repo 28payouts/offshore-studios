@@ -22,7 +22,7 @@ window.OS_CONFIG = {
      galaxy: which work-life a module lives in — "harmonic", "offshore" or "both". */
   MODULES: [
     { id: "home",     label: "The Universe",     icon: "◈", roles: ["admin"], galaxy: "both" },
-    { id: "claude",   label: "Claude",           icon: "✦", roles: ["admin"], galaxy: "both" },
+    { id: "claude",   label: "Claude",           icon: "✦", roles: ["admin","trading","agency"], galaxy: "both" },
     { id: "table",    label: "Round Table",      icon: "⬡", roles: ["admin"], galaxy: "offshore" },
     { id: "livemind", label: "The Live Mind",    icon: "〰", roles: ["admin","trading"], galaxy: "harmonic" },
     { id: "botlab",   label: "The Bot Lab",      icon: "⚗", roles: ["admin"], galaxy: "harmonic" },
