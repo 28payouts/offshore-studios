@@ -16,7 +16,7 @@
       transition:width .25s,height .25s,border-color .25s,opacity .25s}
     #fxdot.hot{width:14px;height:14px;background:#00e8d0}
     #fxring.hot{width:56px;height:56px;border-color:rgba(169,139,255,.8)}
-    #grainfx{position:fixed;inset:0;z-index:110;pointer-events:none;opacity:.055;mix-blend-mode:overlay}
+    #grainfx{position:fixed;inset:0;z-index:110;pointer-events:none;opacity:.04;mix-blend-mode:overlay}
     .card{transform-style:preserve-3d;will-change:transform}
     @media(pointer:coarse){#fxdot,#fxring{display:none} body{cursor:auto}}`;
   document.head.appendChild(st);
@@ -38,7 +38,7 @@
     tx.putImageData(d, 0, 0);
     gx.clearRect(0, 0, g.width, g.height);
     gx.fillStyle = gx.createPattern(tile, "repeat"); gx.fillRect(0, 0, g.width, g.height);
-  }, 120);
+  }, 160);
 
   /* ── living cursor ── */
   const dot = document.createElement("div"); dot.id = "fxdot";
@@ -70,17 +70,10 @@
     c.style.transition = "transform .5s cubic-bezier(.2,.8,.2,1)"; c.style.transform = "";
   }, { passive: true });
 
-  /* ── pro libraries from CDN: GSAP + Lenis butter scroll ── */
+  /* ── scroll: NATIVE. Lenis was hijacking the wheel and fighting the page —
+        that was the lag and the "can't reach the bottom" feel. Gone. ── */
   const load = src => new Promise(res => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = res; document.head.appendChild(s); });
   load("https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js");
-  load("https://cdn.jsdelivr.net/npm/lenis@1.1.14/dist/lenis.min.js").then(() => {
-    try {
-      if (window.Lenis) {
-        const lenis = new Lenis({ lerp: .09, wheelMultiplier: 1.05 });
-        (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(0);
-      }
-    } catch (e) { /* native scroll is fine */ }
-  });
 
   /* ── Higgsfield skybox hook: set window.OS_SKYBOX (or hardcode) to a hosted
         cinematic nebula and the whole app wears it behind the particle field ── */

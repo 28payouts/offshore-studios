@@ -3,6 +3,47 @@
   const C = window.OS_CONFIG, $ = id => document.getElementById(id);
   const REAL = !!(C.SUPABASE_URL && C.SUPABASE_ANON_KEY);
   let sb = null;
+  window.OS_GALAXY = window.OS_GALAXY || "offshore";
+
+  /* ── injected styles: galaxy select + feel fixes ── */
+  const bs = document.createElement("style");
+  bs.textContent = `
+    #galsel{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;
+      justify-content:center;gap:30px;padding:24px;background:
+      radial-gradient(90% 70% at 50% 0%,rgba(0,232,208,.06),transparent 60%),
+      radial-gradient(80% 60% at 80% 100%,rgba(169,139,255,.07),transparent 60%),#01070d;
+      opacity:0;animation:gsin .7s cubic-bezier(.2,.9,.25,1) forwards}
+    @keyframes gsin{to{opacity:1}}
+    #galsel .gs-kick{font:700 10px 'JetBrains Mono',monospace;letter-spacing:.5em;color:var(--dim)}
+    #galsel h1{font-family:Unbounded;font-size:clamp(1.4rem,3.4vw,2.3rem);font-weight:800;color:#eafcff;text-align:center;margin:0}
+    #galsel .gs-row{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;max-width:980px;width:100%}
+    .gs-card{position:relative;flex:1 1 340px;max-width:440px;border-radius:26px;cursor:pointer;
+      border:1px solid rgba(120,180,200,.16);background:#030d16;overflow:hidden;
+      transition:transform .45s cubic-bezier(.2,.9,.25,1),border-color .45s,box-shadow .45s}
+    .gs-card .gs-art{height:190px;background-size:cover;background-position:center 30%;
+      transition:transform .8s cubic-bezier(.2,.9,.25,1);filter:saturate(1.05)}
+    .gs-card:hover .gs-art,.gs-card.on .gs-art{transform:scale(1.06)}
+    .gs-card:hover,.gs-card.on{transform:translateY(-6px)}
+    .gs-card.on{border-color:var(--gsa,#00e8d0)}
+    .gs-card.on{box-shadow:0 30px 80px -30px var(--gsa,#00e8d0)}
+    .gs-fade{position:absolute;top:0;left:0;right:0;height:190px;background:linear-gradient(rgba(1,7,13,.05) 40%,#030d16)}
+    .gs-body{padding:20px 24px 24px}
+    .gs-name{font-family:Unbounded;font-weight:800;font-size:1.05rem;color:#eafcff;letter-spacing:.04em}
+    .gs-sub{font:400 10.5px 'JetBrains Mono',monospace;letter-spacing:.22em;color:var(--dim);margin-top:6px;text-transform:uppercase}
+    .gs-brief{max-height:0;overflow:hidden;transition:max-height .6s cubic-bezier(.2,.9,.25,1)}
+    .gs-card.on .gs-brief{max-height:340px}
+    .gs-brief ul{list-style:none;margin:16px 0 0;padding:14px 0 0;border-top:1px solid rgba(120,180,200,.12);
+      display:flex;flex-direction:column;gap:9px}
+    .gs-brief li{font-size:12.5px;color:var(--mut);line-height:1.55;display:flex;gap:9px}
+    .gs-brief li b{color:#cfeff5;font-weight:600}
+    .gs-brief li .gi{flex:0 0 16px;color:var(--gsa,#00e8d0)}
+    .gs-enter{margin-top:16px;width:100%;border:0;border-radius:99px;padding:13px;cursor:pointer;
+      font:700 10.5px Unbounded;letter-spacing:.28em;color:#01222b;
+      background:linear-gradient(100deg,var(--gsa,#00e8d0),#4cdcff)}
+    .gs-hint{font:400 10px 'JetBrains Mono',monospace;letter-spacing:.3em;color:var(--dim)}
+    #stage{padding-bottom:110px}
+    @media(max-width:860px){.gs-card .gs-art{height:130px}.gs-fade{height:130px}}`;
+  document.head.appendChild(bs);
 
   /* ═══════════ CINEMATIC BOOT v5 — stardust converges into the wave ═══════════
      No cheap typed-list boot. A field of stardust is pulled out of the dark and
@@ -62,7 +103,7 @@
         const g = x.createLinearGradient(ox, oy + 28 * scale, ox + 52 * scale, oy);
         g.addColorStop(0, "#00e8d0"); g.addColorStop(1, "#a98bff");
         x.strokeStyle = g; x.lineWidth = 2.4 * DP; x.lineCap = x.lineJoin = "round";
-        x.shadowColor = "rgba(0,232,208,.8)"; x.shadowBlur = 18 * DP;
+        x.shadowColor = "rgba(0,232,208,.8)"; x.shadowBlur = 10 * DP;
         x.beginPath(); PTS.forEach(([px2, py2], i) => { const X = ox + px2 * scale, Y = oy + py2 * scale; i ? x.lineTo(X, Y) : x.moveTo(X, Y); }); x.stroke();
         x.shadowBlur = 0;
         /* pulse of light travelling the wave */
@@ -132,7 +173,10 @@
       });
       if (t < 95) requestAnimationFrame(frame);
       else {
-        x.fillStyle = "rgba(234,252,255,.95)"; x.fillRect(0, 0, W, H);  /* arrival flash */
+        /* arrival: soft radial burst, not a hard white slap */
+        const fl = x.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * .7);
+        fl.addColorStop(0, "rgba(234,252,255,.9)"); fl.addColorStop(.5, "rgba(0,232,208,.35)"); fl.addColorStop(1, "rgba(1,7,13,0)");
+        x.fillStyle = fl; x.fillRect(0, 0, W, H);
         done();
         c.style.transition = "opacity .8s"; c.style.opacity = "0";
         setTimeout(() => c.remove(), 850);
@@ -185,14 +229,80 @@
       const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
       if (error) return deny(error.message);
       const prof = await profileOf(data.user);
-      msg.textContent = "COORDINATES LOCKED · JUMPING";
-      return runWarp(() => enter(prof));
+      return arrive(prof, msg);
     }
     const hit = C.LOCAL_USERS.find(u => u.email === email && u.pass === pass)
       || OS.store.get("clients", []).find(u => u.email === email && u.pass === pass);
     if (!hit) return deny("ACCESS DENIED · UNKNOWN DIVER");
-    msg.textContent = "COORDINATES LOCKED · JUMPING";
-    runWarp(() => enter({ email: hit.email, name: hit.name, role: hit.role, accent: hit.accent, welcome: hit.welcome, bill: hit.bill, note: hit.note }));
+    arrive({ email: hit.email, name: hit.name, role: hit.role, accent: hit.accent, welcome: hit.welcome, bill: hit.bill, note: hit.note }, msg);
+  }
+
+  /* admins pick a work-life first; clients jump straight in */
+  function arrive(prof, msg) {
+    if (prof.role === "admin") {
+      msg.textContent = "IDENTITY CONFIRMED · CHOOSE YOUR UNIVERSE";
+      const g = $("gate"); if (g) { g.style.transition = "opacity .6s"; g.style.opacity = "0"; setTimeout(() => g.remove(), 650); }
+      showGalaxySelect(prof);
+    } else {
+      window.OS_GALAXY = prof.role === "trading" ? "harmonic" : "offshore";
+      msg.textContent = "COORDINATES LOCKED · JUMPING";
+      runWarp(() => enter(prof));
+    }
+  }
+
+  /* ═══════════ THE TWO WORK-LIVES — pick a universe ═══════════ */
+  function showGalaxySelect(user) {
+    const old = $("galsel"); if (old) old.remove();
+    const clients = OS.store.get("clients", []);
+    const agencyN = clients.filter(c => c.role === "agency").length;
+    const BRIEF = {
+      harmonic: [
+        ["〰", "The Live Mind", "frozen 27 Jul · backtested $10.0M / 10y · sim gate 0/60"],
+        ["◎", "Sim connection", "awaiting TradingView webhook plan — then real fills light the desk"],
+        ["✺", "Harmonic Academy", "in build · curriculum being written"],
+        ["✳", "AI & Agents", "constellation online"],
+        ["→", "Next move", "webhook relay + fill log → the 0/60 gate starts counting"]
+      ],
+      offshore: [
+        ["⬡", "Round Table", "5 minds seated · goes fully live with the API key"],
+        ["❖", "Clients", clients.length + " onboarded · real count, no fakes"],
+        ["◍", "Studios Agency", "site LIVE · book of work: " + (agencyN || "empty on purpose")],
+        ["✦", "Claude", "resident · wired into every screen"],
+        ["→", "Next move", "Supabase keys → sealed client vaults + real accounts"]
+      ]
+    };
+    const gs = document.createElement("div"); gs.id = "galsel";
+    gs.innerHTML = `
+      <div class="gs-kick">WELCOME BACK, ${user.name.toUpperCase()}</div>
+      <h1>Two lives. <span class="grad">One command deck.</span></h1>
+      <div class="gs-row">
+        ${["harmonic", "offshore"].map(k => { const G = C.GALAXIES[k]; return `
+        <div class="gs-card" data-g="${k}" style="--gsa:${G.accent}">
+          <div class="gs-art" style="background-image:url('${G.art}')"></div><div class="gs-fade"></div>
+          <div class="gs-body">
+            <div class="gs-name">${G.name}</div>
+            <div class="gs-sub">${G.sub}</div>
+            <div class="gs-brief">
+              <ul>${BRIEF[k].map(([ic, t, d]) => `<li><span class="gi">${ic}</span><span><b>${t}</b> — ${d}</span></li>`).join("")}</ul>
+              <button class="gs-enter">ENTER ${G.name} →</button>
+            </div>
+          </div>
+        </div>`; }).join("")}
+      </div>
+      <div class="gs-hint">CLICK A UNIVERSE FOR ITS BRIEFING · ENTER TO JUMP</div>`;
+    document.body.appendChild(gs);
+    gs.addEventListener("click", e => {
+      const enterBtn = e.target.closest(".gs-enter");
+      const card = e.target.closest(".gs-card");
+      if (enterBtn && card) {
+        window.OS_GALAXY = card.dataset.g;
+        gs.style.transition = "opacity .45s"; gs.style.opacity = "0";
+        setTimeout(() => gs.remove(), 480);
+        runWarp(() => enter(user));
+        return;
+      }
+      if (card) gs.querySelectorAll(".gs-card").forEach(c => c.classList.toggle("on", c === card));
+    });
   }
   function deny(t) {
     const msg = $("gateMsg"); msg.className = "gmsg err"; msg.textContent = t;
@@ -200,23 +310,25 @@
     card.classList.remove("gshake"); void card.offsetWidth; card.classList.add("gshake");
   }
 
-  /* ── enter the shell ── */
+  /* ── enter the shell (re-entrant: also used when switching universes) ── */
   function enter(user) {
     OS.setUser(user);
     /* personalization: the portal wears the client's color; admins wear their saved theme */
     const lay = OS.store.get("layout_" + user.email, {});
     const accent = user.accent || lay.accent;
     if (accent) { document.documentElement.style.setProperty("--aqua", accent); document.documentElement.style.setProperty("--bio", accent); }
-    $("gate").classList.add("open");
+    const g = $("gate");
+    if (g) { g.classList.add("open"); setTimeout(() => g.remove(), 900); }
     const app = $("app"); app.hidden = false;
     buildRail(user); buildStatus(user); startWorld();
     const first = visibleModules(user)[0];
     go(first ? first.id : "livemind");
-    setTimeout(() => $("gate").remove(), 900);
   }
 
   function visibleModules(user) {
-    let list = C.MODULES.filter(m => m.roles.includes(user.role));
+    const gal = window.OS_GALAXY || "offshore";
+    let list = C.MODULES.filter(m => m.roles.includes(user.role) &&
+      (!m.galaxy || m.galaxy === "both" || m.galaxy === gal));
     /* admin's saved layout: custom order + hidden modules */
     const lay = OS.store.get("layout_" + user.email, {});
     if (lay.order) list = [...list].sort((a, b) => { const ia = lay.order.indexOf(a.id), ib = lay.order.indexOf(b.id); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); });
@@ -229,12 +341,14 @@
     rail.innerHTML =
       visibleModules(user).map(m =>
         `<button class="navbtn" data-id="${m.id}"><span class="ic">${m.icon}</span><span class="lb">${m.label}</span><span class="st" id="st-${m.id}"></span></button>`).join("") +
+      (user.role === "admin" ? `<button class="navbtn" id="btnGal"><span class="ic">⇄</span><span class="lb">Universes</span></button>` : "") +
       (user.role === "admin" ? `<button class="navbtn" id="btnCust"><span class="ic">⚙</span><span class="lb">Customize</span></button>` : "") +
       `<button class="navbtn" id="btnOut"><span class="ic">⏻</span><span class="lb">Sign out</span></button>`;
     rail.onclick = e => {
       const b = e.target.closest(".navbtn"); if (!b) return;
       if (b.id === "btnOut") { location.reload(); return; }
       if (b.id === "btnCust") { openCustomize(user); return; }
+      if (b.id === "btnGal") { showGalaxySelect(user); return; }
       go(b.dataset.id);
     };
   }
@@ -243,13 +357,14 @@
      Bioluminescent current that breathes with the trading session:
      hunting hours run fast and aqua; off-hours drift slow and violet. */
   function startWorld() {
+    if (window.__worldOn) return; window.__worldOn = true;   /* one ambient loop, ever */
     const c = $("bgfx"); if (!c) return;
     const x = c.getContext("2d");
     let W, H, mx = .5, my = .5;
     const rs = () => { W = c.width = innerWidth; H = c.height = innerHeight; }; rs();
     addEventListener("resize", rs);
     addEventListener("pointermove", e => { mx = e.clientX / W; my = e.clientY / H; }, { passive: true });
-    const P = [...Array(120)].map(() => ({
+    const P = [...Array(80)].map(() => ({
       x: Math.random(), y: Math.random(), z: .3 + Math.random() * .7,
       s: .6 + Math.random() * 1.8, ph: Math.random() * 7, hue: Math.random()
     }));
@@ -263,11 +378,13 @@
       const n = OS.nyNow();
       return n.wd !== "Sat" && n.wd !== "Sun" && ((n.dec >= 2 && n.dec < 5) || (n.dec >= 8.5 && n.dec < 11) || (n.dec >= 13.5 && n.dec < 16));
     };
+    let fskip = 0;
     (function frame() {
-      if (!document.getElementById("bgfx")) return;
+      if (!document.getElementById("bgfx")) { window.__worldOn = false; return; }
       requestAnimationFrame(frame);
       if (document.hidden) return;
-      t++;
+      if (fskip++ & 1) return;                       /* ambient layer runs at 30fps — zero jank */
+      t += 2;
       const live = isLive(), speed = live ? 1.7 : 1, glow = live ? .16 : .1;
       x.clearRect(0, 0, W, H);
       /* aurora bands */
@@ -362,10 +479,14 @@
 
   function buildStatus(user) {
     const el = $("statusbar");
+    if (window.__statusTimers) window.__statusTimers.forEach(clearInterval);
+    window.__statusTimers = [];
+    const gal = C.GALAXIES && C.GALAXIES[window.OS_GALAXY || "offshore"];
     const canClaude = C.MODULES.some(m => m.id === "claude" && m.roles.includes(user.role));
     /* static skeleton once — only the live values re-render (no flicker) */
     el.innerHTML =
       `<span class="brand"><svg width="26" height="14" viewBox="0 0 52 28"><polyline points="2,24 12,20 18,23 27,12 33,16 42,5 50,9" fill="none" stroke="url(#lg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="lg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/></linearGradient></defs></svg>OFFSHORE OS</span><span class="sep"></span>` +
+      (gal ? `<span class="it" style="color:${gal.accent};font-weight:700">◈ ${gal.name}</span><span class="sep"></span>` : "") +
       `<span class="it">NY <b id="hudNY">--:--:--</b></span><span class="sep"></span>` +
       `<span class="it"><span class="dot" id="hudDot"></span><span id="hudMind">…</span></span><span class="sep"></span>` +
       `<span class="it">MODE <b class="${REAL ? "pos" : "wc"}">${REAL ? "SECURE" : "LOCAL"}</b></span>` +
@@ -382,13 +503,13 @@
       document.getElementById("hudMind").textContent = "LIVE MIND " + (live ? "HUNTING" : "STANDING BY");
       document.getElementById("hudDot").className = "dot" + (live ? " on" : "");
     };
-    tick(); setInterval(tick, 1000);
+    tick(); window.__statusTimers.push(setInterval(tick, 1000));
     /* heartbeat waveform */
     const wc = document.getElementById("hudwave");
     if (wc) {
       const wx = wc.getContext("2d"); wc.width = 128; wc.height = 32;
       let wt = 0;
-      setInterval(() => {
+      window.__statusTimers.push(setInterval(() => {
         if (document.hidden || !document.getElementById("hudwave")) return;
         wt++; wx.clearRect(0, 0, 128, 32);
         for (let i = 0; i < 16; i++) {
@@ -396,7 +517,7 @@
           wx.fillStyle = `rgba(0,232,208,${.35 + h / 40})`;
           wx.fillRect(i * 8, 16 - h / 2, 4, h);
         }
-      }, 90);
+      }, 90));
     }
   }
 

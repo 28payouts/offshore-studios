@@ -17,16 +17,29 @@ window.OS_CONFIG = {
   ],
 
   /* Module registry — each module registers itself; roles control visibility.
-     Add a module = add one file + one line here. Nothing else changes. */
+     galaxy: which work-life a module lives in — "harmonic", "offshore" or "both". */
   MODULES: [
-    { id: "home",     label: "The Universe",   icon: "◈", roles: ["admin"] },
-    { id: "claude",   label: "Claude",         icon: "✦", roles: ["admin"] },
-    { id: "table",    label: "Round Table",    icon: "⬡", roles: ["admin"] },
-    { id: "livemind", label: "The Live Mind",  icon: "〰", roles: ["admin","trading"] },
-    { id: "clients",  label: "Clients",        icon: "❖", roles: ["admin"] },
-    { id: "agency",   label: "Studios Agency", icon: "◍", roles: ["admin","agency"] },
-    { id: "agents",   label: "AI & Agents",    icon: "✳", roles: ["admin"] }
+    { id: "home",     label: "The Universe",     icon: "◈", roles: ["admin"], galaxy: "both" },
+    { id: "claude",   label: "Claude",           icon: "✦", roles: ["admin"], galaxy: "both" },
+    { id: "table",    label: "Round Table",      icon: "⬡", roles: ["admin"], galaxy: "offshore" },
+    { id: "livemind", label: "The Live Mind",    icon: "〰", roles: ["admin","trading"], galaxy: "harmonic" },
+    { id: "academy",  label: "Harmonic Academy", icon: "✺", roles: ["admin"], galaxy: "harmonic" },
+    { id: "clients",  label: "Clients",          icon: "❖", roles: ["admin"], galaxy: "offshore" },
+    { id: "agency",   label: "Studios Agency",   icon: "◍", roles: ["admin","agency"], galaxy: "offshore" },
+    { id: "agents",   label: "AI & Agents",      icon: "✳", roles: ["admin"], galaxy: "harmonic" }
   ],
+
+  /* The two work-lives. Shown as universe cards after sign-in (admins only). */
+  GALAXIES: {
+    harmonic: {
+      name: "HARMONIC", sub: "trading · academy · agents", accent: "#00e8d0",
+      art: "https://d8j0ntlcm91z4.cloudfront.net/user_3H4SzmK3yfFv5j6nbvNOM3d88rq/hf_20260821_175515_f25e921c-0e59-4a4b-b82c-95be8cdeaa03.png"
+    },
+    offshore: {
+      name: "OFFSHORE STUDIOS", sub: "agency · clients · council", accent: "#a98bff",
+      art: "https://d8j0ntlcm91z4.cloudfront.net/user_3H4SzmK3yfFv5j6nbvNOM3d88rq/hf_20260821_175515_0e57f17a-e1ff-4552-9a88-79c5bb294254.png"
+    }
+  },
 
   LINKS: {
     livemindSite: "https://28payouts.github.io/livemind/",

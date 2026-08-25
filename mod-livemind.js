@@ -79,7 +79,10 @@ OS.register({
     const constel = setInterval(() => {
       if (document.hidden || !document.contains(cn)) return;
       ct++;
-      const r = cn.getBoundingClientRect(), W2 = cn.width = r.width * 2, H2 = cn.height = 380;
+      /* PERF: resizing a canvas every tick reallocs its buffer — only resize on change */
+      const r = cn.getBoundingClientRect(), tw = Math.round(r.width * 2);
+      if (cn.width !== tw || cn.height !== 380) { cn.width = tw; cn.height = 380; }
+      const W2 = cn.width, H2 = cn.height;
       const cx0 = W2 / 2, cy0 = H2 / 2;
       cxx.clearRect(0, 0, W2, H2);
       const cg = cxx.createRadialGradient(cx0, cy0, 0, cx0, cy0, 46);
@@ -103,7 +106,7 @@ OS.register({
         cxx.fillStyle = e.col; cxx.font = "700 11px 'JetBrains Mono'";
         cxx.fillText(e.pf, ex, ey + 48);
       });
-    }, 55);
+    }, 66);
     this._timers.push(constel);
 
     /* ── session state ── */

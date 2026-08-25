@@ -7,13 +7,16 @@ OS.register({
   id: "home",
   _raf: null, _timers: [],
   mount(el, user) {
-    const projects = () => OS.store.get("projects", []);
+    const GAL = window.OS_GALAXY || "offshore";
+    const GNAME = GAL === "harmonic" ? "Harmonic" : "Offshore Studios";
+    const projects = () => OS.store.get("projects", []).filter(p => (p.gal || "offshore") === GAL);
+    const allProjects = () => OS.store.get("projects", []);
     const clients = () => OS.store.get("clients", []);
     let showForm = false, selected = null;
 
     el.innerHTML = `
     <div class="mhead reveal">
-      <div class="eyebrow">The Universe · ${user.name}</div>
+      <div class="eyebrow">The ${GNAME} Universe · ${user.name}</div>
       <h2>Your empire,<br><span class="grad">seen from space.</span></h2>
       <p class="sub">Every system is a world orbiting the core. Your clients ride the Clients world as moons. Spawn a project and watch a new planet ignite.</p>
     </div>
@@ -68,7 +71,7 @@ OS.register({
 
     /* ═══════════ THE UNIVERSE CANVAS ═══════════ */
     const cv = el.querySelector("#orbmap"), x = cv.getContext("2d");
-    let W = 0, H = 0, DPR = Math.min(2, devicePixelRatio || 1), mx = -1, my = -1, t = 0;
+    let W = 0, H = 0, DPR = Math.min(1.5, devicePixelRatio || 1), mx = -1, my = -1, t = 0;
     const size = () => { const r = cv.getBoundingClientRect(); W = cv.width = r.width * DPR; H = cv.height = r.height * DPR; };
     size(); addEventListener("resize", size);
 
@@ -97,11 +100,26 @@ OS.register({
       agents:   HF + "hf_20260821_175515_cc9daaa4-9354-4b32-b933-adefb0b5b9ed.png"
     };
     const ARTPOOL = Object.values(ART);
+    /* PERF: the renders are 2048px — scaling them every frame is what lags.
+       Pre-render each once to a 256px sprite; the draw loop only ever touches sprites. */
     const IMGS = {};
-    const pimg = u => { if (!IMGS[u]) { const i = new Image(); i.src = u; IMGS[u] = i; } return IMGS[u]; };
+    const pimg = u => {
+      if (!IMGS[u]) {
+        const rec = { cv: null };
+        const i = new Image();
+        i.onload = () => {
+          const c = document.createElement("canvas"); c.width = c.height = 256;
+          c.getContext("2d").drawImage(i, 0, 0, 256, 256);
+          rec.cv = c;
+        };
+        i.src = u; IMGS[u] = rec;
+      }
+      return IMGS[u];
+    };
     ARTPOOL.forEach(pimg); /* pre-warm */
     const bodies = () => {
-      const mods = window.OS_CONFIG.MODULES.filter(m => m.id !== "home" && m.roles.includes(user.role));
+      const mods = window.OS_CONFIG.MODULES.filter(m => m.id !== "home" && m.roles.includes(user.role) &&
+        (!m.galaxy || m.galaxy === "both" || m.galaxy === GAL));
       const list = mods.map((m, i) => {
         const f = FLAVOR[m.id] || { col: "#4cdcff", ring: false, moons: 0 };
         return { kind: "mod", id: m.id, label: m.label.toUpperCase(), col: f.col, ring: f.ring, img: ART[m.id],
@@ -134,11 +152,11 @@ OS.register({
       moonPos.filter(m => !m.front).forEach(m => { x.fillStyle = m.mc; x.beginPath(); x.arc(m.mxp, m.myp, R * .18, 0, 7); x.fill(); });
       if (b.ring) { x.strokeStyle = col + "55"; x.lineWidth = 2.4 * DPR; x.save(); x.translate(px, py); x.rotate(-.35);
         x.beginPath(); x.ellipse(0, 0, R * 1.75, R * .5, 0, Math.PI, Math.PI * 2); x.stroke(); x.restore(); }
-      /* the world itself: Higgsfield AI render when loaded, shaded sphere as fallback */
+      /* the world itself: pre-rendered Higgsfield sprite, shaded sphere as fallback */
       const im = b.img ? pimg(b.img) : null;
-      if (im && im.complete && im.naturalWidth) {
+      if (im && im.cv) {
         x.save(); x.beginPath(); x.arc(px, py, R, 0, 7); x.clip();
-        x.drawImage(im, px - R * 1.02, py - R * 1.02, R * 2.04, R * 2.04);
+        x.drawImage(im.cv, px - R * 1.02, py - R * 1.02, R * 2.04, R * 2.04);
         x.restore();
         /* soft accent rim so every world still wears its color */
         const rim = x.createRadialGradient(px - R * .5, py - R * .5, R * .55, px, py, R * 1.02);
@@ -162,10 +180,12 @@ OS.register({
       });
     };
 
+    let fskip = 0;
     const draw = () => {
       this._raf = requestAnimationFrame(draw);
       if (document.hidden || !document.contains(cv)) return;
-      t++; x.clearRect(0, 0, W, H);
+      if (fskip++ & 1) return;              /* 30fps universe — silky, half the GPU */
+      t += 2; x.clearRect(0, 0, W, H);
       const cx = W / 2, cy = H * .47;
       const live = (() => { const n = OS.nyNow(); return n.wd !== "Sat" && n.wd !== "Sun" && ((n.dec >= 2 && n.dec < 5) || (n.dec >= 8.5 && n.dec < 11) || (n.dec >= 13.5 && n.dec < 16)); })();
 
@@ -202,23 +222,45 @@ OS.register({
       });
       cv.style.cursor = hover ? "pointer" : "default";
 
-      /* ═ THE SUN-CORE ═ */
-      const br = (22 + Math.sin(t * .045) * 4) * DPR;
-      const halo = x.createRadialGradient(cx, cy, 0, cx, cy, br * 4.2);
-      halo.addColorStop(0, "rgba(255,255,255,.95)"); halo.addColorStop(.2, "rgba(0,232,208,.8)");
-      halo.addColorStop(.5, "rgba(0,232,208,.18)"); halo.addColorStop(1, "transparent");
-      x.fillStyle = halo; x.beginPath(); x.arc(cx, cy, br * 4.2, 0, 7); x.fill();
-      /* corona flares */
-      for (let i = 0; i < 7; i++) {
-        const fa = t * .006 + (i / 7) * Math.PI * 2, fl = br * (1.7 + Math.sin(t * .05 + i * 2) * .5);
-        x.strokeStyle = `rgba(0,232,208,${.28 + Math.sin(t * .07 + i) * .15})`; x.lineWidth = 2 * DPR; x.lineCap = "round";
-        x.beginPath(); x.moveTo(cx + Math.cos(fa) * br * 1.05, cy + Math.sin(fa) * br * 1.05);
-        x.lineTo(cx + Math.cos(fa) * fl, cy + Math.sin(fa) * fl); x.stroke();
+      /* ═ THE CORE — a caged star ═ */
+      const br = (20 + Math.sin(t * .045) * 3.5) * DPR;
+      /* dual-tone halo: aqua heart bleeding into violet */
+      const halo = x.createRadialGradient(cx, cy, 0, cx, cy, br * 5);
+      halo.addColorStop(0, "rgba(255,255,255,.98)"); halo.addColorStop(.14, "rgba(0,232,208,.85)");
+      halo.addColorStop(.34, "rgba(76,220,255,.28)"); halo.addColorStop(.6, "rgba(169,139,255,.12)");
+      halo.addColorStop(1, "transparent");
+      x.fillStyle = halo; x.beginPath(); x.arc(cx, cy, br * 5, 0, 7); x.fill();
+      /* lens-flare cross */
+      const flare = (len, wdt, a) => {
+        const lg = x.createLinearGradient(cx - len, cy, cx + len, cy);
+        lg.addColorStop(0, "transparent"); lg.addColorStop(.5, `rgba(234,252,255,${a})`); lg.addColorStop(1, "transparent");
+        x.fillStyle = lg; x.fillRect(cx - len, cy - wdt / 2, len * 2, wdt);
+      };
+      const fp = .5 + Math.sin(t * .03) * .25;
+      flare(br * 5.5, 1.4 * DPR, .5 * fp);
+      x.save(); x.translate(cx, cy); x.rotate(Math.PI / 2); x.translate(-cx, -cy); flare(br * 3.4, 1.2 * DPR, .35 * fp); x.restore();
+      /* the cage: two counter-rotating elliptical light rings */
+      [[1, "0,232,208", .55], [-1, "169,139,255", .45]].forEach(([dir, col, al], ri) => {
+        x.save(); x.translate(cx, cy); x.rotate(dir * t * .008 + ri * 1.3);
+        x.strokeStyle = `rgba(${col},${al})`; x.lineWidth = 1.6 * DPR;
+        x.beginPath(); x.ellipse(0, 0, br * 2.2, br * .8, 0, 0, Math.PI * 1.55); x.stroke();
+        /* rider spark on each ring */
+        const sa = dir * t * .03;
+        x.fillStyle = `rgba(${col},.95)`;
+        x.beginPath(); x.arc(Math.cos(sa) * br * 2.2, Math.sin(sa) * br * .8, 2.2 * DPR, 0, 7); x.fill();
+        x.restore();
+      });
+      /* orbiting embers */
+      for (let i = 0; i < 10; i++) {
+        const ea = t * .014 + (i / 10) * Math.PI * 2, er = br * (2.6 + Math.sin(t * .02 + i * 2.4) * .7);
+        const exx = cx + Math.cos(ea) * er, eyy = cy + Math.sin(ea) * er * .55;
+        x.fillStyle = `rgba(234,252,255,${.25 + Math.sin(t * .06 + i) * .2})`;
+        x.beginPath(); x.arc(exx, eyy, (0.9 + (i % 3) * .5) * DPR, 0, 7); x.fill();
       }
-      x.fillStyle = "rgba(1,10,16,.8)"; x.font = `800 ${8 * DPR}px Unbounded`; x.textAlign = "center";
+      x.fillStyle = "rgba(1,10,16,.85)"; x.font = `800 ${8 * DPR}px Unbounded`; x.textAlign = "center";
       x.fillText("CORE", cx, cy + 3 * DPR);
       x.fillStyle = "rgba(143,180,196,.85)"; x.font = `${7 * DPR}px "JetBrains Mono"`;
-      x.fillText(live ? "● HUNTING" : "○ STANDING BY", cx, cy + br * 2.4 + 12 * DPR);
+      x.fillText(live ? "● HUNTING" : "○ STANDING BY", cx, cy + br * 2.8 + 12 * DPR);
 
       /* gravity strands + pulses */
       B.forEach(b => {
@@ -266,7 +308,7 @@ OS.register({
           <button class="btn ghost sm danger" id="projDel">COLLAPSE THE PLANET</button>
           <button class="btn ghost sm" id="projClose">CLOSE</button>
         </div></div>`;
-      pp.querySelector("#projDel").onclick = () => { OS.store.set("projects", P.filter((_, i) => i !== selected)); selected = null; renderProjPanel(); };
+      pp.querySelector("#projDel").onclick = () => { const victim = P[selected]; OS.store.set("projects", allProjects().filter(q => q !== victim && !(q.name === victim.name && q.created === victim.created))); selected = null; renderProjPanel(); };
       pp.querySelector("#projClose").onclick = () => { selected = null; renderProjPanel(); };
     };
 
@@ -292,7 +334,7 @@ OS.register({
       sw.forEach(s => s.onclick = () => { col = s.dataset.c; paint(); }); paint();
       f.querySelector("#pjGo").onclick = () => {
         const name = f.querySelector("#pjName").value.trim(); if (!name) return;
-        OS.store.set("projects", [...projects(), { name, link: f.querySelector("#pjLink").value.trim(), note: f.querySelector("#pjNote").value.trim(), color: col, created: Date.now() }]);
+        OS.store.set("projects", [...allProjects(), { name, gal: GAL, link: f.querySelector("#pjLink").value.trim(), note: f.querySelector("#pjNote").value.trim(), color: col, created: Date.now() }]);
         showForm = false; renderForm();
         const cnt = el.querySelector('[data-count][data-fmt="n"].bio'); if (cnt) cnt.textContent = projects().length;
       };
