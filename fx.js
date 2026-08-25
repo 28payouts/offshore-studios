@@ -94,4 +94,24 @@
   applySky(window.OS_SKYBOX);
   const trySky = () => { const a = document.getElementById("app"); if (a && !a.hidden) applySky(window.OS_SKYBOX); else setTimeout(trySky, 1500); };
   trySky();
+
+  /* ── UNIVERSE SELECT: guaranteed to appear ──
+     boot.js faded #galsel in with a CSS keyframe. If the browser throttles
+     that animation (backgrounded tab, reduced motion, slow paint) the screen
+     stays at opacity 0 and clicking "Universes" looks like nothing happened.
+     This kills the keyframe and drives the fade from JS instead — inline
+     style always wins, so the screen can never get stuck invisible. */
+  const gsFix = document.createElement("style");
+  gsFix.textContent = "#galsel{animation:none!important;opacity:0;transition:opacity .5s ease}";
+  document.head.appendChild(gsFix);
+  const showGal = n => {
+    n.style.opacity = "0";
+    requestAnimationFrame(() => requestAnimationFrame(() => { n.style.opacity = "1"; }));
+    setTimeout(() => { n.style.opacity = "1"; }, 400);   /* belt and braces */
+  };
+  const gsObs = new MutationObserver(ms => {
+    ms.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1 && n.id === "galsel") showGal(n); }));
+  });
+  gsObs.observe(document.body, { childList: true });
+  const existing = document.getElementById("galsel"); if (existing) showGal(existing);
 })();

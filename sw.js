@@ -1,10 +1,10 @@
 /* OFFSHORE OS · service worker — the app shell lives on the device.
    Network-first so updates always win; cache fallback keeps it opening offline. */
-const CACHE = "offshore-os-v7";
+const CACHE = "offshore-os-v8";
 const SHELL = ["./", "./index.html", "./core.css?v=4", "./config.js?v=8", "./bus.js?v=3",
   "./mod-home.js?v=8", "./mod-roundtable.js?v=4", "./mod-claude.js?v=4", "./mod-livemind.js?v=5",
   "./mod-botlab.js?v=1", "./mod-academy.js?v=3", "./mod-clients.js?v=3", "./mod-agency.js?v=4",
-  "./mod-agents.js?v=3", "./boot.js?v=8", "./fx.js?v=2", "./manifest.json", "./icon.svg"];
+  "./mod-agents.js?v=3", "./boot.js?v=8", "./fx.js?v=3", "./manifest.json", "./icon.svg"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
