@@ -193,7 +193,7 @@ OS.register({
         x.beginPath(); x.ellipse(0, 0, R * 1.75, R * .5, 0, 0, Math.PI); x.stroke(); x.restore(); }
       moonPos.filter(m => m.front).forEach(m => {
         const mg = x.createRadialGradient(m.mxp - 2, m.myp - 2, 0, m.mxp, m.myp, R * .26);
-        mg.addColorStop(0, "#fff"); mg.addolorStop(.5, m.mc); mg.addColorStop(1, "transparent");
+        mg.addColorStop(0, "#fff"); mg.addColorStop(.5, m.mc); mg.addColorStop(1, "transparent");
         x.fillStyle = mg; x.beginPath(); x.arc(m.mxp, m.myp, R * .26, 0, 7); x.fill();
       });
     };
