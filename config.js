@@ -8,10 +8,12 @@ window.OS_CONFIG = {
   SUPABASE_URL: "",
   SUPABASE_ANON_KEY: "",
 
-  /* LOCAL MODE identities (demo only — replaced by real accounts once Supabase is on) */
+  /* LOCAL MODE identities (demo only — replaced by real accounts once Supabase is on)
+     gals: which universes an account can enter. Mr John is Harmonic-only —
+     Offshore Studios (agency, clients, web work) is Riley's personal world. */
   LOCAL_USERS: [
-    { email: "riley@offshore",  pass: "OFFSHORE", role: "admin",   name: "Riley" },
-    { email: "john@offshore",   pass: "OFFSHORE", role: "admin",   name: "Mr John" },
+    { email: "riley@offshore",  pass: "OFFSHORE", role: "admin",   name: "Riley",  gals: ["harmonic", "offshore"] },
+    { email: "john@offshore",   pass: "OFFSHORE", role: "admin",   name: "Mr John", gals: ["harmonic"] },
     { email: "trader@offshore", pass: "DEMO",     role: "trading", name: "Trading Client" },
     { email: "client@offshore", pass: "DEMO",     role: "agency",  name: "Agency Client" }
   ],
@@ -23,7 +25,8 @@ window.OS_CONFIG = {
     { id: "claude",   label: "Claude",           icon: "✦", roles: ["admin"], galaxy: "both" },
     { id: "table",    label: "Round Table",      icon: "⬡", roles: ["admin"], galaxy: "offshore" },
     { id: "livemind", label: "The Live Mind",    icon: "〰", roles: ["admin","trading"], galaxy: "harmonic" },
-    { id: "academy",  label: "Harmonic Academy", icon: "✺", roles: ["admin"], galaxy: "harmonic" },
+    { id: "botlab",   label: "The Bot Lab",      icon: "⚗", roles: ["admin"], galaxy: "harmonic" },
+    { id: "academy",  label: "Harmonic Projects", icon: "✺", roles: ["admin"], galaxy: "harmonic" },
     { id: "clients",  label: "Clients",          icon: "❖", roles: ["admin"], galaxy: "offshore" },
     { id: "agency",   label: "Studios Agency",   icon: "◍", roles: ["admin","agency"], galaxy: "offshore" },
     { id: "agents",   label: "AI & Agents",      icon: "✳", roles: ["admin"], galaxy: "harmonic" }

@@ -14,11 +14,23 @@ OS.register({
     const clients = () => OS.store.get("clients", []);
     let showForm = false, selected = null;
 
+    /* Riley's own online businesses live as planets in HIS Offshore universe */
+    if (GAL === "offshore" && /riley/i.test(user.email)) {
+      const all = OS.store.get("projects", []);
+      [["LedgerLab", "#ffc46b", "Riley's online business · details land as it builds"],
+       ["Remeve", "#ff7d9d", "Riley's online business · details land as it builds"]].forEach(([nm, c, note]) => {
+        if (!all.some(p => p.name === nm)) all.push({ name: nm, gal: "offshore", color: c, note, link: "", created: Date.now() });
+      });
+      OS.store.set("projects", all);
+    }
+
     el.innerHTML = `
     <div class="mhead reveal">
       <div class="eyebrow">The ${GNAME} Universe · ${user.name}</div>
       <h2>Your empire,<br><span class="grad">seen from space.</span></h2>
-      <p class="sub">Every system is a world orbiting the core. Your clients ride the Clients world as moons. Spawn a project and watch a new planet ignite.</p>
+      <p class="sub">${GAL === "harmonic"
+        ? "The trading bot, the projects, the agents — Harmonic's worlds in orbit. Spawn a project and watch a new planet ignite."
+        : "Every system is a world orbiting the core. Your clients ride the Clients world as moons. Spawn a project and watch a new planet ignite."}</p>
     </div>
 
     <div id="orbwrap" class="reveal">
@@ -37,7 +49,8 @@ OS.register({
       <div class="card"><div class="stat"><div class="k">Backtested · 10y</div><div class="v pos" data-count="10015774" data-fmt="m">$0</div><div class="s">verified bar-by-bar · frozen 27 Jul</div></div></div>
       <div class="card"><div class="stat"><div class="k">Win rate</div><div class="v" data-count="57.3" data-fmt="pct">0%</div><div class="s">4,267 trades · PF 2.00</div></div></div>
       <div class="card"><div class="stat"><div class="k">Max drawdown</div><div class="v wc" data-count="16.9" data-fmt="pct">0%</div><div class="s">never worse, ten years</div></div></div>
-      <div class="card"><div class="stat"><div class="k">Client moons</div><div class="v aq" data-count="${clients().length}" data-fmt="n">0</div><div class="s">in orbit around the Clients world</div></div></div>
+      ${GAL === "offshore" ? `<div class="card"><div class="stat"><div class="k">Client moons</div><div class="v aq" data-count="${clients().length}" data-fmt="n">0</div><div class="s">in orbit around the Clients world</div></div></div>`
+      : `<div class="card"><div class="stat"><div class="k">Sim gate</div><div class="v aq">0 / 60</div><div class="s">verified sim trades unlock live capital</div></div></div>`}
       <div class="card"><div class="stat"><div class="k">Planets ignited</div><div class="v bio" data-count="${projects().length}" data-fmt="n">0</div><div class="s">and room for a galaxy</div></div></div>
     </div>
 
@@ -87,7 +100,9 @@ OS.register({
       table:    { col: "#ff7d9d", ring: true,  moons: 0 },
       clients:  { col: "#4cdcff", ring: false, moons: 0 }, /* moons = real clients */
       agency:   { col: "#6ef2c0", ring: true,  moons: 1 },
-      agents:   { col: "#ffc46b", ring: false, moons: 2 }
+      agents:   { col: "#ffc46b", ring: false, moons: 2 },
+      botlab:   { col: "#ff7d9d", ring: true,  moons: 1 },
+      academy:  { col: "#4cdcff", ring: false, moons: 1 }
     };
     /* Higgsfield-rendered worlds — real AI planet art, hotlinked from their CDN */
     const HF = "https://d8j0ntlcm91z4.cloudfront.net/user_3H4SzmK3yfFv5j6nbvNOM3d88rq/";
@@ -97,7 +112,10 @@ OS.register({
       table:    HF + "hf_20260821_175515_ac39776a-7b90-47ab-b274-95ad8c3a2811.png",
       clients:  HF + "hf_20260821_175515_2505b7fc-ce7e-4b1b-a754-57c1ad89f6c5.png",
       agency:   HF + "hf_20260821_175515_9be9daca-e377-4d99-b8b3-4fa694716da2.png",
-      agents:   HF + "hf_20260821_175515_cc9daaa4-9354-4b32-b933-adefb0b5b9ed.png"
+      agents:   HF + "hf_20260821_175515_cc9daaa4-9354-4b32-b933-adefb0b5b9ed.png",
+      /* harmonic-only worlds reuse offshore-only art — the two never share a sky */
+      botlab:   HF + "hf_20260821_175515_ac39776a-7b90-47ab-b274-95ad8c3a2811.png",
+      academy:  HF + "hf_20260821_175515_2505b7fc-ce7e-4b1b-a754-57c1ad89f6c5.png"
     };
     const ARTPOOL = Object.values(ART);
     /* PERF: the renders are 2048px — scaling them every frame is what lags.
@@ -175,7 +193,7 @@ OS.register({
         x.beginPath(); x.ellipse(0, 0, R * 1.75, R * .5, 0, 0, Math.PI); x.stroke(); x.restore(); }
       moonPos.filter(m => m.front).forEach(m => {
         const mg = x.createRadialGradient(m.mxp - 2, m.myp - 2, 0, m.mxp, m.myp, R * .26);
-        mg.addColorStop(0, "#fff"); mg.addColorStop(.5, m.mc); mg.addColorStop(1, "transparent");
+        mg.addColorStop(0, "#fff"); mg.addolorStop(.5, m.mc); mg.addColorStop(1, "transparent");
         x.fillStyle = mg; x.beginPath(); x.arc(m.mxp, m.myp, R * .26, 0, 7); x.fill();
       });
     };

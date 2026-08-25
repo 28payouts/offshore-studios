@@ -219,7 +219,7 @@
 
   async function profileOf(u) {
     /* role lives in user_metadata.role; default trading */
-    return { email: u.email, name: (u.user_metadata && u.user_metadata.name) || u.email.split("@")[0], role: (u.user_metadata && u.user_metadata.role) || "trading" };
+    return { email: u.email, name: (u.user_metadata && u.user_metadata.name) || u.email.split("@")[0], role: (u.user_metadata && u.user_metadata.role) || "trading", gals: u.user_metadata && u.user_metadata.gals };
   }
 
   async function signIn() {
@@ -234,17 +234,19 @@
     const hit = C.LOCAL_USERS.find(u => u.email === email && u.pass === pass)
       || OS.store.get("clients", []).find(u => u.email === email && u.pass === pass);
     if (!hit) return deny("ACCESS DENIED · UNKNOWN DIVER");
-    arrive({ email: hit.email, name: hit.name, role: hit.role, accent: hit.accent, welcome: hit.welcome, bill: hit.bill, note: hit.note }, msg);
+    arrive({ email: hit.email, name: hit.name, role: hit.role, accent: hit.accent, welcome: hit.welcome, bill: hit.bill, note: hit.note, gals: hit.gals }, msg);
   }
 
-  /* admins pick a work-life first; clients jump straight in */
+  /* admins pick a work-life first; single-universe accounts and clients jump straight in.
+     gals is the allowlist — Mr John carries ["harmonic"] and never sees Offshore Studios. */
   function arrive(prof, msg) {
-    if (prof.role === "admin") {
+    const allowed = prof.role === "admin" ? (prof.gals || ["harmonic", "offshore"]) : null;
+    if (prof.role === "admin" && allowed.length > 1) {
       msg.textContent = "IDENTITY CONFIRMED · CHOOSE YOUR UNIVERSE";
       const g = $("gate"); if (g) { g.style.transition = "opacity .6s"; g.style.opacity = "0"; setTimeout(() => g.remove(), 650); }
       showGalaxySelect(prof);
     } else {
-      window.OS_GALAXY = prof.role === "trading" ? "harmonic" : "offshore";
+      window.OS_GALAXY = prof.role === "admin" ? allowed[0] : (prof.role === "trading" ? "harmonic" : "offshore");
       msg.textContent = "COORDINATES LOCKED · JUMPING";
       runWarp(() => enter(prof));
     }
@@ -259,7 +261,7 @@
       harmonic: [
         ["〰", "The Live Mind", "frozen 27 Jul · backtested $10.0M / 10y · sim gate 0/60"],
         ["◎", "Sim connection", "awaiting TradingView webhook plan — then real fills light the desk"],
-        ["✺", "Harmonic Academy", "in build · curriculum being written"],
+        ["✺", "Harmonic Academy", "LIVE · harmonic-academy.netlify.app"],
         ["✳", "AI & Agents", "constellation online"],
         ["→", "Next move", "webhook relay + fill log → the 0/60 gate starts counting"]
       ],
@@ -274,9 +276,9 @@
     const gs = document.createElement("div"); gs.id = "galsel";
     gs.innerHTML = `
       <div class="gs-kick">WELCOME BACK, ${user.name.toUpperCase()}</div>
-      <h1>Two lives. <span class="grad">One command deck.</span></h1>
+      <h1>Your universes. <span class="grad">One command deck.</span></h1>
       <div class="gs-row">
-        ${["harmonic", "offshore"].map(k => { const G = C.GALAXIES[k]; return `
+        ${["harmonic", "offshore"].filter(k => !user.gals || user.gals.includes(k)).map(k => { const G = C.GALAXIES[k]; return `
         <div class="gs-card" data-g="${k}" style="--gsa:${G.accent}">
           <div class="gs-art" style="background-image:url('${G.art}')"></div><div class="gs-fade"></div>
           <div class="gs-body">
@@ -341,7 +343,7 @@
     rail.innerHTML =
       visibleModules(user).map(m =>
         `<button class="navbtn" data-id="${m.id}"><span class="ic">${m.icon}</span><span class="lb">${m.label}</span><span class="st" id="st-${m.id}"></span></button>`).join("") +
-      (user.role === "admin" ? `<button class="navbtn" id="btnGal"><span class="ic">⇄</span><span class="lb">Universes</span></button>` : "") +
+      (user.role === "admin" && (!user.gals || user.gals.length > 1) ? `<button class="navbtn" id="btnGal"><span class="ic">⇄</span><span class="lb">Universes</span></button>` : "") +
       (user.role === "admin" ? `<button class="navbtn" id="btnCust"><span class="ic">⚙</span><span class="lb">Customize</span></button>` : "") +
       `<button class="navbtn" id="btnOut"><span class="ic">⏻</span><span class="lb">Sign out</span></button>`;
     rail.onclick = e => {
