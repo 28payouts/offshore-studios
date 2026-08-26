@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OFFSHORE OS — One universe. Every system.</title>
+<title>OFFSHORE STUDIOS — Your universes. Every system.</title>
 <meta name="description" content="The living AI ecosystem: trading intelligence, agency, client worlds and an AI council — one installable OS.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -97,9 +97,35 @@ section>p{color:var(--mut);font-size:15.5px;line-height:1.85;max-width:660px}
 .final h2{font-size:clamp(1.8rem,5vw,3.2rem)}
 footer{padding:40px 26px;text-align:center;font:400 10px var(--mono);letter-spacing:.2em;color:var(--dim);
   border-top:1px solid rgba(0,232,208,.08)}
+
+/* ═══ INTRO: the wave forges itself before the site breathes in ═══ */
+#intro{position:fixed;inset:0;z-index:200;background:#01070d;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:20px;transition:opacity .7s ease,visibility .7s}
+#intro.gone{opacity:0;visibility:hidden;pointer-events:none}
+#intro svg{width:min(280px,52vw);filter:drop-shadow(0 0 20px rgba(0,232,208,.6))}
+#intro .iv{stroke-dasharray:240;stroke-dashoffset:240;animation:ivdraw 1.3s .15s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes ivdraw{to{stroke-dashoffset:0}}
+#intro .it{font:800 13px var(--disp);letter-spacing:1.1em;text-indent:1.1em;color:#eafcff;opacity:0;
+  animation:itin .9s .7s ease forwards}
+@keyframes itin{to{opacity:.96;letter-spacing:.5em;text-indent:.5em}}
+#intro .is{font:400 9.5px var(--mono);letter-spacing:.4em;color:var(--dim);opacity:0;animation:itin .8s 1.15s ease forwards}
+body.introing{overflow:hidden}
+section,nav{opacity:0;transition:opacity .9s ease .1s}
+body.introdone section,body.introdone nav{opacity:1}
 </style>
 </head>
 <body>
+<div id="intro">
+  <svg viewBox="0 0 52 28" fill="none">
+    <polyline class="iv" points="2,24 12,20 18,23 27,12 33,16 42,5 50,9"
+      stroke="url(#ig)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <defs><linearGradient id="ig" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/>
+    </linearGradient></defs></svg>
+  <div class="it">OFFSHORE STUDIOS</div>
+  <div class="is">YOUR UNIVERSES &middot; EVERY SYSTEM</div>
+</div>
+
 <div id="sky"></div><canvas id="stars"></canvas><canvas id="grain"></canvas>
 <div id="cring"></div><div id="cdot"></div>
 
@@ -113,8 +139,8 @@ footer{padding:40px 26px;text-align:center;font:400 10px var(--mono);letter-spac
 <div class="hero">
   <svg class="logo" viewBox="0 0 52 28"><polyline points="2,24 12,20 18,23 27,12 33,16 42,5 50,9" fill="none" stroke="url(#hg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="hg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/></linearGradient></defs></svg>
   <div class="kick">Offshore Studios presents</div>
-  <h1>One universe.<br><span class="grad">Every system.</span></h1>
-  <p>Trading intelligence, design agency, client worlds and an AI council — living together in one installable OS. Boot in, jump to hyperspace, and run your empire from space.</p>
+  <h1>Your universes.<br><span class="grad">Every system.</span></h1>
+  <p>Every business you run with us becomes its own personalized universe — automated, augmented, AI-resident. Trading bots, websites &amp; marketing, online business ops: boot in, jump to hyperspace, and check on all of it from space.</p>
   <div class="ctas">
     <a class="cta main" href="index.html">ENTER THE UNIVERSE</a>
     <a class="cta ghost" href="index.html">⬇ INSTALL THE APP</a>
@@ -150,12 +176,12 @@ footer{padding:40px 26px;text-align:center;font:400 10px var(--mono);letter-spac
 <section>
   <div class="eyebrow">Client Worlds</div>
   <h2>Every client gets <span class="grad">their own world.</span></h2>
-  <p>Onboarding takes two minutes. Each client signs in through the same airlock and lands in a portal built only for them — their color, their greeting, their project, their billing. Private by design: your pipeline and other clients are invisible to them.</p>
+  <p>Every client gets a personalized custom universe — one place where everything you do with us lives. Trading clients open their trading universe: the bot, the record, the gate. Website clients open their website universe: the build, the launch, the numbers. Automated, augmented and AI-focused — sign in, and your whole operation with Offshore is one screen away. Private by design: nobody sees anyone else's universe.</p>
   <div class="grid">
     <div class="f"><span class="ic">🎨</span><h3>Personal by default</h3><p>Portal color, greeting, status line and billing — set per client at onboarding. The app dresses itself in their identity.</p><span class="tag">LIVE</span></div>
     <div class="f"><span class="ic">🔒</span><h3>Walled-off data</h3><p>Role-based access today; Supabase row-level security next — client data isolated at the database layer, encrypted passwords, signed sessions.</p><span class="tag warn">HARDENING</span></div>
     <div class="f"><span class="ic">📲</span><h3>Real software</h3><p>Installs to the dock and home screen, opens fullscreen in its own window, works offline. One codebase, every device.</p><span class="tag">LIVE</span></div>
-    <div class="f"><span class="ic">🌌</span><h3>One app, every service</h3><p>Trading, design, marketing, ecom — clients come for one world and discover the galaxy. Offshore runs it all from a single OS.</p><span class="tag warn">EXPANDING</span></div>
+    <div class="f"><span class="ic">🌌</span><h3>Everything we offer</h3><p>Trading bots with verified records · websites &amp; marketing that look like this one · AI automation for your business. Come for one universe, discover the galaxy.</p><span class="tag warn">EXPANDING</span></div>
   </div>
 </section>
 
@@ -196,6 +222,14 @@ addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'p
 /* scroll reveals */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.15});
 document.querySelectorAll('.f').forEach(f=>io.observe(f));
+
+/* intro sequence: draw the wave, then hand the site over */
+document.body.classList.add('introing');
+setTimeout(()=>{const i=document.getElementById('intro');i.classList.add('gone');
+  document.body.classList.remove('introing');document.body.classList.add('introdone');
+  setTimeout(()=>i.remove(),800);},2050);
+document.getElementById('intro').addEventListener('click',()=>{const i=document.getElementById('intro');
+  i.classList.add('gone');document.body.classList.remove('introing');document.body.classList.add('introdone');});
 </script>
 </body>
 </html>
