@@ -203,18 +203,21 @@
     })();
   })();
 
-  $("gateMode").textContent = REAL ? "SECURE MODE · REAL ACCOUNTS" : "LOCAL MODE · demo identities · supabase keys not set";
+  $("gateMode").textContent = REAL ? "SECURE MODE · SUPABASE LINKED" : "LOCAL MODE · demo identities · supabase keys not set";
 
   async function realInit() {
     if (!REAL) return;
-    await new Promise((res, rej) => {
-      const s = document.createElement("script");
-      s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js";
-      s.onload = res; s.onerror = rej; document.head.appendChild(s);
-    });
-    sb = window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY);
-    const { data } = await sb.auth.getSession();
-    if (data && data.session) enter(await profileOf(data.session.user));
+    try {
+      await new Promise((res, rej) => {
+        const s = document.createElement("script");
+        s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js";
+        s.onload = res; s.onerror = rej; document.head.appendChild(s);
+      });
+      sb = window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY);
+      window.OS_SB = sb; /* modules (fills feed, client vaults) share the client */
+      const { data } = await sb.auth.getSession();
+      if (data && data.session) enter(await profileOf(data.session.user));
+    } catch (e) { /* CDN unreachable — gate still works through the bridge */ }
   }
 
   async function profileOf(u) {
@@ -225,11 +228,14 @@
   async function signIn() {
     const email = $("inEmail").value.trim().toLowerCase(), pass = $("inPass").value;
     const msg = $("gateMsg"); msg.className = "gmsg"; msg.textContent = "AUTHENTICATING…";
-    if (REAL) {
-      const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-      if (error) return deny(error.message);
-      const prof = await profileOf(data.user);
-      return arrive(prof, msg);
+    if (REAL && sb) {
+      /* real accounts first — Supabase Auth is the front door now */
+      try {
+        const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+        if (!error) return arrive(await profileOf(data.user), msg);
+      } catch (e) { /* network/CDN hiccup — fall through to the bridge */ }
+      /* BRIDGE: until every account exists in Supabase, the local book still
+         opens the door. Remove LOCAL_USERS from config once accounts are made. */
     }
     const hit = C.LOCAL_USERS.find(u => u.email === email && u.pass === pass)
       || OS.store.get("clients", []).find(u => u.email === email && u.pass === pass);

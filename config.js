@@ -5,8 +5,8 @@
    3. Redeploy. That's it — the app detects the keys and uses real auth.
    While these are empty, the app runs in LOCAL MODE with the demo identities below. */
 window.OS_CONFIG = {
-  SUPABASE_URL: "",
-  SUPABASE_ANON_KEY: "",
+  SUPABASE_URL: "https://jbqxbpletvoocxiizwdy.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_JLAY2oACx0ZqUHcrFTVjKg_iAZ6xlzH",
 
   /* LOCAL MODE identities (demo only — replaced by real accounts once Supabase is on)
      gals: which universes an account can enter. Mr John is Harmonic-only —

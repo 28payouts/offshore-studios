@@ -34,9 +34,9 @@ OS.register({
 
     <div class="cards" style="margin-top:13px;grid-template-columns:1.25fr .75fr">
       <div class="card reveal">
-        <h3>Sim desk <span class="chip off" style="float:right">AWAITING CONNECTION</span></h3>
+        <h3>Sim desk <span class="chip off" style="float:right" id="lmFeedChip">AWAITING CONNECTION</span></h3>
         <p class="cs">nothing fake on this screen · <span class="mono" id="lmClock">--:--</span> NY</p>
-        <div style="font-size:13px;color:var(--mut);line-height:2;margin-top:8px">
+        <div id="lmFills" style="font-size:13px;color:var(--mut);line-height:2;margin-top:8px">
           This desk stays dark until real fills flow in. The wiring:<br>
           <span class="chip ok">PINE ENGINES · FROZEN</span> →
           <span class="chip warn">TRADINGVIEW ALERTS</span> →
@@ -171,6 +171,50 @@ OS.register({
       if (ck) { const n = OS.nyNow(); ck.textContent = `${String(n.h).padStart(2, "0")}:${String(n.m).padStart(2, "0")}:${String(n.s).padStart(2, "0")}`; }
     };
     clock(); this._timers.push(setInterval(clock, 1000));
+
+    /* ── LIVE FILLS: the real execution feed ──
+       Source 1: Supabase `fills` table (when the relay writes there).
+       Source 2: the relay's own /fills endpoint (Deno KV / CF KV).
+       No source or no rows → the honest wiring card stays. NO fake fills, ever. */
+    const fillRow = f => {
+      const side = String(f.side || "").toLowerCase();
+      const col = side === "long" || side === "buy" ? "var(--aqua)" : "#ff6b8a";
+      const when = f.time || f.received || f.created_at || "";
+      return `<div style="display:flex;gap:10px;align-items:center;padding:9px 12px;border-radius:12px;background:rgba(4,16,26,.6);border:1px solid rgba(120,180,200,.12);margin-top:8px">
+        <b class="mono" style="color:${col};font-size:11px;letter-spacing:.08em">${(f.side || "?").toUpperCase()}</b>
+        <span class="mono" style="font-size:11px;color:#eafcff">${f.sym || f.ticker || "?"}</span>
+        <span class="chip off" style="font-size:8.5px">${f.engine || "—"}</span>
+        <span class="mono" style="font-size:11px;color:var(--mut)">${f.action || ""} @ ${f.price ?? "?"}</span>
+        <span class="mono" style="margin-left:auto;font-size:9px;color:var(--dim)">${String(when).slice(0, 19).replace("T", " ")}</span>
+      </div>`;
+    };
+    const paintFills = fills => {
+      const box = el.querySelector("#lmFills"), chip = el.querySelector("#lmFeedChip");
+      if (!box || !fills || !fills.length) return;
+      if (chip) { chip.className = "chip ok"; chip.textContent = "LIVE FEED · " + fills.length + " FILLS"; }
+      box.innerHTML = `<div class="mono" style="font-size:9.5px;letter-spacing:.22em;color:var(--dim)">EXECUTION FEED · NEWEST FIRST · EVERY ROW REAL</div>`
+        + fills.slice(0, 12).map(fillRow).join("");
+    };
+    const pollFills = async () => {
+      if (document.hidden) return;
+      /* Supabase first */
+      try {
+        if (window.OS_SB) {
+          const { data, error } = await window.OS_SB.from("fills").select("*").order("created_at", { ascending: false }).limit(30);
+          if (!error && data && data.length) return paintFills(data);
+        }
+      } catch (e) {}
+      /* relay /fills second */
+      try {
+        const relay = OS.store.get("claude_relay", "");
+        if (relay) {
+          const base = relay.replace(/\/claude\/?$/, "");
+          const r = await fetch(base + "/fills");
+          if (r.ok) { const d = await r.json(); if (d.fills && d.fills.length) paintFills(d.fills); }
+        }
+      } catch (e) {}
+    };
+    pollFills(); this._timers.push(setInterval(pollFills, 30000));
   },
   unmount() { this._timers.forEach(clearInterval); this._timers = []; }
 });
