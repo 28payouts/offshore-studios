@@ -33,7 +33,10 @@ window.OS_CONFIG = {
     { id: "academy",  label: "Harmonic Projects", icon: "✺", roles: ["admin"], galaxy: "harmonic" },
     { id: "clients",  label: "Clients",          icon: "❖", roles: ["admin"], galaxy: "offshore" },
     { id: "agency",   label: "Studios Agency",   icon: "◍", roles: ["admin","agency"], galaxy: "offshore" },
-    { id: "showcase", label: "What We Offer",    icon: "✧", roles: ["guest","admin"], galaxy: "offshore" },
+    /* GUESTS ONLY. This is the account-free window-shopping universe reached from
+       EXPLORE on the gate. It must NEVER appear inside a real signed-in dashboard —
+       not for Riley, not for admins, not for clients. Do not add roles here. */
+    { id: "showcase", label: "What We Offer",    icon: "✧", roles: ["guest"], galaxy: "offshore" },
     { id: "agents",   label: "AI & Agents",      icon: "✳", roles: ["admin"], galaxy: "harmonic" }
   ],
 

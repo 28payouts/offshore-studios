@@ -133,7 +133,18 @@
       transition:opacity .38s cubic-bezier(.2,.8,.2,1)}
     body.railhov #raildim{opacity:1}
     #stage{transition:transform .38s cubic-bezier(.2,.8,.2,1),filter .38s cubic-bezier(.2,.8,.2,1)}
-    body.railhov #stage{transform:scale(.994);filter:blur(4px) brightness(.8) saturate(.85)}
+    /* gentle focus pull — the page stays readable even mid-effect */
+    body.railhov #stage{transform:scale(.996);filter:blur(2.2px) brightness(.88) saturate(.92)}
+    /* THE DOCK LIGHTS UP: when everything else recedes, the rail comes forward */
+    #rail{transition:border-color .38s cubic-bezier(.2,.8,.2,1),box-shadow .38s cubic-bezier(.2,.8,.2,1),background .38s}
+    body.railhov #rail{
+      border-color:rgba(0,232,208,.5)!important;
+      box-shadow:0 0 0 1px rgba(0,232,208,.28),0 28px 80px -24px rgba(0,232,208,.5),
+                 inset 0 0 40px -18px rgba(0,232,208,.5)!important}
+    body.railhov .navbtn .ic{color:var(--aqua);text-shadow:0 0 14px rgba(0,232,208,.55)}
+    /* touch devices have no hover — never blur on a phone or tablet */
+    @media(hover:none){body.railhov #stage{filter:none;transform:none}
+      body.railhov #raildim{opacity:0}}
 
     /* each item breathes on hover — icon lifts, label glides in staggered */
     .navbtn{transition:transform .28s cubic-bezier(.2,.9,.25,1),background .25s,border-color .25s}
@@ -178,15 +189,43 @@
   const dim = document.createElement("div"); dim.id = "raildim"; document.body.appendChild(dim);
   /* click a page → release the focus dim instantly so the app is usable;
      the dim only returns after the pointer leaves the dock and comes back */
-  let dimSuppressed = false;
-  document.addEventListener("mouseover", e => {
-    const inRail = !!e.target.closest("#rail");
-    if (!inRail) dimSuppressed = false;
-    document.body.classList.toggle("railhov", inRail && !dimSuppressed);
+  /* ── DOCK FOCUS, FAIL-SAFE ──
+     Driven by real pointer COORDINATES, never by enter/leave event pairing.
+     A pointer that leaves the window mid-hover (screenshot, tab switch, alt-tab)
+     used to strand the blur on forever; it cannot any more. Five independent
+     releases plus a watchdog mean the page always comes back. */
+  let railOn = false, dimSuppressed = false;
+  const setRail = on => {
+    if (on === railOn) return;
+    railOn = on;
+    document.body.classList.toggle("railhov", on);
+  };
+  const overRail = (x, y) => {
+    const r = document.getElementById("rail");
+    if (!r) return false;
+    const b = r.getBoundingClientRect();
+    return x >= b.left - 8 && x <= b.right + 8 && y >= b.top - 8 && y <= b.bottom + 8;
+  };
+  addEventListener("pointermove", e => {
+    if (e.pointerType === "touch") return;                 /* phones never blur */
+    const inside = overRail(e.clientX, e.clientY);
+    if (!inside) dimSuppressed = false;
+    setRail(inside && !dimSuppressed);
   }, { passive: true });
+  /* every route by which focus can be lost releases it */
+  ["pointerleave", "pointercancel", "mouseleave", "blur"].forEach(ev =>
+    addEventListener(ev, () => setRail(false), true));
+  addEventListener("scroll", () => setRail(false), { passive: true });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) setRail(false); });
+  /* clicking a page releases instantly so the app is usable straight away */
   document.addEventListener("click", e => {
-    if (e.target.closest("#rail")) { dimSuppressed = true; document.body.classList.remove("railhov"); }
+    if (e.target.closest("#rail")) { dimSuppressed = true; setRail(false); }
   }, true);
+  /* watchdog: the browser's own :hover is the source of truth. If the blur is on
+     while nothing is actually hovered, drop it. Runs twice a second, costs nothing. */
+  setInterval(() => {
+    if (railOn && !document.querySelector("#rail:hover")) setRail(false);
+  }, 500);
   /* page-arrival animation holds a filter on #stage after it finishes (fill mode),
      which would fight the hover blur — drop the class the moment it completes */
   document.addEventListener("animationend", e => {
