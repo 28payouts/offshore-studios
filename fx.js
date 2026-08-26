@@ -121,18 +121,19 @@
      so hovering the dock always shows the full label over the content. */
   const railFix = document.createElement("style");
   railFix.textContent = `
-    #rail{z-index:46}
+    #rail{z-index:46;position:relative}
     .navbtn .lb{z-index:220;box-shadow:0 14px 40px rgba(0,0,0,.55)}
     #rail:hover{border-color:rgba(0,232,208,.28);box-shadow:0 24px 70px rgba(0,0,0,.55),0 0 30px -12px rgba(0,232,208,.35)}
 
-    /* ── DOCK FOCUS: hovering the sidebar dims the world behind it ── */
+    /* ── DOCK FOCUS: hovering the sidebar softens ONLY the page content.
+       The blur lives on #stage itself (not an overlay), so the sidebar and
+       its labels can never be caught in it. ── */
     #raildim{position:fixed;inset:0;z-index:44;pointer-events:none;opacity:0;
-      background:radial-gradient(1200px 100% at 0% 50%,rgba(1,4,8,.28),rgba(1,4,8,.62));
-      backdrop-filter:blur(3px) saturate(.82);-webkit-backdrop-filter:blur(3px) saturate(.82);
+      background:radial-gradient(1200px 100% at 0% 50%,rgba(1,4,8,.2),rgba(1,4,8,.45));
       transition:opacity .38s cubic-bezier(.2,.8,.2,1)}
     body.railhov #raildim{opacity:1}
-    body.railhov #stage{transition:transform .38s cubic-bezier(.2,.8,.2,1);transform:scale(.994)}
-    #stage{transition:transform .38s cubic-bezier(.2,.8,.2,1)}
+    #stage{transition:transform .38s cubic-bezier(.2,.8,.2,1),filter .38s cubic-bezier(.2,.8,.2,1)}
+    body.railhov #stage{transform:scale(.994);filter:blur(4px) brightness(.8) saturate(.85)}
 
     /* each item breathes on hover — icon lifts, label glides in staggered */
     .navbtn{transition:transform .28s cubic-bezier(.2,.9,.25,1),background .25s,border-color .25s}
@@ -185,6 +186,11 @@
   }, { passive: true });
   document.addEventListener("click", e => {
     if (e.target.closest("#rail")) { dimSuppressed = true; document.body.classList.remove("railhov"); }
+  }, true);
+  /* page-arrival animation holds a filter on #stage after it finishes (fill mode),
+     which would fight the hover blur — drop the class the moment it completes */
+  document.addEventListener("animationend", e => {
+    if (e.animationName === "stagein" && e.target.id === "stage") e.target.classList.remove("warpin");
   }, true);
 
   /* warp brand overlay — rides on top of boot.js's hyperspace canvas */
