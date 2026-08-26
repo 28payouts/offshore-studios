@@ -252,19 +252,26 @@
       try {
         const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
         if (!error) return arrive(await profileOf(data.user), msg);
-      } catch (e) { /* network/CDN hiccup — fall through to the bridge */ }
-      /* BRIDGE: until every account exists in Supabase, the local book still
-         opens the door. Remove LOCAL_USERS from config once accounts are made. */
+      } catch (e) { /* network/CDN hiccup — fall through */ }
     }
-    const hit = C.LOCAL_USERS.find(u => u.email === email && u.pass === pass)
-      || OS.store.get("clients", []).find(u => u.email === email && u.pass === pass);
+    /* The browser-side client book is NO LONGER a door. Client passwords used
+       to sit in plain text in localStorage and were checked right here, which
+       meant anyone with the laptop open could read them. Every real client now
+       has a genuine Supabase account created from ❖ Clients; Supabase Auth is
+       the only way in. LOCAL_USERS is empty and stays that way. */
+    const hit = C.LOCAL_USERS.find(u => u.email === email && u.pass === pass);
     if (!hit) return deny("ACCESS DENIED · UNKNOWN DIVER");
     arrive({ email: hit.email, name: hit.name, role: hit.role, accent: hit.accent, welcome: hit.welcome, bill: hit.bill, note: hit.note, gals: hit.gals }, msg);
   }
 
   /* admins pick a work-life first; single-universe accounts and clients jump straight in.
      gals is the allowlist — Mr John carries ["harmonic"] and never sees Offshore Studios. */
-  function arrive(prof, msg) {
+  async function arrive(prof, msg) {
+    /* The client book lives on the server. Pull it before anything mounts so a
+       client sees their real portal on ANY device, not just the browser it was
+       created in. If the server is unreachable we keep the local cache and the
+       app still opens — it just won't have tonight's changes. */
+    try { await OS.cloud.pull(prof.role === "admin"); } catch (e) { }
     const allowed = prof.role === "admin" ? (prof.gals || ["harmonic", "offshore"]) : null;
     if (prof.role === "admin" && allowed.length > 1) {
       msg.textContent = "IDENTITY CONFIRMED · CHOOSE YOUR UNIVERSE";

@@ -21,6 +21,9 @@ OS.register({
     };
     const SERVICES = [["website", "Website / Web app"], ["marketing", "Marketing & brand"], ["ai", "AI automation"], ["trading", "Trading systems"]];
 
+    /* Shown exactly once, right after an account is created or reset. The code
+       is held in memory only — leave this screen and it is gone for good. */
+    let lastInvite = null;
     let view = "book";          /* book | wizard | manage */
     let wiz = null;             /* wizard state */
     let manageEmail = null;
@@ -37,6 +40,22 @@ OS.register({
         <span class="chip ${REAL ? "ok" : "warn"}">${REAL ? "SECURE · real accounts" : "LOCAL MODE · portals live in this browser until Supabase keys land"}</span>
         <button class="btn" id="startWiz" style="margin-left:10px">⟠ ONBOARD A NEW CLIENT</button>
       </div>
+      ${lastInvite ? `
+      <div class="card reveal" id="inviteCard" style="border-color:#00e8d088;margin-bottom:18px">
+        <h3 style="margin:0 0 6px">${lastInvite.name}'s account is live</h3>
+        <p class="cs" style="margin:0 0 10px">Send this now. The code is in memory only — once you leave this screen
+        nobody, including me, can read it back. If it is lost you reset it, you never look it up.</p>
+        <pre class="mono" id="inviteText" style="white-space:pre-wrap;font-size:12px;color:#cfeff5;background:rgba(0,232,208,.06);border:1px solid rgba(0,232,208,.2);border-radius:12px;padding:12px;margin:0 0 12px">${lastInvite.welcome || "Welcome to Offshore Studios"} — your private portal is live.
+
+Portal: https://28payouts.github.io/offshore-studios/
+Email: ${lastInvite.email}
+Code: ${lastInvite.pass}
+
+Inside you'll find your project's live progress, every deliverable, and a direct line to the team.
+— Offshore Studios</pre>
+        <button class="btn sm" id="inviteCopy">COPY INVITE</button>
+        <button class="btn ghost sm" id="inviteDone" style="margin-left:8px">DONE — HIDE IT</button>
+      </div>` : ""}
       <div class="cards">
         ${L.length ? L.map(c => `
         <div class="card reveal" style="border-color:${(c.accent || "#00e8d0")}44">
@@ -53,7 +72,7 @@ OS.register({
           </div>
           <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
             <button class="btn ghost sm" data-manage="${c.email}">MANAGE</button>
-            <button class="btn ghost sm" data-invite="${c.email}">COPY INVITE</button>
+            <button class="btn ghost sm" data-reset="${c.email}">RESET CODE</button>
             <button class="btn ghost sm danger" data-del="${c.email}">REMOVE</button>
           </div>
         </div>`).join("")
@@ -69,22 +88,36 @@ OS.register({
         view = "wizard"; render();
       };
       el.querySelectorAll("[data-manage]").forEach(b => b.onclick = () => { manageEmail = b.dataset.manage; view = "manage"; render(); });
-      el.querySelectorAll("[data-del]").forEach(b => b.onclick = () => {
+      /* Removing a client kills the real account too — otherwise they'd keep a
+         working login to a portal that no longer exists. */
+      el.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
         const c = load().find(x => x.email === b.dataset.del);
-        if (confirm(`Remove ${c.name}'s portal?`)) { save(load().filter(x => x.email !== b.dataset.del)); render(); }
+        if (!confirm(`Remove ${c.name}'s portal AND delete their sign-in? This cannot be undone.`)) return;
+        b.disabled = true; b.textContent = "REMOVING…";
+        const res = await OS.cloud.call("account", { op: "delete", email: c.email });
+        if (!res || res.error) { b.disabled = false; b.textContent = "REMOVE"; alert(res ? res.error : "account server unreachable"); return; }
+        save(load().filter(x => x.email !== c.email)); render();
       });
-      el.querySelectorAll("[data-invite]").forEach(b => b.onclick = () => {
-        const c = load().find(x => x.email === b.dataset.invite);
-        navigator.clipboard.writeText(
-`${c.welcome || "Welcome to Offshore Studios"} — your private portal is live.
 
-Portal: https://28payouts.github.io/offshore-studios/
-Email: ${c.email}
-Code: ${c.pass}
-
-Inside you'll find your project's live progress, every deliverable, and a direct line to the team.
-— Offshore Studios`).then(() => { b.textContent = "COPIED ✓"; setTimeout(() => b.textContent = "COPY INVITE", 1400); });
+      /* No "copy invite": the code is not stored, so there is nothing to copy.
+         A lost code is reset, never recovered. That is the point. */
+      el.querySelectorAll("[data-reset]").forEach(b => b.onclick = async () => {
+        const c = load().find(x => x.email === b.dataset.reset);
+        const np = prompt(`New portal code for ${c.name} (8+ characters).\nThey will need this to sign in — you will not be able to read it again.`);
+        if (!np) return;
+        if (np.trim().length < 8) { alert("Code must be at least 8 characters."); return; }
+        b.disabled = true; b.textContent = "RESETTING…";
+        const res = await OS.cloud.call("account", { op: "reset", email: c.email, password: np.trim() });
+        b.disabled = false; b.textContent = "RESET CODE";
+        if (!res || res.error) { alert(res ? res.error : "account server unreachable"); return; }
+        lastInvite = { name: c.name, email: c.email, pass: np.trim(), welcome: c.welcome }; render();
       });
+
+      const ic = el.querySelector("#inviteCopy");
+      if (ic) ic.onclick = () => navigator.clipboard.writeText(el.querySelector("#inviteText").textContent)
+        .then(() => { ic.textContent = "COPIED ✓"; setTimeout(() => ic.textContent = "COPY INVITE", 1400); });
+      const idn = el.querySelector("#inviteDone");
+      if (idn) idn.onclick = () => { lastInvite = null; render(); };
     };
 
     /* ═══════════ THE WIZARD ═══════════ */
@@ -174,6 +207,7 @@ Inside you'll find your project's live progress, every deliverable, and a direct
             <b style="color:#cfeff5">Billing:</b> ${W.bill || "not set"}<br>
             <b style="color:#cfeff5">Sign-in:</b> ${W.email} / ${W.pass}
           </div>
+          <div class="gmsg" id="wzMsg2"></div>
           <button class="btn" id="wzCreate" style="margin-top:16px">⟠ CREATE THE PORTAL</button>
         </div>`;
 
@@ -219,11 +253,27 @@ Inside you'll find your project's live progress, every deliverable, and a direct
         };
       }
       const cr = el.querySelector("#wzCreate");
-      if (cr) cr.onclick = () => {
-        const rec = { name: W.name, email: W.email, pass: W.pass, role: W.role, welcome: W.welcome,
+      if (cr) cr.onclick = async () => {
+        /* A real account is born on the SERVER first. If that fails we do not
+           create a half-client that can log in nowhere — we stop and say why.
+           The portal code is never stored anywhere: it goes to the client and
+           to nobody else. If it is lost, Riley resets it; he cannot look it up. */
+        cr.disabled = true; cr.textContent = "CREATING ACCOUNT…";
+        const res = await OS.cloud.call("account", {
+          op: "create", email: W.email, password: W.pass, name: W.name, role: W.role
+        });
+        if (!res || res.error) {
+          cr.disabled = false; cr.textContent = "⟠ CREATE THE PORTAL";
+          const m = el.querySelector("#wzMsg2");
+          if (m) { m.className = "gmsg err"; m.textContent = res ? res.error : "not connected to the account server — sign in again and retry"; }
+          return;
+        }
+        const rec = { name: W.name, email: W.email, role: W.role, welcome: W.welcome,
           accent: W.accent, brand: W.brand, services: W.services, miles: W.miles, bill: W.bill,
           note: W.note, addons: W.addons, msgs: [], reqs: [], delivs: [], created: Date.now() };
-        save([...load(), rec]); view = "book"; wiz = null; render();
+        save([...load(), rec]);
+        lastInvite = { name: W.name, email: W.email, pass: W.pass, welcome: W.welcome };
+        view = "book"; wiz = null; render();
       };
     };
 
