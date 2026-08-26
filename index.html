@@ -20,6 +20,14 @@
 @keyframes lwave{0%,30%,100%{text-shadow:0 0 0 rgba(0,232,208,0)}10%{text-shadow:0 0 22px rgba(0,232,208,.9),0 0 44px rgba(0,232,208,.35)}20%{text-shadow:0 0 18px rgba(169,139,255,.7)}}
 .bwave .bl{animation:lwave 4.6s linear infinite;animation-delay:calc(var(--i)*.12s)}
 
+/* ══ THE REAL BLUR BUG ══
+   core.css gives .reveal a starting filter:blur(6px) that its animation never
+   clears (the keyframes only animate opacity and transform). Result: every
+   content block on every page sat at 6px blur permanently. This was the blur —
+   it had nothing to do with the sidebar. Cards still fade and rise; they just
+   arrive sharp. */
+.reveal,.orbwrap{filter:none!important}
+
 /* ══ DOCK FOCUS — driven ONLY by the browser's own hover state ══
    No JavaScript, no class, no timers. The page is blurred if and only if
    the pointer is physically over the sidebar right now. The moment you
