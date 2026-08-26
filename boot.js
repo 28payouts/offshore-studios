@@ -215,8 +215,11 @@
       });
       sb = window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY);
       window.OS_SB = sb; /* modules (fills feed, client vaults) share the client */
-      const { data } = await sb.auth.getSession();
-      if (data && data.session) enter(await profileOf(data.session.user));
+      /* getUser() asks the SERVER for the live profile — a stale token from before
+         a role/metadata change can never lock someone into the wrong universe.
+         Resume goes through arrive() so admins still get the universe select. */
+      const { data } = await sb.auth.getUser();
+      if (data && data.user) arrive(await profileOf(data.user), $("gateMsg") || { textContent: "" });
     } catch (e) { /* CDN unreachable — gate still works through the bridge */ }
   }
 
