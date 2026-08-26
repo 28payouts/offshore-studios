@@ -19,6 +19,28 @@
 .bl{display:inline-block;will-change:transform}
 @keyframes lwave{0%,30%,100%{text-shadow:0 0 0 rgba(0,232,208,0)}10%{text-shadow:0 0 22px rgba(0,232,208,.9),0 0 44px rgba(0,232,208,.35)}20%{text-shadow:0 0 18px rgba(169,139,255,.7)}}
 .bwave .bl{animation:lwave 4.6s linear infinite;animation-delay:calc(var(--i)*.12s)}
+
+/* ══ DOCK FOCUS — driven ONLY by the browser's own hover state ══
+   No JavaScript, no class, no timers. The page is blurred if and only if
+   the pointer is physically over the sidebar right now. The moment you
+   move away it is over. There is no state that can get stuck, because
+   there is no state. This overrides every older rule. */
+body.railhov #stage{filter:none!important;transform:none!important}
+body.railhov #raildim{opacity:0!important}
+body:has(#rail:hover) #stage{
+  filter:blur(2.2px) brightness(.88) saturate(.92)!important;
+  transform:scale(.996)!important}
+body:has(#rail:hover) #raildim{opacity:1!important}
+body:has(#rail:hover) #rail{
+  border-color:rgba(0,232,208,.5)!important;
+  box-shadow:0 0 0 1px rgba(0,232,208,.28),0 28px 80px -24px rgba(0,232,208,.5),
+             inset 0 0 40px -18px rgba(0,232,208,.5)!important}
+body:has(#rail:hover) .navbtn .lb{opacity:1!important;transform:translateY(-50%) translateX(0)!important}
+body:has(#rail:hover) .navbtn .ic{color:var(--aqua);text-shadow:0 0 14px rgba(0,232,208,.55)}
+/* phones and tablets have no hover — never blur there */
+@media(hover:none){
+  body:has(#rail:hover) #stage{filter:none!important;transform:none!important}
+  body:has(#rail:hover) #raildim{opacity:0!important}}
 </style>
 </head>
 <body>
