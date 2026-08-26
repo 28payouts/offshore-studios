@@ -18,6 +18,16 @@ OS.register({
     const MODEL = () => OS.store.get("claude_model", "claude-sonnet-5");
     const RELAY = () => OS.store.get("claude_relay", "") || (window.OS_CONFIG.RELAY_URL || "");
 
+    /* Truth on the status chip: it says LIVE only once a real relay reply has
+       actually landed. Configured is not the same thing as working. */
+    const markRelay = (ok, why) => {
+      const m = el.querySelector("#clMode"); if (!m) return;
+      m.className = "chip " + (ok ? "ok" : "off");
+      m.textContent = ok ? "LIVE · SECURE RELAY"
+        : (isOwner && KEY()) ? "LIVE · REAL CLAUDE · " + MODEL()
+        : "LOCAL BRAIN · relay " + (why || "offline");
+    };
+
     /* ── who is sitting here ── */
     const isOwner = user.role === "admin" && /riley/i.test(user.email || "");
     const SCOPE = isOwner ? "owner"
@@ -223,14 +233,27 @@ OS.register({
         .filter(m => m.content).concat([{ role: "user", content: q }]);
 
       if (RELAY()) {
-        /* the relay holds the key and re-checks the role server-side */
-        const r = await fetch(RELAY(), {
-          method: "POST", headers: { "content-type": "application/json" },
-          body: JSON.stringify({ scope: SCOPE, email: user.email, system: sys, messages: msgs, model: MODEL() })
-        });
-        if (!r.ok) throw new Error("relay " + r.status);
-        const d = await r.json();
-        return (d.content || []).map(b => b.text || "").join(" ") || d.text || "";
+        /* The relay holds the key and re-checks the role server-side.
+           If it ever falters — key not set yet, cold start, network — we do NOT
+           dead-end the user with a red error. We fall back to the owner's own
+           key if there is one, otherwise the local brain, and we say so on the
+           status chip. Degrade quietly, never lie about being live. */
+        try {
+          const r = await fetch(RELAY(), {
+            method: "POST", headers: { "content-type": "application/json" },
+            body: JSON.stringify({ scope: SCOPE, email: user.email, system: sys, messages: msgs, model: MODEL() })
+          });
+          if (r.ok) {
+            const d = await r.json();
+            const t = (d.content || []).map(b => b.text || "").join(" ") || d.text || "";
+            if (t) { markRelay(true); return t; }
+            markRelay(false, "empty reply");
+          } else {
+            const e = await r.json().catch(() => ({}));
+            markRelay(false, e?.error ? String(e.error).slice(0, 40) : "relay " + r.status);
+          }
+        } catch { markRelay(false, "unreachable"); }
+        if (!(isOwner && KEY())) return localBrain(q);
       }
 
       /* direct — owner only. A guest browser has no key, by design. */

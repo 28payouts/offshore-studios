@@ -8,10 +8,11 @@ window.OS_CONFIG = {
   SUPABASE_URL: "https://jbqxbpletvoocxiizwdy.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_JLAY2oACx0ZqUHcrFTVjKg_iAZ6xlzH",
 
-  /* Secure Claude relay (Deno Deploy). The API key lives ONLY on the relay
-     server — never here. Set to "https://<name>.deno.dev/claude" once deployed
-     and every signed-in role gets real Claude with zero keys in the browser. */
-  RELAY_URL: "",
+  /* Secure Claude relay — Supabase Edge Function "relay", LIVE 26 Aug 2026.
+     The Anthropic key lives ONLY on that server and never touches a browser.
+     Health check: .../functions/v1/relay/health → {"ok":true}
+     Source of truth for the function code: backend/supabase-relay.ts */
+  RELAY_URL: "https://jbqxbpletvoocxiizwdy.supabase.co/functions/v1/relay/claude",
 
   /* FAILSAFE: these emails are ALWAYS admins with both universes,
      even if their Supabase metadata is missing or wrong. */
