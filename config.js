@@ -8,6 +8,10 @@ window.OS_CONFIG = {
   SUPABASE_URL: "https://jbqxbpletvoocxiizwdy.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_JLAY2oACx0ZqUHcrFTVjKg_iAZ6xlzH",
 
+  /* FAILSAFE: these emails are ALWAYS admins with both universes,
+     even if their Supabase metadata is missing or wrong. */
+  ADMIN_EMAILS: ["rileylagan@gmail.com"],
+
   /* Demo identities RETIRED 25 Aug 2026 — real Supabase accounts confirmed working.
      The only doors in: Supabase Auth (admins + future client accounts) and
      locally-onboarded client records from ❖ Clients. */

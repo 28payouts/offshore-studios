@@ -151,6 +151,12 @@
 
   /* ═══════════ HYPERSPACE — the jump to your universe ═══════════ */
   function runWarp(done) {
+    /* GUARANTEE: the warp can never strand anyone on a black screen.
+       If the animation stalls (throttled tab, hidden window), the user
+       still lands in their universe within 3 seconds. */
+    let fired = false;
+    const fire = () => { if (!fired) { fired = true; done(); } };
+    const guard = setTimeout(fire, 3000);
     const c = document.createElement("canvas"); c.id = "warpfx";
     document.body.appendChild(c);
     const x = c.getContext("2d");
@@ -177,7 +183,7 @@
         const fl = x.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * .7);
         fl.addColorStop(0, "rgba(234,252,255,.9)"); fl.addColorStop(.5, "rgba(0,232,208,.35)"); fl.addColorStop(1, "rgba(1,7,13,0)");
         x.fillStyle = fl; x.fillRect(0, 0, W, H);
-        done();
+        clearTimeout(guard); fire();
         c.style.transition = "opacity .8s"; c.style.opacity = "0";
         setTimeout(() => c.remove(), 850);
       }
@@ -224,8 +230,17 @@
   }
 
   async function profileOf(u) {
-    /* role lives in user_metadata.role; default trading */
-    return { email: u.email, name: (u.user_metadata && u.user_metadata.name) || u.email.split("@")[0], role: (u.user_metadata && u.user_metadata.role) || "trading", gals: u.user_metadata && u.user_metadata.gals };
+    /* role lives in user_metadata.role; default trading.
+       FAILSAFE: ADMIN_EMAILS are always full admins — a missing/mismatched
+       metadata row can never lock the owner out of their own software. */
+    const md = u.user_metadata || {};
+    const forced = (C.ADMIN_EMAILS || []).includes(String(u.email || "").toLowerCase());
+    return {
+      email: u.email,
+      name: md.name || u.email.split("@")[0],
+      role: forced ? "admin" : (md.role || "trading"),
+      gals: md.gals || (forced ? ["harmonic", "offshore"] : undefined)
+    };
   }
 
   async function signIn() {
