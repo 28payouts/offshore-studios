@@ -36,6 +36,19 @@ OS.register({
       <div class="card"><div class="stat"><div class="k">Trades</div><div class="v">${V.trades.toLocaleString()}</div><div class="s">≈${Math.round(V.trades / V.years)}/yr · ≈${Math.round(V.trades / V.years / 12)}/mo · selective on purpose</div></div></div>
     </div>
 
+    <div class="card reveal" style="margin-top:13px">
+      <h3>The curve — ten years, every year real
+        <span class="chip warn" style="float:right">BACKTEST · VERIFIED HANDOFF FIGURES</span></h3>
+      <p class="cs">hover to scrub the journey · log scale, because 100× doesn't fit on a straight one</p>
+      <canvas id="blCurve" style="width:100%;height:300px;display:block;cursor:crosshair"></canvas>
+      <div id="blCurveInfo" class="mono" style="display:flex;gap:26px;flex-wrap:wrap;padding:12px 6px 2px;font-size:11px;color:var(--mut)">
+        <span>YEAR <b id="bcY" style="color:#eafcff">—</b></span>
+        <span>EQUITY <b id="bcE" style="color:var(--aqua)">—</b></span>
+        <span>YEAR P&amp;L <b id="bcP" style="color:#eafcff">—</b></span>
+        <span>RETURN <b id="bcR" style="color:#eafcff">—</b></span>
+      </div>
+    </div>
+
     <div class="cards" style="margin-top:13px;grid-template-columns:1.1fr .9fr">
       <div class="card reveal">
         <h3>Engine bench</h3><p class="cs">profit factor per engine · the spread IS the research agenda</p>
@@ -112,6 +125,99 @@ OS.register({
         <button id="blGo">RAISE IT</button>
       </div>
     </div>`;
+
+    /* ── THE CURVE: real year-by-year equity from the v6 design handoff ──
+       Every figure below is from DESIGN_HANDOFF_BOT_V6 (verified run).
+       Log scale; animated draw-in; hover scrubs a real data point. */
+    const YRS = [
+      ["2016 H2", -8830, -8.8], ["2017", 19177, 21.0], ["2018", 1404, 1.3],
+      ["2019", 134491, 120.3], ["2020", 281069, 114.1], ["2021", 646233, 122.6],
+      ["2022", 941736, 80.2], ["2023", 2199354, 104.0], ["2024", 3132060, 72.6],
+      ["2025", 1127872, 15.1], ["2026 H1", 1518490, 17.7]
+    ];
+    let eq = 100000;
+    const PTS = [{ y: "START", e: eq, p: 0, r: 0 }];
+    YRS.forEach(([y, p, r]) => { eq += p; PTS.push({ y, e: eq, p, r }); });
+
+    const cCv = el.querySelector("#blCurve"), cX = cCv.getContext("2d");
+    let prog = 0, hovI = -1;
+    const money = v => v >= 1e6 ? "$" + (v / 1e6).toFixed(2) + "M" : "$" + Math.round(v / 1000) + "k";
+    const drawCurve = () => {
+      const r = cCv.getBoundingClientRect();
+      const W = Math.round(r.width * 2), H = 600;
+      if (cCv.width !== W) { cCv.width = W; cCv.height = H; }
+      cX.clearRect(0, 0, W, H);
+      const padL = 90, padR = 40, padT = 40, padB = 60;
+      const lo = Math.log(80000), hi = Math.log(11e6);
+      const xy = i => [padL + (i / (PTS.length - 1)) * (W - padL - padR),
+                       H - padB - ((Math.log(PTS[i].e) - lo) / (hi - lo)) * (H - padT - padB)];
+      /* grid: honest log gridlines */
+      cX.font = "20px 'JetBrains Mono'"; cX.textAlign = "left";
+      [100000, 300000, 1e6, 3e6, 10e6].forEach(g => {
+        const gy = H - padB - ((Math.log(g) - lo) / (hi - lo)) * (H - padT - padB);
+        cX.strokeStyle = "rgba(120,180,200,.09)"; cX.lineWidth = 1;
+        cX.beginPath(); cX.moveTo(padL, gy); cX.lineTo(W - padR, gy); cX.stroke();
+        cX.fillStyle = "rgba(143,180,196,.55)"; cX.fillText(money(g), 8, gy + 6);
+      });
+      const upto = Math.max(2, Math.ceil(prog * PTS.length));
+      /* glow underlay + line */
+      const grad = cX.createLinearGradient(padL, 0, W - padR, 0);
+      grad.addColorStop(0, "#a98bff"); grad.addColorStop(.55, "#4cdcff"); grad.addColorStop(1, "#00e8d0");
+      cX.lineJoin = cX.lineCap = "round";
+      /* area fill */
+      cX.beginPath();
+      for (let i = 0; i < upto && i < PTS.length; i++) { const [x, y] = xy(i); i ? cX.lineTo(x, y) : cX.moveTo(x, y); }
+      const [lx] = xy(Math.min(upto - 1, PTS.length - 1));
+      cX.lineTo(lx, H - padB); cX.lineTo(padL, H - padB); cX.closePath();
+      const af = cX.createLinearGradient(0, padT, 0, H - padB);
+      af.addColorStop(0, "rgba(0,232,208,.18)"); af.addColorStop(1, "rgba(0,232,208,0)");
+      cX.fillStyle = af; cX.fill();
+      /* stroke */
+      cX.beginPath();
+      for (let i = 0; i < upto && i < PTS.length; i++) { const [x, y] = xy(i); i ? cX.lineTo(x, y) : cX.moveTo(x, y); }
+      cX.strokeStyle = grad; cX.lineWidth = 4.5;
+      cX.shadowColor = "rgba(0,232,208,.6)"; cX.shadowBlur = 14;
+      cX.stroke(); cX.shadowBlur = 0;
+      /* points + labels */
+      cX.textAlign = "center";
+      for (let i = 0; i < upto && i < PTS.length; i++) {
+        const [x, y] = xy(i), hot = i === hovI, neg = PTS[i].p < 0;
+        cX.fillStyle = hot ? "#eafcff" : neg ? "#ff7d9d" : "#00e8d0";
+        cX.beginPath(); cX.arc(x, y, hot ? 10 : 5.5, 0, 7); cX.fill();
+        if (hot) { cX.strokeStyle = "rgba(234,252,255,.5)"; cX.lineWidth = 2;
+          cX.beginPath(); cX.moveTo(x, padT); cX.lineTo(x, H - padB); cX.stroke(); }
+        cX.fillStyle = hot ? "#eafcff" : "rgba(143,180,196,.6)";
+        cX.font = (hot ? "700 " : "") + "18px 'JetBrains Mono'";
+        cX.fillText(PTS[i].y.replace(" H2", "½").replace(" H1", "½"), x, H - padB + 34);
+      }
+      /* headline flag at the end */
+      if (upto >= PTS.length) {
+        const [ex, ey] = xy(PTS.length - 1);
+        cX.fillStyle = "#00e8d0"; cX.font = "800 26px Unbounded"; cX.textAlign = "right";
+        cX.fillText("$10.02M", ex - 4, ey - 22);
+      }
+    };
+    const animCurve = setInterval(() => {
+      if (document.hidden || !document.contains(cCv)) return;
+      if (prog < 1) { prog = Math.min(1, prog + .02); drawCurve(); }
+    }, 30);
+    this._timers.push(animCurve);
+    drawCurve();
+    cCv.addEventListener("pointermove", e => {
+      const r = cCv.getBoundingClientRect();
+      const i = Math.round(((e.clientX - r.left) * 2 - 90) / ((r.width * 2 - 130) / (PTS.length - 1)));
+      if (i >= 0 && i < PTS.length && i !== hovI) {
+        hovI = i; drawCurve();
+        const p = PTS[i];
+        el.querySelector("#bcY").textContent = p.y;
+        el.querySelector("#bcE").textContent = "$" + p.e.toLocaleString();
+        el.querySelector("#bcP").textContent = i === 0 ? "—" : (p.p >= 0 ? "+$" : "−$") + Math.abs(p.p).toLocaleString();
+        el.querySelector("#bcP").style.color = p.p < 0 ? "#ff7d9d" : "#6ef2c0";
+        el.querySelector("#bcR").textContent = i === 0 ? "—" : (p.r >= 0 ? "+" : "") + p.r + "%";
+        el.querySelector("#bcR").style.color = p.r < 0 ? "#ff7d9d" : "#6ef2c0";
+      }
+    });
+    cCv.addEventListener("pointerleave", () => { hovI = -1; drawCurve(); });
 
     /* ── the three minds ── */
     const M = [
