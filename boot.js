@@ -155,10 +155,13 @@
        If the animation stalls (throttled tab, hidden window), the user
        still lands in their universe within 3 seconds. */
     let fired = false;
-    const fire = () => { if (!fired) { fired = true; done(); } };
-    const guard = setTimeout(fire, 3000);
     const c = document.createElement("canvas"); c.id = "warpfx";
     document.body.appendChild(c);
+    const fade = () => { c.style.transition = "opacity .8s"; c.style.opacity = "0"; setTimeout(() => c.remove(), 850); };
+    const fire = () => { if (!fired) { fired = true; done(); } };
+    /* the guard also clears the canvas — a throttled tab must never
+       leave a frozen warp frame parked over the universe */
+    const guard = setTimeout(() => { fire(); fade(); }, 3000);
     const x = c.getContext("2d");
     const W = c.width = innerWidth, H = c.height = innerHeight, cx = W / 2, cy = H / 2;
     const S = [...Array(420)].map(() => ({ a: Math.random() * Math.PI * 2, d: Math.random() * Math.max(W, H) * .5, s: .5 + Math.random() * 1.5 }));
@@ -183,9 +186,7 @@
         const fl = x.createRadialGradient(cx, cy, 0, cx, cy, Math.max(W, H) * .7);
         fl.addColorStop(0, "rgba(234,252,255,.9)"); fl.addColorStop(.5, "rgba(0,232,208,.35)"); fl.addColorStop(1, "rgba(1,7,13,0)");
         x.fillStyle = fl; x.fillRect(0, 0, W, H);
-        clearTimeout(guard); fire();
-        c.style.transition = "opacity .8s"; c.style.opacity = "0";
-        setTimeout(() => c.remove(), 850);
+        clearTimeout(guard); fire(); fade();
       }
     })();
   }
