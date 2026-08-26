@@ -194,12 +194,10 @@
      A pointer that leaves the window mid-hover (screenshot, tab switch, alt-tab)
      used to strand the blur on forever; it cannot any more. Five independent
      releases plus a watchdog mean the page always comes back. */
-  let railOn = false, dimSuppressed = false;
-  const setRail = on => {
-    if (on === railOn) return;
-    railOn = on;
-    document.body.classList.toggle("railhov", on);
-  };
+  let dimSuppressed = false;
+  /* the DOM class is the single source of truth — no internal flag can ever
+     desync from it and leave the page stuck behind a blur */
+  const setRail = on => document.body.classList.toggle("railhov", on);
   const overRail = (x, y) => {
     const r = document.getElementById("rail");
     if (!r) return false;
@@ -224,7 +222,7 @@
   /* watchdog: the browser's own :hover is the source of truth. If the blur is on
      while nothing is actually hovered, drop it. Runs twice a second, costs nothing. */
   setInterval(() => {
-    if (railOn && !document.querySelector("#rail:hover")) setRail(false);
+    if (document.body.classList.contains("railhov") && !document.querySelector("#rail:hover")) setRail(false);
   }, 500);
   /* page-arrival animation holds a filter on #stage after it finishes (fill mode),
      which would fight the hover blur — drop the class the moment it completes */
