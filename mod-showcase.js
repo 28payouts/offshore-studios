@@ -13,7 +13,7 @@ OS.register({
       { ic: "🪐", n: "Personalized Client Universes", tag: "INCLUDED WITH EVERY PROJECT", tc: "ok",
         d: "Every client gets their own universe inside this software — your logo and brand on the wall, your project's live progress as we work, every deliverable kept forever, new offerings with live pricing, and a direct line to the team.",
         pts: ["Your brand wraps the whole experience", "Watch milestones move in real time", "Deliverables vault — yours forever", "Direct line · we reply fast"] },
-      { ic: "🌊", n: "High-End Websites", tag: "FROM $1,500", tc: "ok",
+      { ic: "🌊", n: "High-End Websites", tag: "FROM $2,500", tc: "ok",
         d: "Real 3D, cinematic motion, custom everything — sites that feel like this app. We pull your brand into the build and make something people remember.",
         pts: ["Custom-designed — never templates", "Motion & interaction on every page", "Mobile-perfect, fast, deployed for you", "Final quote scoped to your project"] },
       { ic: "📣", n: "Marketing & Content", tag: "SCOPED PER PROJECT", tc: "ok",
@@ -27,9 +27,9 @@ OS.register({
         pts: ["$100k → $10.0M backtested over 10 years", "57.3% win rate · 4,267 trades · PF 2.00", "Max drawdown 16.9% — never worse", "Verified bar-by-bar · stated as a backtest, honestly"] }
     ];
     const TIERS = [
-      ["SIGNATURE SITE", "from $1,500", "custom site · motion pass · your universe included"],
+      ["SIGNATURE SITE", "from $2,500", "custom site · motion pass · your universe included"],
       ["FLAGSHIP EXPERIENCE", "from $5,000", "full cinematic build · 3D · brand system"],
-      ["CARE & GROWTH", "from $250/mo", "updates · monitoring · new offerings live"],
+      ["CARE & GROWTH · ADD-ON", "from $250/mo", "maintenance add-on · updates · monitoring"],
       ["TRADING INTELLIGENCE", "by inquiry", "exclusive · starts with a conversation"]
     ];
     el.innerHTML = `
@@ -52,6 +52,14 @@ OS.register({
         </div>
         <div class="mono" style="font-size:9px;letter-spacing:.2em;color:var(--dim);margin-top:12px">TAP TO ${"EXPAND"} · ◈</div>
       </div>`).join("")}
+    </div>
+
+    <div class="mhead reveal" style="margin-top:34px"><div class="eyebrow">The desk · live market</div>
+      <h2 style="font-size:1.35rem">Watch the market <span class="grad">our intelligence watches.</span></h2>
+      <p class="sub">A live view of the S&amp;P 500 futures our trading system trades — with what the system is doing right now. Flip timeframes freely; the chart is view-only.</p></div>
+    <div class="card reveal" style="padding:0;overflow:hidden">
+      <div id="scBotStat" class="mono" style="display:flex;flex-wrap:wrap;gap:14px;padding:13px 16px;font-size:9.5px;letter-spacing:.18em;color:var(--mut);border-bottom:1px solid rgba(120,180,200,.12)">CONNECTING…</div>
+      <div id="scTV" style="height:460px"></div>
     </div>
 
     <div class="mhead reveal" style="margin-top:34px"><div class="eyebrow">Starting points</div>
@@ -89,6 +97,46 @@ OS.register({
       ${user.role === "guest" ? `<span class="chip off">EXPLORING AS A GUEST · CLIENTS GET THEIR OWN UNIVERSE</span>` : ""}
     </div>`;
 
+    /* ── the desk: live read-only chart + honest bot status ──
+       Guests can flip timeframes on the embedded chart but nothing else:
+       no symbol change, no drawing sidebar, no TradingView account needed. */
+    const mountTV = () => {
+      if (!document.getElementById("scTV")) return;
+      new window.TradingView.widget({
+        container_id: "scTV", width: "100%", height: 460,
+        symbol: "CME_MINI:ES1!", interval: "5", timezone: "America/New_York",
+        theme: "dark", style: "1", locale: "en",
+        hide_side_toolbar: true, allow_symbol_change: false, save_image: false,
+        withdateranges: true, backgroundColor: "rgba(2,9,16,1)"
+      });
+    };
+    if (window.TradingView) mountTV();
+    else {
+      let tvs = document.getElementById("tvjs");
+      if (!tvs) { tvs = document.createElement("script"); tvs.id = "tvjs"; tvs.src = "https://s3.tradingview.com/tv.js"; document.head.appendChild(tvs); }
+      tvs.addEventListener("load", mountTV);
+      if (window.TradingView) mountTV();
+    }
+    const botStat = async () => {
+      const box = el.querySelector("#scBotStat"); if (!box) return;
+      const n = OS.nyNow();
+      const wd = n.wd !== "Sat" && n.wd !== "Sun";
+      const inSess = wd && ((n.dec >= 2 && n.dec < 5) || (n.dec >= 8.5 && n.dec < 11) || (n.dec >= 13.5 && n.dec < 16));
+      let fills = null;
+      try {
+        const r = await fetch(C.SUPABASE_URL + "/rest/v1/fills?select=id", {
+          headers: { apikey: C.SUPABASE_ANON_KEY, Authorization: "Bearer " + C.SUPABASE_ANON_KEY, Prefer: "count=exact", Range: "0-0" } });
+        if (r.ok) fills = parseInt((r.headers.get("content-range") || "/0").split("/")[1]) || 0;
+      } catch (e) {}
+      box.innerHTML =
+        `<span style="color:${inSess ? "var(--aqua)" : "var(--dim)"}">● ${inSess ? "HUNTING — READING THIS MARKET NOW" : "STANDING BY — OUTSIDE ITS TRADING WINDOWS"}</span>` +
+        `<span>NY ${String(n.h).padStart(2, "0")}:${String(n.m).padStart(2, "0")} · ${n.wd}</span>` +
+        `<span>${fills === null ? "FILL FEED CONNECTING…" : fills > 0 ? "LOGGED FILLS: " + fills : "VERIFICATION STAGE · NO LIVE FILLS YET"}</span>` +
+        `<span style="color:var(--dim)">VIEW-ONLY CHART · TIMEFRAMES FREE</span>`;
+    };
+    botStat();
+    this._timers.push(setInterval(botStat, 30000));
+
     /* expand cards */
     el.querySelector("#scOffers").addEventListener("click", e => {
       const card = e.target.closest(".card[data-i]"); if (!card) return;
@@ -99,7 +147,7 @@ OS.register({
     /* tier tap preselects matching chip + scrolls to form */
     el.querySelectorAll(".sctier").forEach(t => t.onclick = () => {
       const map = { "SIGNATURE SITE": "High-End Website", "FLAGSHIP EXPERIENCE": "High-End Website",
-        "CARE & GROWTH": "High-End Website", "TRADING INTELLIGENCE": "Trading Intelligence (exclusive)" };
+        "CARE & GROWTH · ADD-ON": "High-End Website", "TRADING INTELLIGENCE": "Trading Intelligence (exclusive)" };
       const want = map[t.dataset.t];
       el.querySelectorAll("#scChips .chip").forEach(c => { if (c.dataset.v === want) c.className = "chip ok"; });
       el.querySelector("#scForm").scrollIntoView({ behavior: "smooth", block: "start" });

@@ -168,6 +168,12 @@ footer{padding:40px 26px;text-align:center;font:400 10px var(--mono);letter-spac
 body.introing{overflow:hidden}
 section,nav,.final{opacity:0;transition:opacity .9s ease .1s}
 body.introdone section,body.introdone nav,body.introdone .final{opacity:1}
+
+/* ── the wordmark, alive: per-letter glow wave + magnetic hover ── */
+.bl{display:inline-block;will-change:transform}
+@keyframes lwave{0%,30%,100%{text-shadow:0 0 0 rgba(0,232,208,0)}10%{text-shadow:0 0 22px rgba(0,232,208,.9),0 0 44px rgba(0,232,208,.35)}20%{text-shadow:0 0 18px rgba(169,139,255,.7)}}
+.bwave .bl{animation:lwave 4.6s linear infinite;animation-delay:calc(var(--i)*.12s)}
+#intro .it{opacity:1;animation:none;letter-spacing:.5em;text-indent:.5em}
 </style>
 </head>
 <body>
@@ -210,7 +216,7 @@ body.introdone section,body.introdone nav,body.introdone .final{opacity:1}
   <p>Everything we make is custom, real, and built to a standard most agencies don't attempt. No templates dressed up as design. No promises we can't keep.</p>
   <div class="grid">
     <div class="f"><span class="ic">🪐</span><h3>Personalized Client Universes</h3><p>Every client gets their own universe inside our software — your logo and brand on the wall, your project's live progress, every deliverable kept forever, new offerings with live pricing, and a direct line to the team. Your business, made physical.</p><span class="tag">INCLUDED WITH EVERY PROJECT</span></div>
-    <div class="f"><span class="ic">🌊</span><h3>High-End Websites</h3><p>Real 3D, cinematic motion, custom everything — sites that feel like this one. We pull your brand into the build and make something people remember. See the tiers below.</p><span class="tag">FROM $1,500</span></div>
+    <div class="f"><span class="ic">🌊</span><h3>High-End Websites</h3><p>Real 3D, cinematic motion, custom everything — sites that feel like this one. We pull your brand into the build and make something people remember. See the tiers below.</p><span class="tag">FROM $2,500</span></div>
     <div class="f"><span class="ic">📣</span><h3>Marketing &amp; Content</h3><p>Launch content, brand assets and campaigns that match the quality of the site they point at. Scoped per project alongside your build or as its own engagement.</p><span class="tag">SCOPED PER PROJECT</span></div>
     <div class="f"><span class="ic">✳</span><h3>AI Automation</h3><p>Assistants and automations wired into your business — answering, organizing, operating. Built to be professional and invisible: your customers just see things working.</p><span class="tag">SCOPED PER PROJECT</span></div>
     <div class="f"><span class="ic">〰</span><h3>Trading Intelligence</h3><p>An in-house algorithmic trading system with a ten-year verified record. Not a product on a shelf — access is by inquiry only.</p><span class="tag vio">EXCLUSIVE · INQUIRE</span></div>
@@ -224,7 +230,7 @@ body.introdone section,body.introdone nav,body.introdone .final{opacity:1}
   <div class="tiers">
     <div class="tier">
       <div class="tn">SIGNATURE SITE</div>
-      <div class="tp"><small>STARTING AT</small>$1,500</div>
+      <div class="tp"><small>STARTING AT</small>$2,500</div>
       <div class="tv">FINAL QUOTE SCOPED TO YOUR PROJECT</div>
       <ul>
         <li>Custom-designed site — no templates</li>
@@ -249,7 +255,7 @@ body.introdone section,body.introdone nav,body.introdone .final{opacity:1}
     <div class="tier">
       <div class="tn">CARE &amp; GROWTH</div>
       <div class="tp"><small>STARTING AT</small>$250<span style="font:700 12px var(--mono)">/mo</span></div>
-      <div class="tv">FINAL QUOTE SCOPED TO YOUR NEEDS</div>
+      <div class="tv">MAINTENANCE ADD-ON · FOR SITES WE'VE BUILT</div>
       <ul>
         <li>Updates, new sections, fresh content</li>
         <li>Monitoring — your site never quietly breaks</li>
@@ -293,9 +299,9 @@ body.introdone section,body.introdone nav,body.introdone .final{opacity:1}
 
     <div class="flabel">Pick a starting tier — final pricing varies with scope</div>
     <div class="trow" id="tierRow">
-      <div class="topt" data-v="Signature Site — starting at $1,500"><b>SIGNATURE SITE</b><div class="p">from $1,500</div><div class="s">custom site · motion pass · your universe included</div></div>
+      <div class="topt" data-v="Signature Site — starting at $2,500"><b>SIGNATURE SITE</b><div class="p">from $2,500</div><div class="s">custom site · motion pass · your universe included</div></div>
       <div class="topt" data-v="Flagship Experience — starting at $5,000"><b>FLAGSHIP EXPERIENCE</b><div class="p">from $5,000</div><div class="s">full cinematic build · 3D · brand system</div></div>
-      <div class="topt" data-v="Care & Growth — starting at $250/mo"><b>CARE &amp; GROWTH</b><div class="p">from $250/mo</div><div class="s">updates · monitoring · new offerings live</div></div>
+      <div class="topt" data-v="Care & Growth — maintenance add-on, from $250/mo"><b>CARE &amp; GROWTH · ADD-ON</b><div class="p">from $250/mo</div><div class="s">maintenance add-on · updates · monitoring</div></div>
       <div class="topt" data-v="Trading Intelligence — by inquiry"><b>TRADING INTELLIGENCE</b><div class="p">by inquiry</div><div class="s">exclusive · access starts with a conversation</div></div>
       <div class="topt" data-v="Not sure yet — advise me"><b>NOT SURE YET</b><div class="p">advise me</div><div class="s">tell us the goal, we'll recommend the path</div></div>
     </div>
@@ -363,6 +369,35 @@ setTimeout(()=>{const i=document.getElementById('intro');i.classList.add('gone')
   setTimeout(()=>i.remove(),800);},2050);
 document.getElementById('intro').addEventListener('click',()=>{const i=document.getElementById('intro');
   i.classList.add('gone');document.body.classList.remove('introing');document.body.classList.add('introdone');});
+
+/* ═ brand wordmark: split into letters, stagger in, glow-wave, magnet ═ */
+const MAG=[];
+function brandify(el,o={}){
+  if(!el)return;
+  const walk=n=>{[...n.childNodes].forEach(ch=>{
+    if(ch.nodeType===3&&ch.textContent.trim()!==''){
+      const f=document.createDocumentFragment();
+      [...ch.textContent].forEach(c=>{const s=document.createElement('span');s.className='bl';s.textContent=c===' '?' ':c;f.appendChild(s);});
+      n.replaceChild(f,ch);
+    }else if(ch.nodeType===1&&ch.nodeName.toLowerCase()!=='svg')walk(ch);});};
+  walk(el);
+  el.querySelectorAll('.grad').forEach(g=>{g.style.background='none';g.style.webkitTextFillColor='initial';});
+  const ls=[...el.querySelectorAll('.bl')];
+  ls.forEach((s,i)=>{s.style.setProperty('--i',i);
+    if(s.closest('.grad')){const t=i/Math.max(1,ls.length-1);
+      s.style.color=`rgb(${Math.round(169*t)},${Math.round(232-93*t)},${Math.round(208+47*t)})`;}
+    if(o.enter)s.animate([{opacity:0,transform:'translateY(26px) rotate(5deg)',filter:'blur(9px)'},{opacity:1,transform:'translateY(0)',filter:'blur(0)'}],
+      {duration:640,delay:(o.delay||0)+i*40,easing:'cubic-bezier(.2,.8,.2,1)',fill:'backwards'});});
+  if(o.wave)el.classList.add('bwave');
+  if(o.magnet)MAG.push({ls,r:o.magnet});
+}
+addEventListener('pointermove',e=>{MAG.forEach(m=>m.ls.forEach(s=>{
+  const b=s.getBoundingClientRect(),dx=e.clientX-(b.left+b.width/2),dy=e.clientY-(b.top+b.height/2),d=Math.hypot(dx,dy);
+  s.style.transform=d<m.r?`translate(${dx*-.12*(1-d/m.r)}px,${dy*-.12*(1-d/m.r)-(1-d/m.r)*8}px) scale(${1+(1-d/m.r)*.18})`:'';})); },{passive:true});
+brandify(document.querySelector('#intro .it'),{enter:true,delay:650,wave:true});
+brandify(document.querySelector('nav .brand'),{wave:true,magnet:130});
+const hh1=document.querySelector('.hero h1');
+if(hh1){hh1.style.animation='none';hh1.style.opacity=1;brandify(hh1,{enter:true,delay:750,wave:true,magnet:150});}
 
 /* ═══ INQUIRY FORM → Supabase (publishable key — safe to ship) ═══ */
 const SUPA="https://jbqxbpletvoocxiizwdy.supabase.co";

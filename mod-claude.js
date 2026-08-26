@@ -16,7 +16,7 @@ OS.register({
   mount(el, user) {
     const KEY = () => OS.store.get("claude_key", "");
     const MODEL = () => OS.store.get("claude_model", "claude-sonnet-5");
-    const RELAY = () => OS.store.get("claude_relay", "");
+    const RELAY = () => OS.store.get("claude_relay", "") || (window.OS_CONFIG.RELAY_URL || "");
 
     /* ── who is sitting here ── */
     const isOwner = user.role === "admin" && /riley/i.test(user.email || "");

@@ -14,6 +14,12 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="OFFSHORE STUDIOS">
+<style>
+/* the wordmark, alive — per-letter glow wave + magnetic hover */
+.bl{display:inline-block;will-change:transform}
+@keyframes lwave{0%,30%,100%{text-shadow:0 0 0 rgba(0,232,208,0)}10%{text-shadow:0 0 22px rgba(0,232,208,.9),0 0 44px rgba(0,232,208,.35)}20%{text-shadow:0 0 18px rgba(169,139,255,.7)}}
+.bwave .bl{animation:lwave 4.6s linear infinite;animation-delay:calc(var(--i)*.12s)}
+</style>
 </head>
 <body>
 
@@ -45,18 +51,18 @@
 </div>
 
 <!-- bump ?v= on any file you change — one number busts every visitor's cache -->
-<script src="config.js?v=12"></script>
+<script src="config.js?v=13"></script>
 <script src="bus.js?v=3"></script>
 <script src="mod-home.js?v=8"></script>
 <script src="mod-roundtable.js?v=4"></script>
-<script src="mod-claude.js?v=4"></script>
+<script src="mod-claude.js?v=5"></script>
 <script src="mod-livemind.js?v=7"></script>
 <script src="mod-botlab.js?v=2"></script>
 <script src="mod-academy.js?v=3"></script>
 <script src="mod-clients.js?v=4"></script>
 <script src="mod-agency.js?v=5"></script>
 <script src="mod-agents.js?v=3"></script>
-<script src="mod-showcase.js?v=1"></script>
+<script src="mod-showcase.js?v=2"></script>
 <script src="boot.js?v=12"></script>
 <script src="fx.js?v=7"></script>
 <script>
@@ -64,6 +70,32 @@
    No install banner here — this IS the app; the landing site does the marketing. */
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
 window.addEventListener("beforeinstallprompt", e => e.preventDefault());
+
+/* brand wordmark on the gate — letters that breathe and follow the cursor */
+(() => {
+  const el = document.querySelector("#gate h1"); if (!el) return;
+  const walk = n => [...n.childNodes].forEach(ch => {
+    if (ch.nodeType === 3 && ch.textContent.trim() !== "") {
+      const f = document.createDocumentFragment();
+      [...ch.textContent].forEach(c => { const s = document.createElement("span"); s.className = "bl"; s.textContent = c === " " ? " " : c; f.appendChild(s); });
+      n.replaceChild(f, ch);
+    } else if (ch.nodeType === 1) walk(ch);
+  });
+  walk(el);
+  el.querySelectorAll(".grad").forEach(g => { g.style.background = "none"; g.style.webkitTextFillColor = "initial"; });
+  const ls = [...el.querySelectorAll(".bl")];
+  ls.forEach((s, i) => {
+    s.style.setProperty("--i", i);
+    if (s.closest(".grad")) { const t = i / Math.max(1, ls.length - 1); s.style.color = `rgb(${Math.round(169*t)},${Math.round(232-93*t)},${Math.round(208+47*t)})`; }
+    s.animate([{ opacity: 0, transform: "translateY(22px) rotate(4deg)", filter: "blur(8px)" }, { opacity: 1, transform: "translateY(0)", filter: "blur(0)" }],
+      { duration: 620, delay: 420 + i * 42, easing: "cubic-bezier(.2,.8,.2,1)", fill: "backwards" });
+  });
+  el.classList.add("bwave");
+  addEventListener("pointermove", e => ls.forEach(s => {
+    const b = s.getBoundingClientRect(), dx = e.clientX - (b.left + b.width / 2), dy = e.clientY - (b.top + b.height / 2), d = Math.hypot(dx, dy);
+    s.style.transform = d < 140 ? `translate(${dx * -.12 * (1 - d / 140)}px,${dy * -.12 * (1 - d / 140) - (1 - d / 140) * 8}px) scale(${1 + (1 - d / 140) * .18})` : "";
+  }), { passive: true });
+})();
 </script>
 </body>
 </html>
