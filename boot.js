@@ -549,5 +549,8 @@
 
   $("btnIn").onclick = signIn;
   ["inEmail", "inPass"].forEach(id => $(id).addEventListener("keydown", e => { if (e.key === "Enter") signIn(); }));
+  /* GUEST PASS: anyone can explore the showcase universe — no account, no data */
+  const bg = $("btnGuest");
+  if (bg) bg.onclick = () => arrive({ email: "guest@offshore", name: "Explorer", role: "guest" }, $("gateMsg"));
   realInit();
 })();

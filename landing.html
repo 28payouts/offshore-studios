@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OFFSHORE STUDIOS — Your universes. Every system.</title>
-<meta name="description" content="The living AI ecosystem: trading intelligence, agency, client worlds and an AI council — one installable OS.">
+<title>OFFSHORE STUDIOS — High-end sites, personalized universes, trading intelligence.</title>
+<meta name="description" content="Offshore Studios builds high-end websites, personalized client universes, marketing and AI automation — and runs an exclusive trading intelligence. Start your project.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -19,60 +19,55 @@ body{background:#01070d;color:var(--ink);font-family:var(--body);overflow-x:hidd
 .mono{font-family:var(--mono)}
 .grad{background:linear-gradient(100deg,var(--aqua),var(--cyan) 45%,var(--vio));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 
-/* nebula + stars */
 #sky{position:fixed;inset:0;z-index:-2;
   background:linear-gradient(rgba(1,7,13,.55),rgba(1,7,13,.88)),
   url("https://d8j0ntlcm91z4.cloudfront.net/user_3H4SzmK3yfFv5j6nbvNOM3d88rq/hf_20260809_151529_04d4ca59-bab1-490f-bd5b-c90de4408294.png") center/cover no-repeat fixed}
 #stars{position:fixed;inset:0;z-index:-1;pointer-events:none}
 #grain{position:fixed;inset:0;z-index:90;pointer-events:none;opacity:.05;mix-blend-mode:overlay}
 
-/* cursor */
 #cdot{position:fixed;width:8px;height:8px;border-radius:50%;background:#eafcff;z-index:99;pointer-events:none;
   transform:translate(-50%,-50%);box-shadow:0 0 12px rgba(0,232,208,.9);transition:width .2s,height .2s}
 #cring{position:fixed;width:34px;height:34px;border-radius:50%;border:1.5px solid rgba(0,232,208,.5);z-index:98;
   pointer-events:none;transform:translate(-50%,-50%);transition:width .25s,height .25s,border-color .25s}
 #cdot.hot{width:14px;height:14px}#cring.hot{width:58px;height:58px;border-color:rgba(169,139,255,.85)}
 @media(pointer:coarse){#cdot,#cring{display:none}body{cursor:auto}}
-input,textarea{cursor:text}
+input,textarea,select{cursor:text}
 
-/* nav */
 nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:14px;padding:16px 28px;
   background:linear-gradient(180deg,rgba(1,7,13,.85),transparent);backdrop-filter:blur(6px)}
 nav .brand{font:800 12px var(--disp);letter-spacing:.2em;display:flex;align-items:center;gap:10px}
 nav .sp{flex:1}
 .pill{font:700 9.5px var(--disp);letter-spacing:.22em;padding:11px 18px;border-radius:99px;text-decoration:none;
-  color:var(--aqua);border:1px solid rgba(0,232,208,.35);transition:.3s}
+  color:var(--aqua);border:1px solid rgba(0,232,208,.35);transition:.3s;background:none;cursor:pointer}
 .pill:hover{background:rgba(0,232,208,.1)}
-.pill.solid{color:#012;border:0;background:linear-gradient(100deg,var(--aqua),var(--cyan));}
+.pill.solid{color:#012;border:0;background:linear-gradient(100deg,var(--aqua),var(--cyan))}
 .pill.solid:hover{transform:translateY(-2px);box-shadow:0 14px 34px -8px rgba(0,232,208,.55)}
 
-/* hero */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:110px 20px 60px}
+.hero{min-height:92vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:110px 20px 60px}
 .hero .logo{width:150px;height:80px;overflow:visible;margin-bottom:26px}
 .hero .logo polyline{stroke-dasharray:120;stroke-dashoffset:120;animation:draw 2s .3s ease forwards;
   filter:drop-shadow(0 0 16px rgba(0,232,208,.8))}
 @keyframes draw{to{stroke-dashoffset:0}}
 .kick{font:700 10px var(--mono);letter-spacing:.5em;color:var(--aqua);text-transform:uppercase;margin-bottom:20px;opacity:0;animation:up 1s .6s forwards}
 h1{font:800 clamp(2.2rem,7vw,4.6rem)/1.08 var(--disp);letter-spacing:-.01em;opacity:0;animation:up 1s .8s forwards}
-.hero p{max-width:640px;margin:24px auto 0;color:var(--mut);font-size:17px;line-height:1.8;opacity:0;animation:up 1s 1.05s forwards}
+.hero p{max-width:680px;margin:24px auto 0;color:var(--mut);font-size:17px;line-height:1.8;opacity:0;animation:up 1s 1.05s forwards}
 .ctas{display:flex;gap:14px;margin-top:38px;flex-wrap:wrap;justify-content:center;opacity:0;animation:up 1s 1.25s forwards}
-.cta{font:700 11.5px var(--disp);letter-spacing:.24em;padding:17px 30px;border-radius:99px;text-decoration:none;transition:.3s}
+.cta{font:700 11.5px var(--disp);letter-spacing:.24em;padding:17px 30px;border-radius:99px;text-decoration:none;transition:.3s;border:0;cursor:pointer}
 .cta.main{color:#012;background:linear-gradient(100deg,var(--aqua),var(--cyan) 55%,var(--vio));background-size:200% 100%;animation:flow 6s linear infinite}
 .cta.main:hover{transform:translateY(-3px);box-shadow:0 20px 50px -10px rgba(0,232,208,.6)}
-.cta.ghost{color:var(--aqua);border:1px solid rgba(0,232,208,.4)}
+.cta.ghost{color:var(--aqua);border:1px solid rgba(0,232,208,.4);background:none}
 .cta.ghost:hover{background:rgba(0,232,208,.09)}
 @keyframes flow{to{background-position:200% 0}}
 @keyframes up{from{opacity:0;transform:translateY(26px);filter:blur(8px)}to{opacity:1;transform:none;filter:none}}
 .scrollhint{margin-top:64px;font:400 9px var(--mono);letter-spacing:.4em;color:var(--dim);animation:pulse 2.6s infinite}
 @keyframes pulse{50%{opacity:.3}}
 
-/* sections */
-section{max-width:1100px;margin:0 auto;padding:110px 26px}
+section{max-width:1100px;margin:0 auto;padding:100px 26px}
 .eyebrow{font:700 9.5px var(--mono);letter-spacing:.42em;color:var(--aqua);text-transform:uppercase;margin-bottom:16px;
   display:flex;align-items:center;gap:12px}
 .eyebrow::after{content:"";width:90px;height:1px;background:linear-gradient(90deg,var(--aqua),transparent)}
 h2{font:800 clamp(1.6rem,4vw,2.6rem)/1.15 var(--disp);margin-bottom:18px}
-section>p{color:var(--mut);font-size:15.5px;line-height:1.85;max-width:660px}
+section>p{color:var(--mut);font-size:15.5px;line-height:1.85;max-width:680px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:44px}
 .f{position:relative;background:rgba(7,26,42,.5);border:1px solid rgba(0,232,208,.14);border-radius:20px;padding:26px;
   backdrop-filter:blur(12px);transition:.35s;overflow:hidden;opacity:0;transform:translateY(30px)}
@@ -84,21 +79,82 @@ section>p{color:var(--mut);font-size:15.5px;line-height:1.85;max-width:660px}
 .f .tag{display:inline-block;margin-top:14px;font:700 8.5px var(--mono);letter-spacing:.18em;color:var(--bio);
   border:1px solid rgba(110,242,192,.35);border-radius:99px;padding:4px 10px}
 .f .tag.warn{color:#ffc46b;border-color:rgba(255,196,107,.35)}
+.f .tag.vio{color:var(--vio);border-color:rgba(169,139,255,.4)}
 
-/* numbers strip */
-.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-top:44px}
-.n{text-align:center;padding:26px 10px;border-radius:18px;background:rgba(7,26,42,.4);border:1px solid rgba(0,232,208,.12)}
-.n b{display:block;font:800 2rem var(--disp)}
+/* pricing tiers */
+.tiers{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:44px}
+.tier{position:relative;background:rgba(7,26,42,.55);border:1px solid rgba(0,232,208,.16);border-radius:22px;padding:30px 26px;
+  backdrop-filter:blur(12px);transition:.35s;opacity:0;transform:translateY(30px)}
+.tier.in{opacity:1;transform:none;transition:opacity .8s,transform .8s cubic-bezier(.2,.8,.2,1)}
+.tier:hover{transform:translateY(-6px);border-color:rgba(0,232,208,.45);box-shadow:0 28px 70px -24px rgba(0,232,208,.35)}
+.tier.hot{border-color:rgba(169,139,255,.45)}
+.tier .tn{font:800 13px var(--disp);letter-spacing:.08em}
+.tier .tp{font:800 2rem var(--disp);margin:14px 0 2px}
+.tier .tp small{font:700 10px var(--mono);letter-spacing:.16em;color:var(--dim);display:block;margin-bottom:6px}
+.tier .tv{font:400 10px var(--mono);letter-spacing:.1em;color:var(--dim);margin-bottom:16px}
+.tier ul{list-style:none;padding:14px 0 0;margin:12px 0 0;border-top:1px solid rgba(120,180,200,.12);
+  display:flex;flex-direction:column;gap:9px}
+.tier li{font-size:12.5px;color:var(--mut);line-height:1.55;display:flex;gap:9px}
+.tier li::before{content:"◈";color:var(--aqua);flex:0 0 14px}
+.tier .go{margin-top:18px;width:100%;border:0;border-radius:99px;padding:13px;cursor:pointer;
+  font:700 10.5px var(--disp);letter-spacing:.28em;color:#01222b;
+  background:linear-gradient(100deg,var(--aqua),#4cdcff)}
+.tier.hot .go{background:linear-gradient(100deg,var(--vio),#4cdcff)}
+
+/* exclusive bot */
+.exwrap{border:1px solid rgba(169,139,255,.3);border-radius:26px;padding:44px 34px;margin-top:44px;
+  background:radial-gradient(80% 120% at 80% 0%,rgba(169,139,255,.1),transparent 60%),rgba(4,14,24,.6);backdrop-filter:blur(12px)}
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-top:32px}
+.n{text-align:center;padding:24px 10px;border-radius:18px;background:rgba(7,26,42,.4);border:1px solid rgba(0,232,208,.12)}
+.n b{display:block;font:800 1.9rem var(--disp)}
 .n span{font:400 10px var(--mono);letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
 .honest{margin-top:14px;font:400 10.5px var(--mono);color:var(--dim);letter-spacing:.06em}
 
-/* final cta */
-.final{text-align:center;padding:130px 26px 150px}
-.final h2{font-size:clamp(1.8rem,5vw,3.2rem)}
+/* ═══ INQUIRY FORM ═══ */
+.formwrap{border:1px solid rgba(0,232,208,.2);border-radius:26px;padding:40px 34px;margin-top:44px;
+  background:rgba(4,14,24,.65);backdrop-filter:blur(14px)}
+.flabel{font:700 9.5px var(--mono);letter-spacing:.3em;color:var(--dim);text-transform:uppercase;margin:26px 0 12px}
+.flabel:first-child{margin-top:0}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{font:700 10px var(--disp);letter-spacing:.12em;padding:12px 18px;border-radius:99px;cursor:pointer;
+  color:var(--mut);border:1px solid rgba(120,180,200,.25);background:rgba(7,26,42,.4);transition:.25s;user-select:none}
+.chip:hover{border-color:rgba(0,232,208,.45);color:var(--ink)}
+.chip.on{color:#01222b;background:linear-gradient(100deg,var(--aqua),#4cdcff);border-color:transparent;
+  box-shadow:0 10px 26px -10px rgba(0,232,208,.6)}
+.chip.vio.on{background:linear-gradient(100deg,var(--vio),#4cdcff)}
+.trow{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.topt{border:1px solid rgba(120,180,200,.22);border-radius:16px;padding:16px;cursor:pointer;transition:.25s;background:rgba(7,26,42,.35)}
+.topt:hover{border-color:rgba(0,232,208,.4)}
+.topt.on{border-color:var(--aqua);box-shadow:0 0 0 1px var(--aqua),0 14px 40px -16px rgba(0,232,208,.5)}
+.topt b{font:800 11px var(--disp);letter-spacing:.06em;display:block}
+.topt .p{font:800 1.1rem var(--disp);color:var(--aqua);margin-top:6px}
+.topt .s{font:400 9.5px var(--mono);letter-spacing:.08em;color:var(--dim);margin-top:4px;line-height:1.6}
+.fin{width:100%;background:rgba(4,16,26,.7);border:1px solid rgba(120,180,200,.22);border-radius:14px;color:var(--ink);
+  padding:14px 16px;font:500 14px var(--body);outline:none;transition:.25s}
+.fin:focus{border-color:var(--aqua);box-shadow:0 0 0 1px var(--aqua)}
+textarea.fin{min-height:110px;resize:vertical}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.frow{grid-template-columns:1fr}}
+.fup{border:1.5px dashed rgba(120,180,200,.3);border-radius:14px;padding:18px;text-align:center;cursor:pointer;transition:.25s;
+  font:400 12px var(--body);color:var(--mut)}
+.fup:hover{border-color:rgba(0,232,208,.5);color:var(--ink)}
+.fup.has{border-color:var(--aqua);color:var(--aqua)}
+.fsend{margin-top:26px;width:100%;border:0;border-radius:99px;padding:18px;cursor:pointer;
+  font:700 12px var(--disp);letter-spacing:.28em;color:#012;
+  background:linear-gradient(100deg,var(--aqua),var(--cyan) 55%,var(--vio));background-size:200% 100%;animation:flow 6s linear infinite}
+.fsend:hover{transform:translateY(-2px);box-shadow:0 18px 50px -12px rgba(0,232,208,.55)}
+.fsend:disabled{opacity:.5;cursor:wait;transform:none}
+.fmsg{margin-top:14px;font:700 10px var(--mono);letter-spacing:.2em;text-align:center;min-height:14px}
+.fmsg.ok{color:var(--bio)}.fmsg.err{color:#ff8f8f}
+.fdone{text-align:center;padding:40px 10px}
+.fdone .big{font:800 clamp(1.2rem,3vw,1.8rem) var(--disp);margin:16px 0 10px}
+.fdone p{color:var(--mut);font-size:14px;line-height:1.8}
+
+.final{text-align:center;padding:110px 26px 140px}
 footer{padding:40px 26px;text-align:center;font:400 10px var(--mono);letter-spacing:.2em;color:var(--dim);
   border-top:1px solid rgba(0,232,208,.08)}
 
-/* ═══ INTRO: the wave forges itself before the site breathes in ═══ */
+/* intro */
 #intro{position:fixed;inset:0;z-index:200;background:#01070d;display:flex;flex-direction:column;
   align-items:center;justify-content:center;gap:20px;transition:opacity .7s ease,visibility .7s}
 #intro.gone{opacity:0;visibility:hidden;pointer-events:none}
@@ -110,8 +166,8 @@ footer{padding:40px 26px;text-align:center;font:400 10px var(--mono);letter-spac
 @keyframes itin{to{opacity:.96;letter-spacing:.5em;text-indent:.5em}}
 #intro .is{font:400 9.5px var(--mono);letter-spacing:.4em;color:var(--dim);opacity:0;animation:itin .8s 1.15s ease forwards}
 body.introing{overflow:hidden}
-section,nav{opacity:0;transition:opacity .9s ease .1s}
-body.introdone section,body.introdone nav{opacity:1}
+section,nav,.final{opacity:0;transition:opacity .9s ease .1s}
+body.introdone section,body.introdone nav,body.introdone .final{opacity:1}
 </style>
 </head>
 <body>
@@ -123,78 +179,156 @@ body.introdone section,body.introdone nav{opacity:1}
       <stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/>
     </linearGradient></defs></svg>
   <div class="it">OFFSHORE STUDIOS</div>
-  <div class="is">YOUR UNIVERSES &middot; EVERY SYSTEM</div>
+  <div class="is">HIGH-END DIGITAL &middot; BUILT IN THE DEEP</div>
 </div>
 
 <div id="sky"></div><canvas id="stars"></canvas><canvas id="grain"></canvas>
 <div id="cring"></div><div id="cdot"></div>
 
 <nav>
-  <span class="brand"><svg width="30" height="16" viewBox="0 0 52 28"><polyline points="2,24 12,20 18,23 27,12 33,16 42,5 50,9" fill="none" stroke="url(#ng)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="ng" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/></linearGradient></defs></svg>OFFSHORE OS</span>
+  <span class="brand"><svg width="30" height="16" viewBox="0 0 52 28"><polyline points="2,24 12,20 18,23 27,12 33,16 42,5 50,9" fill="none" stroke="url(#ng)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="ng" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/></linearGradient></defs></svg>OFFSHORE STUDIOS</span>
   <span class="sp"></span>
-  <a class="pill" href="https://28payouts.github.io/livemind/">THE LIVE MIND</a>
-  <a class="pill solid" href="index.html">LAUNCH OS →</a>
+  <a class="pill" href="#start">START A PROJECT</a>
+  <a class="pill solid" href="index.html">CLIENT APP →</a>
 </nav>
 
 <div class="hero">
   <svg class="logo" viewBox="0 0 52 28"><polyline points="2,24 12,20 18,23 27,12 33,16 42,5 50,9" fill="none" stroke="url(#hg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="hg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/></linearGradient></defs></svg>
-  <div class="kick">Offshore Studios presents</div>
-  <h1>Your universes.<br><span class="grad">Every system.</span></h1>
-  <p>Every business you run with us becomes its own personalized universe — automated, augmented, AI-resident. Trading bots, websites &amp; marketing, online business ops: boot in, jump to hyperspace, and check on all of it from space.</p>
+  <div class="kick">Websites &middot; Client Universes &middot; Marketing &middot; AI &middot; Trading Intelligence</div>
+  <h1>Your business.<br><span class="grad">Its own universe.</span></h1>
+  <p>We build high-end digital for people who care how things feel. Jaw-dropping websites, marketing that moves, AI automation — and every client gets a personalized universe: a private command deck where you watch your project come to life and keep everything we ever ship you.</p>
   <div class="ctas">
-    <a class="cta main" href="index.html">ENTER THE UNIVERSE</a>
-    <a class="cta ghost" href="index.html">⬇ INSTALL THE APP</a>
+    <a class="cta main" href="#start">START YOUR PROJECT</a>
+    <a class="cta ghost" href="#offers">SEE WHAT WE BUILD</a>
   </div>
-  <div class="scrollhint">SCROLL · THE SYSTEMS AWAIT</div>
+  <div class="scrollhint">SCROLL · THE WORK SPEAKS</div>
 </div>
 
-<section>
-  <div class="eyebrow">The Universe</div>
-  <h2>Your empire, <span class="grad">seen from space.</span></h2>
-  <p>Every system is a living planet orbiting your core — shaded worlds with rings, atmospheres and moons. Your clients orbit as moons in their own colors. Spawn a project and watch a new planet ignite in real time.</p>
+<section id="offers">
+  <div class="eyebrow">What we build</div>
+  <h2>Five things. <span class="grad">Done properly.</span></h2>
+  <p>Everything we make is custom, real, and built to a standard most agencies don't attempt. No templates dressed up as design. No promises we can't keep.</p>
   <div class="grid">
-    <div class="f"><span class="ic">🚀</span><h3>Cinematic boot & hyperspace</h3><p>The OS wakes with a system-check sequence, then jumps through a star tunnel into your universe. Every module arrives out of warp.</p><span class="tag">LIVE</span></div>
-    <div class="f"><span class="ic">🪐</span><h3>Planets, not pages</h3><p>Hover a world and it wakes. Click and you jump in. Projects become planets, clients become moons — your business, made physical.</p><span class="tag">LIVE</span></div>
-    <div class="f"><span class="ic">⬡</span><h3>The Round Table</h3><p>Five AI minds — strategist, trader, market watcher, agency builder and the money mind — seated at one holographic table, debating how to grow your empire. Drop a topic and steer the council.</p><span class="tag">LIVE</span></div>
-    <div class="f"><span class="ic">✦</span><h3>Claude, resident</h3><p>An AI with a face — a breathing orb and voice waveform — wired into your systems, able to answer and to drive the entire OS for you.</p><span class="tag">LIVE</span></div>
+    <div class="f"><span class="ic">🪐</span><h3>Personalized Client Universes</h3><p>Every client gets their own universe inside our software — your logo and brand on the wall, your project's live progress, every deliverable kept forever, new offerings with live pricing, and a direct line to the team. Your business, made physical.</p><span class="tag">INCLUDED WITH EVERY PROJECT</span></div>
+    <div class="f"><span class="ic">🌊</span><h3>High-End Websites</h3><p>Real 3D, cinematic motion, custom everything — sites that feel like this one. We pull your brand into the build and make something people remember. See the tiers below.</p><span class="tag">FROM $1,500</span></div>
+    <div class="f"><span class="ic">📣</span><h3>Marketing &amp; Content</h3><p>Launch content, brand assets and campaigns that match the quality of the site they point at. Scoped per project alongside your build or as its own engagement.</p><span class="tag">SCOPED PER PROJECT</span></div>
+    <div class="f"><span class="ic">✳</span><h3>AI Automation</h3><p>Assistants and automations wired into your business — answering, organizing, operating. Built to be professional and invisible: your customers just see things working.</p><span class="tag">SCOPED PER PROJECT</span></div>
+    <div class="f"><span class="ic">〰</span><h3>Trading Intelligence</h3><p>An in-house algorithmic trading system with a ten-year verified record. Not a product on a shelf — access is by inquiry only.</p><span class="tag vio">EXCLUSIVE · INQUIRE</span></div>
   </div>
 </section>
 
-<section>
-  <div class="eyebrow">The Live Mind</div>
-  <h2>A trading intelligence with <span class="grad">a verified record.</span></h2>
-  <p>One bot, four engines across ES + NQ futures. Every trade in the record was replayed bar-by-bar against real market data. The rules are frozen — the simulator is earning its way to live capital through a strict performance gate.</p>
-  <div class="nums">
-    <div class="n"><b class="grad">$10.0M</b><span>backtested from $100k · 10y</span></div>
-    <div class="n"><b>57.3%</b><span>win rate · 4,267 trades</span></div>
-    <div class="n"><b>16.9%</b><span>max drawdown · never worse</span></div>
-    <div class="n"><b>2.00</b><span>profit factor</span></div>
+<section id="sites">
+  <div class="eyebrow">Websites</div>
+  <h2>Sites that feel <span class="grad">expensive to touch.</span></h2>
+  <p>Three ways in. Every quote is scoped to your project — starting prices below, final pricing varies with scope and ambition. Every tier includes your own client universe from day one.</p>
+  <div class="tiers">
+    <div class="tier">
+      <div class="tn">SIGNATURE SITE</div>
+      <div class="tp"><small>STARTING AT</small>$1,500</div>
+      <div class="tv">FINAL QUOTE SCOPED TO YOUR PROJECT</div>
+      <ul>
+        <li>Custom-designed site — no templates</li>
+        <li>Motion &amp; interaction pass on every page</li>
+        <li>Mobile-perfect, fast, deployed for you</li>
+        <li>Your personal client universe included</li>
+      </ul>
+      <button class="go" data-tier="Signature Site">START WITH SIGNATURE</button>
+    </div>
+    <div class="tier hot">
+      <div class="tn">FLAGSHIP EXPERIENCE</div>
+      <div class="tp"><small>STARTING AT</small>$5,000</div>
+      <div class="tv">FINAL QUOTE SCOPED TO YOUR PROJECT</div>
+      <ul>
+        <li>Full cinematic build — real 3D, custom art direction</li>
+        <li>The kind of site that becomes your best salesperson</li>
+        <li>Brand system, launch assets, the works</li>
+        <li>Priority line to the studio + client universe</li>
+      </ul>
+      <button class="go" data-tier="Flagship Experience">GO FLAGSHIP</button>
+    </div>
+    <div class="tier">
+      <div class="tn">CARE &amp; GROWTH</div>
+      <div class="tp"><small>STARTING AT</small>$250<span style="font:700 12px var(--mono)">/mo</span></div>
+      <div class="tv">FINAL QUOTE SCOPED TO YOUR NEEDS</div>
+      <ul>
+        <li>Updates, new sections, fresh content</li>
+        <li>Monitoring — your site never quietly breaks</li>
+        <li>New offerings appear in your universe with live pricing</li>
+        <li>Cancel anytime</li>
+      </ul>
+      <button class="go" data-tier="Care & Growth">ADD CARE &amp; GROWTH</button>
+    </div>
   </div>
-  <div class="honest">Backtested performance — verified bar-by-bar, and stated as a backtest, not live results. That honesty is the brand.</div>
 </section>
 
-<section>
-  <div class="eyebrow">Client Worlds</div>
-  <h2>Every client gets <span class="grad">their own world.</span></h2>
-  <p>Every client gets a personalized custom universe — one place where everything you do with us lives. Trading clients open their trading universe: the bot, the record, the gate. Website clients open their website universe: the build, the launch, the numbers. Automated, augmented and AI-focused — sign in, and your whole operation with Offshore is one screen away. Private by design: nobody sees anyone else's universe.</p>
-  <div class="grid">
-    <div class="f"><span class="ic">🎨</span><h3>Personal by default</h3><p>Portal color, greeting, status line and billing — set per client at onboarding. The app dresses itself in their identity.</p><span class="tag">LIVE</span></div>
-    <div class="f"><span class="ic">🔒</span><h3>Walled-off data</h3><p>Role-based access today; Supabase row-level security next — client data isolated at the database layer, encrypted passwords, signed sessions.</p><span class="tag warn">HARDENING</span></div>
-    <div class="f"><span class="ic">📲</span><h3>Real software</h3><p>Installs to the dock and home screen, opens fullscreen in its own window, works offline. One codebase, every device.</p><span class="tag">LIVE</span></div>
-    <div class="f"><span class="ic">🌌</span><h3>Everything we offer</h3><p>Trading bots with verified records · websites &amp; marketing that look like this one · AI automation for your business. Come for one universe, discover the galaxy.</p><span class="tag warn">EXPANDING</span></div>
+<section id="bot">
+  <div class="eyebrow">Trading Intelligence</div>
+  <h2>The Live Mind. <span class="grad">By invitation.</span></h2>
+  <div class="exwrap">
+    <p style="color:var(--mut);font-size:15.5px;line-height:1.85;max-width:680px">One bot, four engines across ES + NQ futures. Every trade in its record was replayed bar-by-bar against real market data, and its rules are frozen — it earns its way to live capital through a strict performance gate. This is not a product with a price tag. It's an in-house system we run ourselves, and access — in any form — starts with a conversation.</p>
+    <div class="nums">
+      <div class="n"><b class="grad">$10.0M</b><span>backtested from $100k · 10y</span></div>
+      <div class="n"><b>57.3%</b><span>win rate · 4,267 trades</span></div>
+      <div class="n"><b>16.9%</b><span>max drawdown · never worse</span></div>
+      <div class="n"><b>2.00</b><span>profit factor</span></div>
+    </div>
+    <div class="honest">Backtested performance — verified bar-by-bar and stated as a backtest, not live results. That honesty is the brand.</div>
+    <div style="margin-top:28px"><button class="cta ghost" id="botInq" style="border-color:rgba(169,139,255,.5);color:var(--vio)">INQUIRE ABOUT ACCESS →</button></div>
+  </div>
+</section>
+
+<section id="start">
+  <div class="eyebrow">Start your project</div>
+  <h2>Tell us what <span class="grad">you're building.</span></h2>
+  <p>Pick what you want, tell us about it, and it lands directly on our desk. We read everything and reply personally.</p>
+  <div class="formwrap" id="formwrap">
+    <div class="flabel">What do you want from us? — pick any</div>
+    <div class="chips" id="svcChips">
+      <span class="chip" data-v="High-End Website">HIGH-END WEBSITE</span>
+      <span class="chip" data-v="Client Universe / Dashboard">CLIENT UNIVERSE</span>
+      <span class="chip" data-v="Marketing & Content">MARKETING</span>
+      <span class="chip" data-v="AI Automation">AI AUTOMATION</span>
+      <span class="chip vio" data-v="Trading Intelligence (exclusive)">TRADING INTELLIGENCE</span>
+    </div>
+
+    <div class="flabel">Pick a starting tier — final pricing varies with scope</div>
+    <div class="trow" id="tierRow">
+      <div class="topt" data-v="Signature Site — starting at $1,500"><b>SIGNATURE SITE</b><div class="p">from $1,500</div><div class="s">custom site · motion pass · your universe included</div></div>
+      <div class="topt" data-v="Flagship Experience — starting at $5,000"><b>FLAGSHIP EXPERIENCE</b><div class="p">from $5,000</div><div class="s">full cinematic build · 3D · brand system</div></div>
+      <div class="topt" data-v="Care & Growth — starting at $250/mo"><b>CARE &amp; GROWTH</b><div class="p">from $250/mo</div><div class="s">updates · monitoring · new offerings live</div></div>
+      <div class="topt" data-v="Trading Intelligence — by inquiry"><b>TRADING INTELLIGENCE</b><div class="p">by inquiry</div><div class="s">exclusive · access starts with a conversation</div></div>
+      <div class="topt" data-v="Not sure yet — advise me"><b>NOT SURE YET</b><div class="p">advise me</div><div class="s">tell us the goal, we'll recommend the path</div></div>
+    </div>
+
+    <div class="flabel">Who are you?</div>
+    <div class="frow">
+      <input class="fin" id="inqName" placeholder="your name" autocomplete="name">
+      <input class="fin" id="inqEmail" type="email" placeholder="your email" autocomplete="email">
+    </div>
+    <div style="margin-top:12px"><input class="fin" id="inqBiz" placeholder="business / project name (optional)"></div>
+
+    <div class="flabel">Describe it</div>
+    <textarea class="fin" id="inqMsg" placeholder="what you're building, who it's for, what you want it to feel like…"></textarea>
+
+    <div class="flabel">Anything to show us? — logo, brand, current site, inspiration (optional, up to 8&nbsp;MB)</div>
+    <div class="fup" id="fup">DROP A FILE OR CLICK TO ATTACH</div>
+    <input type="file" id="inqFile" hidden>
+
+    <button class="fsend" id="inqSend">SEND IT TO THE STUDIO →</button>
+    <div class="fmsg" id="inqStat"></div>
   </div>
 </section>
 
 <div class="final">
-  <div class="eyebrow" style="justify-content:center">Ready?</div>
-  <h2>The universe is <span class="grad">open.</span></h2>
-  <p style="color:var(--mut);max-width:520px;margin:18px auto 0;line-height:1.8">Launch in the browser, or install it as an app and keep the whole Offshore world one click from your dock.</p>
+  <div class="eyebrow" style="justify-content:center">Already with us?</div>
+  <h2>Your universe is <span class="grad">waiting.</span></h2>
+  <p style="color:var(--mut);max-width:520px;margin:18px auto 0;line-height:1.8">Clients sign into the app to watch their project live, keep every deliverable, and reach the team directly.</p>
   <div class="ctas" style="animation:none;opacity:1">
-    <a class="cta main" href="index.html">LAUNCH OFFSHORE OS</a>
+    <a class="cta main" href="index.html">OPEN THE CLIENT APP</a>
   </div>
 </div>
 
-<footer>OFFSHORE STUDIOS · TRADING × DESIGN × AI · BUILT IN THE DEEP</footer>
+<footer>OFFSHORE STUDIOS · WEBSITES × UNIVERSES × MARKETING × AI × TRADING · BUILT IN THE DEEP</footer>
 
 <script>
 /* starfield */
@@ -217,19 +351,74 @@ setInterval(()=>{if(document.hidden)return;const d=tx.createImageData(128,128);
 const cd=document.getElementById('cdot'),cr=document.getElementById('cring');
 let mx=-99,my=-99,rx=-99,ry=-99;
 addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;cd.style.left=mx+'px';cd.style.top=my+'px';
-  const hot=!!e.target.closest('a,.f,button');cd.classList.toggle('hot',hot);cr.classList.toggle('hot',hot);},{passive:true});
+  const hot=!!e.target.closest('a,.f,button,.chip,.topt,.tier,.fup,input,textarea');cd.classList.toggle('hot',hot);cr.classList.toggle('hot',hot);},{passive:true});
 (function rl(){requestAnimationFrame(rl);rx+=(mx-rx)*.16;ry+=(my-ry)*.16;cr.style.left=rx+'px';cr.style.top=ry+'px'})();
-/* scroll reveals */
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.15});
-document.querySelectorAll('.f').forEach(f=>io.observe(f));
-
-/* intro sequence: draw the wave, then hand the site over */
+/* reveals */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.12});
+document.querySelectorAll('.f,.tier').forEach(f=>io.observe(f));
+/* intro */
 document.body.classList.add('introing');
 setTimeout(()=>{const i=document.getElementById('intro');i.classList.add('gone');
   document.body.classList.remove('introing');document.body.classList.add('introdone');
   setTimeout(()=>i.remove(),800);},2050);
 document.getElementById('intro').addEventListener('click',()=>{const i=document.getElementById('intro');
   i.classList.add('gone');document.body.classList.remove('introing');document.body.classList.add('introdone');});
+
+/* ═══ INQUIRY FORM → Supabase (publishable key — safe to ship) ═══ */
+const SUPA="https://jbqxbpletvoocxiizwdy.supabase.co";
+const SKEY="sb_publishable_JLAY2oACx0ZqUHcrFTVjKg_iAZ6xlzH";
+const $=id=>document.getElementById(id);
+/* service chips (multi) */
+document.getElementById('svcChips').addEventListener('click',e=>{
+  const c=e.target.closest('.chip');if(c)c.classList.toggle('on');});
+/* tier options (single) */
+document.getElementById('tierRow').addEventListener('click',e=>{
+  const o=e.target.closest('.topt');if(!o)return;
+  document.querySelectorAll('.topt').forEach(x=>x.classList.toggle('on',x===o));});
+/* tier buttons + bot inquire preselect + scroll */
+document.querySelectorAll('.tier .go').forEach(b=>b.onclick=()=>{
+  const t=b.dataset.tier;
+  document.querySelectorAll('.topt').forEach(x=>x.classList.toggle('on',x.dataset.v.startsWith(t)));
+  location.hash='#start';});
+document.getElementById('botInq').onclick=()=>{
+  document.querySelectorAll('#svcChips .chip').forEach(c=>{if(c.dataset.v.startsWith('Trading'))c.classList.add('on');});
+  document.querySelectorAll('.topt').forEach(x=>x.classList.toggle('on',x.dataset.v.startsWith('Trading')));
+  location.hash='#start';};
+/* file attach */
+const fup=$('fup'),ff=$('inqFile');
+fup.onclick=()=>ff.click();
+ff.onchange=()=>{if(ff.files[0]){
+  if(ff.files[0].size>8*1024*1024){fup.textContent='FILE TOO BIG — 8 MB MAX';fup.classList.remove('has');ff.value='';return;}
+  fup.textContent='ATTACHED · '+ff.files[0].name;fup.classList.add('has');}};
+/* submit */
+$('inqSend').onclick=async()=>{
+  const stat=$('inqStat');stat.className='fmsg';
+  const services=[...document.querySelectorAll('#svcChips .chip.on')].map(c=>c.dataset.v);
+  const tierEl=document.querySelector('.topt.on');
+  const name=$('inqName').value.trim(),email=$('inqEmail').value.trim(),msg=$('inqMsg').value.trim();
+  if(!name||!email){stat.className='fmsg err';stat.textContent='NAME + EMAIL NEEDED SO WE CAN REPLY';return;}
+  if(!services.length){stat.className='fmsg err';stat.textContent='PICK AT LEAST ONE THING YOU WANT';return;}
+  const btn=$('inqSend');btn.disabled=true;stat.textContent='SENDING…';
+  let file_url=null;
+  try{
+    if(ff.files[0]){
+      const f=ff.files[0];
+      const path=`inq_${Date.now()}_${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+      const up=await fetch(`${SUPA}/storage/v1/object/inquiries/${path}`,{method:'POST',
+        headers:{apikey:SKEY,Authorization:'Bearer '+SKEY,'content-type':f.type||'application/octet-stream'},body:f});
+      if(up.ok)file_url=`${SUPA}/storage/v1/object/public/inquiries/${path}`;
+    }
+    const biz=$('inqBiz').value.trim();
+    const r=await fetch(`${SUPA}/rest/v1/inquiries`,{method:'POST',
+      headers:{apikey:SKEY,Authorization:'Bearer '+SKEY,'content-type':'application/json',Prefer:'return=minimal'},
+      body:JSON.stringify({name,email,business:biz||null,services,tier:tierEl?tierEl.dataset.v:null,message:msg||null,file_url})});
+    if(!r.ok)throw new Error('send failed');
+    document.getElementById('formwrap').innerHTML=`<div class="fdone">
+      <svg width="120" viewBox="0 0 52 28" fill="none"><polyline points="2,24 12,20 18,23 27,12 33,16 42,5 50,9" stroke="url(#dg)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="dg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/></linearGradient></defs></svg>
+      <div class="big">It's on our desk.</div>
+      <p>We read every inquiry personally and we'll reply to <b style="color:var(--aqua)">${email}</b>.<br>When your project starts, your own universe comes with it.</p></div>`;
+  }catch(e){btn.disabled=false;stat.className='fmsg err';stat.textContent='SOMETHING HICCUPED — TRY AGAIN IN A MOMENT';}
+};
 </script>
 </body>
 </html>

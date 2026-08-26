@@ -28,6 +28,7 @@ window.OS_CONFIG = {
     { id: "academy",  label: "Harmonic Projects", icon: "✺", roles: ["admin"], galaxy: "harmonic" },
     { id: "clients",  label: "Clients",          icon: "❖", roles: ["admin"], galaxy: "offshore" },
     { id: "agency",   label: "Studios Agency",   icon: "◍", roles: ["admin","agency"], galaxy: "offshore" },
+    { id: "showcase", label: "What We Offer",    icon: "✧", roles: ["guest","admin"], galaxy: "offshore" },
     { id: "agents",   label: "AI & Agents",      icon: "✳", roles: ["admin"], galaxy: "harmonic" }
   ],
 
