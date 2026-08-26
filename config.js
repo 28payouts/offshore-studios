@@ -8,15 +8,10 @@ window.OS_CONFIG = {
   SUPABASE_URL: "https://jbqxbpletvoocxiizwdy.supabase.co",
   SUPABASE_ANON_KEY: "sb_publishable_JLAY2oACx0ZqUHcrFTVjKg_iAZ6xlzH",
 
-  /* LOCAL MODE identities (demo only — replaced by real accounts once Supabase is on)
-     gals: which universes an account can enter. Mr John is Harmonic-only —
-     Offshore Studios (agency, clients, web work) is Riley's personal world. */
-  LOCAL_USERS: [
-    { email: "riley@offshore",  pass: "OFFSHORE", role: "admin",   name: "Riley",  gals: ["harmonic", "offshore"] },
-    { email: "john@offshore",   pass: "OFFSHORE", role: "admin",   name: "Mr John", gals: ["harmonic"] },
-    { email: "trader@offshore", pass: "DEMO",     role: "trading", name: "Trading Client" },
-    { email: "client@offshore", pass: "DEMO",     role: "agency",  name: "Agency Client" }
-  ],
+  /* Demo identities RETIRED 25 Aug 2026 — real Supabase accounts confirmed working.
+     The only doors in: Supabase Auth (admins + future client accounts) and
+     locally-onboarded client records from ❖ Clients. */
+  LOCAL_USERS: [],
 
   /* Module registry — each module registers itself; roles control visibility.
      galaxy: which work-life a module lives in — "harmonic", "offshore" or "both". */

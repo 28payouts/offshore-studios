@@ -1,15 +1,43 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
     <linearGradient id="g" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0" stop-color="#00e8d0"/><stop offset="1" stop-color="#a98bff"/>
+      <stop offset="0" stop-color="#00e8d0"/><stop offset=".55" stop-color="#4cdcff"/><stop offset="1" stop-color="#a98bff"/>
     </linearGradient>
-    <radialGradient id="glow" cx=".5" cy=".5" r=".5">
-      <stop offset="0" stop-color="#00e8d0" stop-opacity=".28"/><stop offset="1" stop-color="#00e8d0" stop-opacity="0"/>
+    <radialGradient id="neb1" cx=".22" cy=".18" r=".7">
+      <stop offset="0" stop-color="#00e8d0" stop-opacity=".22"/><stop offset="1" stop-color="#00e8d0" stop-opacity="0"/>
     </radialGradient>
+    <radialGradient id="neb2" cx=".85" cy=".85" r=".75">
+      <stop offset="0" stop-color="#a98bff" stop-opacity=".25"/><stop offset="1" stop-color="#a98bff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="core" cx=".5" cy=".46" r=".55">
+      <stop offset="0" stop-color="#062033" stop-opacity="1"/><stop offset="1" stop-color="#01070d" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="pulse" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#eafcff" stop-opacity=".95"/><stop offset=".4" stop-color="#00e8d0" stop-opacity=".5"/><stop offset="1" stop-color="#00e8d0" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
   </defs>
   <rect width="512" height="512" rx="112" fill="#01070d"/>
-  <circle cx="256" cy="256" r="230" fill="url(#glow)"/>
-  <polyline points="96,340 175,308 222,332 293,244 340,276 411,190 462,222"
-    fill="none" stroke="url(#g)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"
-    transform="translate(-23,10)"/>
+  <rect width="512" height="512" rx="112" fill="url(#core)"/>
+  <rect width="512" height="512" rx="112" fill="url(#neb1)"/>
+  <rect width="512" height="512" rx="112" fill="url(#neb2)"/>
+  <g fill="#eafcff">
+    <circle cx="112" cy="120" r="4" opacity=".55"/>
+    <circle cx="404" cy="96" r="3" opacity=".4"/>
+    <circle cx="452" cy="332" r="3.4" opacity=".45"/>
+    <circle cx="88" cy="404" r="2.6" opacity=".35"/>
+    <circle cx="330" cy="132" r="2.4" opacity=".3"/>
+    <circle cx="164" cy="196" r="2" opacity=".25"/>
+    <circle cx="256" cy="452" r="2.8" opacity=".3"/>
+  </g>
+  <polyline points="73,350 152,318 199,342 270,254 317,286 388,200 439,232"
+    fill="none" stroke="url(#g)" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"
+    opacity=".55" filter="url(#soft)"/>
+  <polyline points="73,350 152,318 199,342 270,254 317,286 388,200 439,232"
+    fill="none" stroke="url(#g)" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="388" cy="200" r="52" fill="url(#pulse)"/>
+  <circle cx="388" cy="200" r="11" fill="#eafcff"/>
+  <rect x="6" y="6" width="500" height="500" rx="106" fill="none" stroke="url(#g)" stroke-width="3" opacity=".35"/>
 </svg>

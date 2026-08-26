@@ -175,9 +175,17 @@
 
   /* dim overlay element + rail hover wiring (survives rebuilds via delegation) */
   const dim = document.createElement("div"); dim.id = "raildim"; document.body.appendChild(dim);
+  /* click a page → release the focus dim instantly so the app is usable;
+     the dim only returns after the pointer leaves the dock and comes back */
+  let dimSuppressed = false;
   document.addEventListener("mouseover", e => {
-    document.body.classList.toggle("railhov", !!e.target.closest("#rail"));
+    const inRail = !!e.target.closest("#rail");
+    if (!inRail) dimSuppressed = false;
+    document.body.classList.toggle("railhov", inRail && !dimSuppressed);
   }, { passive: true });
+  document.addEventListener("click", e => {
+    if (e.target.closest("#rail")) { dimSuppressed = true; document.body.classList.remove("railhov"); }
+  }, true);
 
   /* warp brand overlay — rides on top of boot.js's hyperspace canvas */
   const warpObs = new MutationObserver(ms => ms.forEach(m => {

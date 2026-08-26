@@ -1,7 +1,7 @@
 {
-  "name": "Offshore OS",
-  "short_name": "Offshore",
-  "description": "A living world — every Offshore system in one place. Trading, agency, clients, council.",
+  "name": "OFFSHORE STUDIOS — Offshore OS",
+  "short_name": "OFFSHORE STUDIOS",
+  "description": "OFFSHORE OS — every universe in one command deck. Trading, agency, clients, council. Personalized to whoever signs in.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -9,6 +9,7 @@
   "background_color": "#01070d",
   "theme_color": "#01070d",
   "icons": [
-    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ]
 }
