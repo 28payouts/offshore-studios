@@ -30,6 +30,9 @@ window.OS_CONFIG = {
     { id: "claude",   label: "Claude",           icon: "✦", roles: ["admin","trading","agency"], galaxy: "both" },
     { id: "table",    label: "Round Table",      icon: "⬡", roles: ["admin"], galaxy: "offshore" },
     { id: "livemind", label: "The Live Mind",    icon: "〰", roles: ["admin","trading"], galaxy: "harmonic" },
+    /* The trading record. Same page for Riley, Mr John and trading clients —
+       there is only one bot, so there is only one truth about it. */
+    { id: "perf",     label: "Performance Lab",  icon: "◎", roles: ["admin","trading"], galaxy: "harmonic" },
     { id: "botlab",   label: "The Bot Lab",      icon: "⚗", roles: ["admin"], galaxy: "harmonic" },
     { id: "academy",  label: "Harmonic Projects", icon: "✺", roles: ["admin"], galaxy: "harmonic" },
     { id: "clients",  label: "Clients",          icon: "❖", roles: ["admin"], galaxy: "offshore" },
