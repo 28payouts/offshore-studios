@@ -7,7 +7,7 @@ OS.register({
   _timers: [],
   mount(el, user) {
     const L = window.OS_CONFIG.LINKS;
-    const V = { final: "$10,015,774", wr: "56.2%", pf: "1.66", dd: "16.9%", cagr: "28.5%", trades: "6,164" };
+    const V = { final: "$10,015,774", wr: "57.3%", pf: "2.00", dd: "16.9%", cagr: "58.0%", trades: "4,267" };
     el.innerHTML = `
     <div class="mhead reveal">
       <div class="eyebrow">The Live Mind · ${user.role === "admin" ? "master view" : user.name}</div>
@@ -15,9 +15,9 @@ OS.register({
       <p class="sub">One bot, four engines across ES + NQ. Rules frozen 27 Jul 2026 — the simulator is earning its way to real capital.</p>
     </div>
     <div class="cards">
-      <div class="card reveal"><div class="stat"><div class="k">Backtested · 18y</div><div class="v pos">${V.final}</div><div class="s">$100k start · every trade verified</div></div></div>
+      <div class="card reveal"><div class="stat"><div class="k">Backtested · 10y</div><div class="v pos">${V.final}</div><div class="s">$100k start · every trade verified</div></div></div>
       <div class="card reveal"><div class="stat"><div class="k">Win rate</div><div class="v">${V.wr}</div><div class="s">${V.trades} trades · PF ${V.pf}</div></div></div>
-      <div class="card reveal"><div class="stat"><div class="k">Max drawdown</div><div class="v wc">${V.dd}</div><div class="s">never worse, eighteen years</div></div></div>
+      <div class="card reveal"><div class="stat"><div class="k">Max drawdown</div><div class="v wc">${V.dd}</div><div class="s">never worse, ten years</div></div></div>
       <div class="card reveal"><div class="stat"><div class="k">Sim gate</div><div class="v aq">0 / 60</div><div class="s">winner-capture unlocks live capital</div></div></div>
     </div>
     <div class="card reveal" style="margin-top:13px;padding:0;overflow:hidden">
@@ -117,7 +117,7 @@ OS.register({
     /* ── engine constellation ── */
     const ENG = [
       { n: "E1", sub: "FOUNDATION · ES", pf: "PF 1.53", col: "#a98bff" },
-      { n: "E2", sub: "NARRATIVE · NQ", pf: "PF 1.68", col: "#4cdcff" },
+      { n: "E2", sub: "NARRATIVE · NQ", pf: "PF 1.59", col: "#4cdcff" },
       { n: "E3", sub: "CROSSOVER · NQ", pf: "PF 1.96", col: "#00e8d0" },
       { n: "E4", sub: "MIRROR · ES", pf: "PF 1.50", col: "#6ef2c0" }
     ];
