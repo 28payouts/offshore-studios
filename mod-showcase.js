@@ -23,8 +23,8 @@ OS.register({
         d: "Assistants and automations wired into your business — answering, organizing, operating. Professional and invisible: your customers just see things working.",
         pts: ["Wired into your real workflows", "Professional, invisible, reliable", "Grows with your business"] },
       { ic: "〰", n: "Trading Intelligence", tag: "EXCLUSIVE · BY INQUIRY", tc: "warn",
-        d: "An in-house algorithmic trading system with a ten-year verified record. Not a product on a shelf — access, in any form, starts with a conversation.",
-        pts: ["$100k → $10.0M backtested over 10 years", "57.3% win rate · 4,267 trades · PF 2.00", "Max drawdown 16.9% — never worse", "Verified bar-by-bar · stated as a backtest, honestly"] }
+        d: "An in-house algorithmic trading system with a eighteen-year verified record. Not a product on a shelf — access, in any form, starts with a conversation.",
+        pts: ["$100k → $10.02M backtested over 18 years", "56.2% win rate · 6,164 trades · PF 1.66", "Max drawdown 16.9% — never worse", "Verified bar-by-bar · stated as a backtest, honestly"] }
     ];
     const TIERS = [
       ["SIGNATURE SITE", "from $2,500", "custom site · motion pass · your universe included"],

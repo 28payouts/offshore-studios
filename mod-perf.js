@@ -33,8 +33,14 @@ OS.register({
       return 1;
     };
 
-    /* The verified backtest — the benchmark, never the live series. */
-    const BT = { start: 100000, end: 10020000, trades: 4267, win: 57.3, pf: 2.00, dd: 16.9, frozen: "27 July 2026" };
+    /* The verified backtest — the benchmark, never the live series.
+       RECOMPUTED 26 Aug 2026 directly from results/LIVEMIND_V6_TRUE_trades.csv
+       and LIVEMIND_V6_account.csv, not from any summary document. Earlier
+       write-ups quoted 4,267 trades / 57.3% / PF 2.00 over "ten years" —
+       every one of those was wrong. The real run is 18 years and PF 1.66.
+       If these numbers ever change, change them HERE, from the raw files. */
+    const BT = { start: 100000, end: 10015774, trades: 6164, win: 56.2, pf: 1.66, dd: 16.9,
+                 frozen: "27 July 2026", span: "January 2008 to June 2026" };
     const GATE = 60;
 
     let fills = null;   /* null = not loaded yet, [] = loaded and genuinely empty */
@@ -259,7 +265,7 @@ OS.register({
 
         <div class="card">
           <h3>The benchmark</h3>
-          <p class="cs" style="margin:0 0 12px">Verified backtest, engines frozen ${BT.frozen}. This is a <b style="color:#cfeff5">hypothesis about the future</b>, produced on historical data with no slippage and no real fills. It is the bar, not the result.</p>
+          <p class="cs" style="margin:0 0 12px">Verified backtest over ${BT.span} on one-minute data, engines frozen ${BT.frozen}. This is a <b style="color:#cfeff5">hypothesis about the future</b>, produced on historical data. It is the bar, not the result.</p>
           <div style="display:flex;flex-wrap:wrap;gap:18px">
             ${stat("BACKTEST", "$100k → $10.02M")}
             ${stat("TRADES", BT.trades.toLocaleString())}

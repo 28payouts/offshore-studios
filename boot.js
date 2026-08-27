@@ -291,7 +291,7 @@
     const agencyN = clients.filter(c => c.role === "agency").length;
     const BRIEF = {
       harmonic: [
-        ["〰", "The Live Mind", "frozen 27 Jul · backtested $10.0M / 10y · sim gate 0/60"],
+        ["〰", "The Live Mind", "frozen 27 Jul · backtested $10.02M / 18y · sim gate 0/60"],
         ["◎", "Sim connection", "awaiting TradingView webhook plan — then real fills light the desk"],
         ["✺", "Harmonic Academy", "LIVE · harmonic-academy.netlify.app"],
         ["✳", "AI & Agents", "constellation online"],
