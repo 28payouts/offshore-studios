@@ -66,7 +66,7 @@ OS.register({
     }[SCOPE];
 
     /* the honesty rules every posture inherits */
-    const LAW = " ABSOLUTE RULES: the $100k→$10,015,774 figure is a VERIFIED BACKTEST over 10 years, never live money — always say backtest. There are ZERO live fills; the sim gate stands at 0/60 and must pass before real capital. Never invent a number, a fill, a date or a client. If you do not know, say so.";
+    const LAW = " ABSOLUTE RULES: the $100k→$3,427,531 figure is a VERIFIED BACKTEST over 10 years, never live money — always say backtest. There are ZERO live fills; the sim gate stands at 0/60 and must pass before real capital. Never invent a number, a fill, a date or a client. If you do not know, say so.";
 
     let chat = OS.store.get("claude_chat_" + SCOPE, []);
     let busy = false;
@@ -79,8 +79,8 @@ OS.register({
         user: user.name, role: user.role,
         ny: `${n.wd} ${String(n.h).padStart(2, "0")}:${String(n.m).padStart(2, "0")} NY`,
         mind: live ? "HUNTING (inside a live session window)" : "STANDING BY (outside session windows)",
-        record: "$100k→$10,015,774 backtested over 10y · 4,267 trades · 57.3% win rate · PF 2.00 · max drawdown 16.9% · rules frozen 27 Jul 2026 · sim gate 0/60 · zero live fills",
-        engines: "four engines: E1 foundation ES (PF 1.53), E2 narrative NQ (1.59), E3 crossover NQ (1.96), E4 mirror ES (1.50)",
+        record: "$100k→$3,427,531 backtested over 10y · 1,845 trades · 59.7% win rate · PF 1.50 · max drawdown 19.9% · rules audited+frozen 28 Aug 2026 · sim gate 0/60 · zero live fills",
+        engines: "three session legs: ES morning ex-Friday (PF 1.26), NQ morning (PF 1.18), NQ afternoon sniper (PF 1.43)",
         harmonic: "Harmonic Academy is live and shipped; the Live Mind has 18 versions on file, current build v6"
       };
       if (SCOPE === "owner") {
@@ -279,11 +279,11 @@ OS.register({
 
       if (SCOPE === "principal") {
         if (s.includes("bot") || s.includes("mind") || s.includes("status") || s.includes("stand"))
-          return `The Live Mind is ${c.mind.toLowerCase()} as of ${c.ny}. The rules have been frozen since 27 July 2026 and the verified backtest stands at $100k→$10.02M over ten years — 4,267 trades, 57.3% win rate, profit factor 2.00, worst drawdown 16.9%. No live fills yet: the sim gate is at 0 of 60. [go:livemind]`;
+          return `The Live Mind is ${c.mind.toLowerCase()} as of ${c.ny}. The rules have been audited and frozen since 28 August 2026 and the verified backtest stands at $100k→$3.43M over ten years — 1,845 trades, 59.7% win rate, profit factor 1.50, worst drawdown 19.9%. No live fills yet: the sim gate is at 0 of 60. [go:livemind]`;
         if (s.includes("record") || s.includes("prove") || s.includes("real"))
-          return `What it proves: the logic survived ten years of real one-minute data bar-by-bar, including 2020 and 2022, with a 2.00 profit factor. What it does not prove: live execution — no slippage, no real fills, no live spread. That gap is exactly what the 0/60 sim gate exists to close before any capital is committed.`;
+          return `What it proves: the logic survived ten years of real one-minute data bar-by-bar, including 2020 and 2022, with a 1.50 profit factor. What it does not prove: live execution — no slippage, no real fills, no live spread. That gap is exactly what the 0/60 sim gate exists to close before any capital is committed.`;
         if (s.includes("live") || s.includes("money") || s.includes("before"))
-          return `Three steps, in order. First the TradingView webhook connects so trades are logged automatically. Then sixty verified simulated trades are compared against the 57.3% record. Only if that holds does the smallest possible live size go in, with the rules unchanged.`;
+          return `Three steps, in order. First the TradingView webhook connects so trades are logged automatically. Then sixty verified simulated trades are compared against the 59.7% record. Only if that holds does the smallest possible live size go in, with the rules unchanged.`;
         if (s.includes("build") || s.includes("progress") || s.includes("next"))
           return `Currently in build: the Bot Lab — a dedicated improvement desk with every statistic and a working council reviewing the engines — and Harmonic Projects, which now carries the full 18-version build lineage. Harmonic Academy is live. [go:botlab]`;
         if (s.includes("client") || s.includes("offshore") || s.includes("agency"))
@@ -297,7 +297,7 @@ OS.register({
         if (s.includes("status") || s.includes("now"))
           return `Currently ${c.mind.toLowerCase()} — ${c.ny}. No live positions: the system is still in its verification stage before any capital is committed.`;
         if (s.includes("record") || s.includes("result") || s.includes("perform"))
-          return `The verified backtest covers ten years: 4,267 trades, 57.3% winners, profit factor 2.00, worst drawdown 16.9%. Important: that is historical testing, not live trading results. Live performance is expected to run below backtest.`;
+          return `The verified backtest covers ten years: 1,845 trades, 59.7% winners, profit factor 1.50, worst drawdown 19.9%. Important: that is historical testing, not live trading results. Live performance is expected to run below backtest.`;
         return `I can walk you through how your system works, where it stands today, and what the testing record shows. Ask away.`;
       }
 
@@ -311,11 +311,11 @@ OS.register({
 
       /* owner */
       if (/^(hi|hey|hello|yo|sup)\b/.test(s)) return pick([`${c.user}. Systems green, ${c.ny}. The Mind is ${c.mind.toLowerCase().split(" (")[0]}. What are we building?`, `Right on time, ${c.user}. Dashboard's warm. Where to?`]);
-      if (s.includes("how") && (s.includes("bot") || s.includes("mind") || s.includes("doing"))) return `She's ${c.mind.toLowerCase().split(" (")[0]} right now — ${c.ny}. Frozen record: $10.02M backtested, 57.3% win, gate at 0/60. Nothing moves until the gate earns it. [go:livemind]`;
+      if (s.includes("how") && (s.includes("bot") || s.includes("mind") || s.includes("doing"))) return `She's ${c.mind.toLowerCase().split(" (")[0]} right now — ${c.ny}. Frozen record: $3.43M backtested, 59.7% win, gate at 0/60. Nothing moves until the gate earns it. [go:livemind]`;
       if (s.includes("client")) { const n = OS.store.get("clients", []).length; return n ? `You're running ${n} portal${n > 1 ? "s" : ""}: ${c.clients}. [go:clients]` : `Empty book so far — every client gets their own private world. [go:clients]`; }
       if (s.includes("brief")) return `${c.ny}. Live Mind: ${c.mind.toLowerCase()}. Record intact, gate 0/60, rules frozen. Clients: ${c.clients}. My advice: one thing done completely beats five started.`;
       if (s.includes("next") || s.includes("build")) return `Priority stack: ① the relay so John and clients get real Claude without touching the key, ② TradingView webhook → the gate starts counting, ③ Supabase → real accounts. The relay and the webhook are the same Worker.`;
-      if (/(joke|funny)/.test(s)) return pick([`A trader walks into a bar. Sets a stop at the door. Smartest thing done in that bar all night.`, `I'd tell you a drawdown joke but you'd only get 16.9% of it.`]);
+      if (/(joke|funny)/.test(s)) return pick([`A trader walks into a bar. Sets a stop at the door. Smartest thing done in that bar all night.`, `I'd tell you a drawdown joke but you'd only get 19.9% of it.`]);
       return pick([`On rails I cover the bot, clients, roadmap and briefing. Key's in ⚙ BRAIN SETTINGS for the unrestricted me.`, `Scripted me has limits — bot, clients, roadmap, briefing. Real me is one key away.`]);
     }
 

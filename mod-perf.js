@@ -33,15 +33,14 @@ OS.register({
       return 1;
     };
 
-    /* The verified backtest — the benchmark, never the live series.
-       VERIFIED 26 Aug 2026 against results/LIVEMIND_V6_account.csv: 4,267 trades,
-       57.3% win, dollar profit factor 2.00, max drawdown 16.9%, $100k to
-       $10,015,774 from 1 June 2016 — 10.01 years, CAGR 58.4%. These are correct.
-       NOTE for anyone tempted to "fix" them from the raw signal file: that file
-       (LIVEMIND_V6_TRUE_trades.csv) runs from 2008 and holds 6,164 signals at a
-       1.66 R-multiple profit factor. That is the UNSIZED signal set, not the
-       account. Different thing. The headline describes the account. */
-    const BT = { start: 100000, end: 10020000, trades: 4267, win: 57.3, pf: 2.00, dd: 16.9, frozen: "27 July 2026" };
+    /* The benchmark — THE LIVE MIND v1.3, the leak-audited honest record.
+       Built 27-28 Aug 2026: look-ahead leaks removed and guarded (leak_guard v2),
+       realistic fill-through entries, IS/OOS-validated config, pyramid sizing,
+       full protection stack. Three legs: ES AM ex-Friday, NQ AM, NQ PM sniper.
+       Provenance: LOOKAHEAD_AUDIT_2026-08-27.md + results/LIVEMIND_v13_SPEC.json
+       in the bot repository — every number regenerable from raw 1-minute data. */
+    const BT = { start: 100000, end: 3427531, trades: 1845, win: 59.7, pf: 1.50, dd: 19.9,
+                 frozen: "28 August 2026", span: "June 2016 to March 2026" };
     const GATE = 60;
 
     let fills = null;   /* null = not loaded yet, [] = loaded and genuinely empty */
@@ -266,9 +265,9 @@ OS.register({
 
         <div class="card">
           <h3>The benchmark</h3>
-          <p class="cs" style="margin:0 0 12px">Verified backtest, engines frozen ${BT.frozen}. This is a <b style="color:#cfeff5">hypothesis about the future</b>, produced on historical data with no slippage and no real fills. It is the bar, not the result.</p>
+          <p class="cs" style="margin:0 0 12px">LIVE MIND v1.3, audited and frozen ${BT.frozen}, over ${BT.span}. This is a <b style="color:#cfeff5">hypothesis about the future</b>, produced on historical data with no slippage and no real fills. It is the bar, not the result.</p>
           <div style="display:flex;flex-wrap:wrap;gap:18px">
-            ${stat("BACKTEST", "$100k → $10.02M")}
+            ${stat("BACKTEST", "$100k → $3.43M")}
             ${stat("TRADES", BT.trades.toLocaleString())}
             ${stat("WIN RATE", BT.win + "%")}
             ${stat("PROFIT FACTOR", BT.pf.toFixed(2))}

@@ -49,8 +49,8 @@ OS.register({
         stats: [], learned: "The edge travelled. That justified building the crossover engine (E3)." },
       { v: "V5 master build", f: "V5_MASTER_BUILD.md · v5_edge_miner.py · v5_exit_opt.py", tag: "OPTIMISED", note: "Three OOS-validated finalists from identical entries: RETURN, QUALITY, SMOOTH.",
         stats: [], learned: "Same entries, different exits, very different outcomes. Exits are their own edge." },
-      { v: "LIVE MIND v6", f: "frozen 27 Jul 2026", tag: "CURRENT · FROZEN", note: "One machine, four engines. The build everything else fed into.",
-        stats: [["10y result", "$100k → $10,015,774"], ["Trades", "4,267"], ["Win rate", "57.3%"], ["Profit factor", "2.00"], ["Max DD", "16.9%"], ["CAGR", "58%"]],
+      { v: "LIVE MIND v6", f: "audited+frozen 28 Aug 2026", tag: "CURRENT · FROZEN", note: "One machine, four engines. The build everything else fed into.",
+        stats: [["10y result", "$100k → $3,427,531"], ["Trades", "1,845"], ["Win rate", "59.7%"], ["Profit factor", "1.50"], ["Max DD", "19.9%"], ["CAGR", "43.9%"]],
         learned: "Frozen rules, versioned changes, and a 0/60 sim gate before a dollar goes live." }
     ];
 
@@ -66,7 +66,7 @@ OS.register({
       { key: "livemind", name: "THE LIVE MIND", sub: "trading bot · " + LINEAGE.length + " versions built", accent: "#00e8d0", art: ART.livemind,
         chip: ["FROZEN 27 JUL", "ok"], brief: [
           ["◈", "Current build", "v6 — one machine, four engines"],
-          ["◈", "Verified record", "$100k → $10.02M / 10y backtest"],
+          ["◈", "Verified record", "$100k → $3.43M / 10y backtest"],
           ["◈", "Versions shipped", LINEAGE.length + " distinct builds, all on file"],
           ["◈", "Live status", "sim gate 0/60 — awaiting TradingView webhook"]
         ] },
@@ -152,8 +152,8 @@ OS.register({
 
       <div class="cards reveal">
         <div class="card"><div class="stat"><div class="k">Versions built</div><div class="v aq">${LINEAGE.length}</div><div class="s">every one on file, none discarded from the record</div></div></div>
-        <div class="card"><div class="stat"><div class="k">Current build</div><div class="v">v6</div><div class="s">four engines · frozen 27 Jul 2026</div></div></div>
-        <div class="card"><div class="stat"><div class="k">Verified 10y</div><div class="v pos">$10.02M</div><div class="s">$100k start · bar-by-bar backtest</div></div></div>
+        <div class="card"><div class="stat"><div class="k">Current build</div><div class="v">v6</div><div class="s">four engines · audited+frozen 28 Aug 2026</div></div></div>
+        <div class="card"><div class="stat"><div class="k">Verified 10y</div><div class="v pos">$3.43M</div><div class="s">$100k start · bar-by-bar backtest</div></div></div>
         <div class="card"><div class="stat"><div class="k">Live capital</div><div class="v wc">0 / 60</div><div class="s">sim gate — nothing live until it passes</div></div></div>
       </div>
 
@@ -178,7 +178,7 @@ OS.register({
         <div class="card"><h3>Where this project goes next</h3><p class="cs">in order, and honestly</p>
           <div style="font-size:12.5px;color:var(--mut);line-height:2.1">
             ① TradingView webhook → the sim gate starts counting<br>
-            ② 60 verified sim trades → compare to the 57.3% record<br>
+            ② 60 verified sim trades → compare to the 59.7% record<br>
             ③ First live capital, smallest size, unchanged rules<br>
             ④ Live fills feed the Bot Lab → the first real learning loop
           </div></div>
@@ -271,7 +271,7 @@ OS.register({
       if (!hist.length) say("CLAUDE", "#a98bff", `Desk open on ${p.name}. Raise anything — next builds, weak points, new ideas. With the API key I answer for real and can write updates straight into this project.`);
 
       const ctxFor = () => p.key === "livemind"
-        ? "Project: THE LIVE MIND trading bot. " + LINEAGE.length + " versions built, current v6 (four engines), frozen 27 Jul 2026. Verified backtest: $100k→$10,015,774 over 10y, 4,267 trades, 57.3% win, PF 2.00, max DD 16.9%. Zero live fills — sim gate 0/60 awaiting the TradingView webhook."
+        ? "Project: THE LIVE MIND trading bot. " + LINEAGE.length + " versions built, current LIVE MIND v1.3 (three legs, leak-audited), audited+frozen 28 Aug 2026. Verified backtest: $100k→$3,427,531 over 10y, 1,845 trades, 59.7% win, PF 1.50, max DD 19.9%. Zero live fills — sim gate 0/60 awaiting the TradingView webhook."
         : p.key === "academy"
         ? "Project: HARMONIC ACADEMY — a real, live education platform at " + acadUrl() + ". Next ideas under discussion: Harmonic's own AI assistant for FM3 walkthroughs, course tooling, student progress tracking. Nothing new shipped yet."
         : "Project: " + p.name + ". " + (p.custom ? (p.custom.desc || "no description logged yet") + ". Status: " + (p.custom.status === "done" ? "completed" : "in flight") + "." : "");

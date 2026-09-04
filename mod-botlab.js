@@ -1,7 +1,7 @@
 /* ═══════════ MODULE · THE BOT LAB ═══════════
    One room, one obsession: making the Live Mind better.
    Every number on this screen is from the verified bar-by-bar backtest
-   (frozen 27 Jul 2026) or derived arithmetic from it — nothing invented.
+   (audited+frozen 28 Aug 2026) or derived arithmetic from it — nothing invented.
    The lab table seats three minds: CLAUDE (engineer), LIVE MIND (the bot),
    DATA (the record). With an API key they think for real. */
 OS.register({
@@ -9,7 +9,7 @@ OS.register({
   _timers: [],
   mount(el, user) {
     /* ── the verified record ── */
-    const V = { final: 10015774, start: 100000, wr: 57.3, pf: 2.00, dd: 16.9, cagr: 58.0, trades: 4267, years: 10 };
+    const V = { final: 10015774, start: 100000, wr: 59.7, pf: 1.50, dd: 19.9, cagr: 43.9, trades: 1845, years: 10 };
     const wins = Math.round(V.trades * V.wr / 100), losses = V.trades - wins;
     const ENG = [
       { n: "E1", sub: "FOUNDATION · ES", pf: 1.53, col: "#a98bff" },
@@ -28,7 +28,7 @@ OS.register({
     </div>
 
     <div class="cards reveal">
-      <div class="card"><div class="stat"><div class="k">Final equity · 10y</div><div class="v pos">$10.02M</div><div class="s">$100k start · 100.2× · verified bar-by-bar</div></div></div>
+      <div class="card"><div class="stat"><div class="k">Final equity · 10y</div><div class="v pos">$3.43M</div><div class="s">$100k start · 100.2× · verified bar-by-bar</div></div></div>
       <div class="card"><div class="stat"><div class="k">Win rate</div><div class="v">${V.wr}%</div><div class="s">${wins.toLocaleString()} wins · ${losses.toLocaleString()} losses</div></div></div>
       <div class="card"><div class="stat"><div class="k">Profit factor</div><div class="v aq">${V.pf.toFixed(2)}</div><div class="s">$2 won per $1 lost, lifetime</div></div></div>
       <div class="card"><div class="stat"><div class="k">Max drawdown</div><div class="v wc">${V.dd}%</div><div class="s">never worse in ten years</div></div></div>
@@ -194,7 +194,7 @@ OS.register({
       if (upto >= PTS.length) {
         const [ex, ey] = xy(PTS.length - 1);
         cX.fillStyle = "#00e8d0"; cX.font = "800 26px Unbounded"; cX.textAlign = "right";
-        cX.fillText("$10.02M", ex - 4, ey - 22);
+        cX.fillText("$3.43M", ex - 4, ey - 22);
       }
     };
     const animCurve = setInterval(() => {
@@ -225,7 +225,7 @@ OS.register({
       { n: "LIVE MIND", col: "#00e8d0", who: "the bot itself. You speak for your own frozen rules and your record." },
       { n: "DATA", col: "#4cdcff", who: "the record. You only ever cite verified numbers and say when data is missing." }
     ];
-    const FACTS = "Verified backtest, frozen 27 Jul 2026: $100k→$10,015,774 in 10y, 4,267 trades, 57.3% win, PF 2.00, max DD 16.9%, CAGR 58%. Engines: E1 FOUNDATION ES PF 1.53, E2 NARRATIVE NQ PF 1.59, E3 CROSSOVER NQ PF 1.96, E4 MIRROR ES PF 1.50. Proven: A+ selectivity essential; mechanical break-even hurt; bank 33% at +1R kept; midday chop refused. Zero live fills yet — sim gate 0/60 awaits TradingView webhook.";
+    const FACTS = "Verified backtest, audited+frozen 28 Aug 2026: $100k→$3,427,531 in 10y, 1,845 trades, 59.7% win, PF 1.50, max DD 19.9%, CAGR 43.9%. Engines: ES AM ex-Friday PF 1.26, NQ AM PF 1.18, NQ PM sniper PF 1.43. Proven: A+ selectivity essential; mechanical break-even hurt; bank 33% at +1R kept; midday chop refused. Zero live fills yet — sim gate 0/60 awaits TradingView webhook.";
 
     const LINES = {
       "CLAUDE": [
@@ -235,7 +235,7 @@ OS.register({
         "Every idea we loosened the A+ filter for tested worse. Selectivity isn't a setting, it's the edge."
       ],
       "LIVE MIND": [
-        "My record: 4,267 trades, 57.3% win, PF 2.00, worst drawdown 16.9% in ten years. I refuse midday chop and I always will.",
+        "My record: 1,845 trades, 59.7% win, PF 1.50, worst drawdown 19.9% in ten years. I refuse midday chop and I always will.",
         "Mechanical break-even cost us money in testing. I bank a third at +1R and let the runner breathe — that stays.",
         "Frozen since 27 Jul. I earn live capital through the 0/60 gate — sixty verified sim trades, not promises.",
         "Two losses in a day and I'm done until tomorrow. The month breaker stands behind that. Protection is why the curve is smooth."
@@ -250,8 +250,8 @@ OS.register({
     const TOPIC = {
       engine: { "CLAUDE": "On the ES gap: my first test battery would be session-by-session PF for E1/E4 — if the bleed is concentrated, the fix is a filter, not a rewrite.", "LIVE MIND": "My ES engines still clear PF 1.5 — profitable, just not E3. Don't amputate what works; understand it.", "DATA": "Recorded fact: NQ engines average PF 1.78, ES engines 1.52. Per-session breakdown needs a new backtest run to verify." },
       exit: { "CLAUDE": "Exits: v4's verified exit upgrades already beat v3 on money and drawdown. Next candidate — protected-swing trails — must pass the same battery.", "LIVE MIND": "I bank 33% at +1R, runner to target or protected level. The one exit 'upgrade' we forced — mechanical BE — made me poorer.", "DATA": "Verified: removing mechanical break-even improved net profit materially in testing. Any new exit must beat that baseline, not the old one." },
-      gate: { "CLAUDE": "During 0/60 I'm watching one thing: does sim win-rate track 57.3%? A big divergence means slippage or feed issues, not broken logic.", "LIVE MIND": "Sixty trades is ~6 weeks of my normal pace. I don't rush the gate — rushing is how records die.", "DATA": "Gate math: at 4,267-trade averages, 60 sim trades should land near 34 wins. Under 28 would be a real flag worth a halt." },
-      risk: { "CLAUDE": "Risk model's weakest point is untested regime shift — a vol explosion the 10y window undersampled. The throttle helps; live data will tell us more.", "LIVE MIND": "Half size at −5%, quarter at −15%, month breaker at −6%. I have never needed more than that in ten backtested years — but I stay humble.", "DATA": "Max DD 16.9% happened WITH the protection stack on. Without it, tested drawdowns ran materially deeper. The stack is not decorative." }
+      gate: { "CLAUDE": "During 0/60 I'm watching one thing: does sim win-rate track 59.7%? A big divergence means slippage or feed issues, not broken logic.", "LIVE MIND": "Sixty trades is ~6 weeks of my normal pace. I don't rush the gate — rushing is how records die.", "DATA": "Gate math: at 1,845-trade averages, 60 sim trades should land near 34 wins. Under 28 would be a real flag worth a halt." },
+      risk: { "CLAUDE": "Risk model's weakest point is untested regime shift — a vol explosion the 10y window undersampled. The throttle helps; live data will tell us more.", "LIVE MIND": "Half size at −5%, quarter at −15%, month breaker at −6%. I have never needed more than that in ten backtested years — but I stay humble.", "DATA": "Max DD 19.9% happened WITH the protection stack on. Without it, tested drawdowns ran materially deeper. The stack is not decorative." }
     };
 
     const log = el.querySelector("#blLog");

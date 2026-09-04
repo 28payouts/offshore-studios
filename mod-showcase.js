@@ -24,7 +24,7 @@ OS.register({
         pts: ["Wired into your real workflows", "Professional, invisible, reliable", "Grows with your business"] },
       { ic: "〰", n: "Trading Intelligence", tag: "EXCLUSIVE · BY INQUIRY", tc: "warn",
         d: "An in-house algorithmic trading system with a ten-year verified record. Not a product on a shelf — access, in any form, starts with a conversation.",
-        pts: ["$100k → $10.0M backtested over 10 years", "57.3% win rate · 4,267 trades · PF 2.00", "Max drawdown 16.9% — never worse", "Verified bar-by-bar · stated as a backtest, honestly"] }
+        pts: ["$100k → $3.43M backtested over 10 years", "59.7% win rate · 1,845 trades · PF 1.50", "Max drawdown 19.9% — never worse", "Verified bar-by-bar · stated as a backtest, honestly"] }
     ];
     const TIERS = [
       ["SIGNATURE SITE", "from $2,500", "custom site · motion pass · your universe included"],

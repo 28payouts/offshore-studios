@@ -7,12 +7,12 @@ OS.register({
   _timers: [],
   mount(el, user) {
     const L = window.OS_CONFIG.LINKS;
-    const V = { final: "$10,015,774", wr: "57.3%", pf: "2.00", dd: "16.9%", cagr: "58.0%", trades: "4,267" };
+    const V = { final: "$3,427,531", wr: "59.7%", pf: "1.50", dd: "19.9%", cagr: "43.9%", trades: "1,845" };
     el.innerHTML = `
     <div class="mhead reveal">
       <div class="eyebrow">The Live Mind · ${user.role === "admin" ? "master view" : user.name}</div>
       <h2>The machine is <span class="grad" id="lmState">…</span></h2>
-      <p class="sub">One bot, four engines across ES + NQ. Rules frozen 27 Jul 2026 — the simulator is earning its way to real capital.</p>
+      <p class="sub">One bot, four engines across ES + NQ. Rules audited+frozen 28 Aug 2026 — the simulator is earning its way to real capital.</p>
     </div>
     <div class="cards">
       <div class="card reveal"><div class="stat"><div class="k">Backtested · 10y</div><div class="v pos">${V.final}</div><div class="s">$100k start · every trade verified</div></div></div>

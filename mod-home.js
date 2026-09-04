@@ -46,9 +46,9 @@ OS.register({
     <div id="projForm"></div>
 
     <div class="cards reveal">
-      <div class="card"><div class="stat"><div class="k">Backtested · 10y</div><div class="v pos" data-count="10015774" data-fmt="m">$0</div><div class="s">verified bar-by-bar · frozen 27 Jul</div></div></div>
-      <div class="card"><div class="stat"><div class="k">Win rate</div><div class="v" data-count="57.3" data-fmt="pct">0%</div><div class="s">4,267 trades · PF 2.00</div></div></div>
-      <div class="card"><div class="stat"><div class="k">Max drawdown</div><div class="v wc" data-count="16.9" data-fmt="pct">0%</div><div class="s">never worse, ten years</div></div></div>
+      <div class="card"><div class="stat"><div class="k">Backtested · 10y</div><div class="v pos" data-count="10015774" data-fmt="m">$0</div><div class="s">verified bar-by-bar · frozen 28 Aug</div></div></div>
+      <div class="card"><div class="stat"><div class="k">Win rate</div><div class="v" data-count="59.7" data-fmt="pct">0%</div><div class="s">1,845 trades · PF 1.50</div></div></div>
+      <div class="card"><div class="stat"><div class="k">Max drawdown</div><div class="v wc" data-count="19.9" data-fmt="pct">0%</div><div class="s">never worse, ten years</div></div></div>
       ${GAL === "offshore" ? `<div class="card"><div class="stat"><div class="k">Client moons</div><div class="v aq" data-count="${clients().length}" data-fmt="n">0</div><div class="s">in orbit around the Clients world</div></div></div>`
       : `<div class="card"><div class="stat"><div class="k">Sim gate</div><div class="v aq">0 / 60</div><div class="s">verified sim trades unlock live capital</div></div></div>`}
       <div class="card"><div class="stat"><div class="k">Planets ignited</div><div class="v bio" data-count="${projects().length}" data-fmt="n">0</div><div class="s">and room for a galaxy</div></div></div>
