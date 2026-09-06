@@ -239,18 +239,15 @@ OS.register({
            key if there is one, otherwise the local brain, and we say so on the
            status chip. Degrade quietly, never lie about being live. */
         try {
-          const r = await fetch(RELAY(), {
-            method: "POST", headers: { "content-type": "application/json" },
-            body: JSON.stringify({ scope: SCOPE, email: user.email, system: sys, messages: msgs, model: MODEL() })
-          });
-          if (r.ok) {
-            const d = await r.json();
+          /* the relay now requires the signed-in session token and derives the
+             role server-side — OS.cloud.call carries the token for us */
+          const d = await OS.cloud.call("claude", { scope: SCOPE, email: user.email, system: sys, messages: msgs, model: MODEL() });
+          if (d && !d.error) {
             const t = (d.content || []).map(b => b.text || "").join(" ") || d.text || "";
             if (t) { markRelay(true); return t; }
             markRelay(false, "empty reply");
           } else {
-            const e = await r.json().catch(() => ({}));
-            markRelay(false, e?.error ? String(e.error).slice(0, 40) : "relay " + r.status);
+            markRelay(false, d && d.error ? String(d.error).slice(0, 40) : "not signed in");
           }
         } catch { markRelay(false, "unreachable"); }
         if (!(isOwner && KEY())) return localBrain(q);

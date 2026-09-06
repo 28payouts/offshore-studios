@@ -1,8 +1,8 @@
 /* OFFSHORE OS · service worker — the app shell lives on the device.
    Network-first so updates always win; cache fallback keeps it opening offline. */
-const CACHE = "offshore-os-v28";
-const SHELL = ["./", "./index.html", "./core.css?v=4", "./config.js?v=16", "./bus.js?v=4",
-  "./mod-home.js?v=9", "./mod-roundtable.js?v=7", "./mod-claude.js?v=7", "./mod-livemind.js?v=8", "./mod-perf.js?v=3",
+const CACHE = "offshore-os-v29";
+const SHELL = ["./", "./index.html", "./core.css?v=4", "./config.js?v=17", "./bus.js?v=4",
+  "./mod-home.js?v=9", "./mod-roundtable.js?v=7", "./mod-claude.js?v=8", "./mod-livemind.js?v=8", "./mod-perf.js?v=3", "./mod-engine.js?v=1", "./mod-datalab.js?v=1",
   "./mod-botlab.js?v=3", "./mod-academy.js?v=4", "./mod-clients.js?v=5", "./mod-agency.js?v=5",
   "./mod-agents.js?v=3", "./mod-showcase.js?v=3", "./boot.js?v=15", "./fx.js?v=9", "./manifest.json", "./icon.svg", "./icon-maskable.svg"];
 

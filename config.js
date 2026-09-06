@@ -33,6 +33,10 @@ window.OS_CONFIG = {
     /* The trading record. Same page for Riley, Mr John and trading clients —
        there is only one bot, so there is only one truth about it. */
     { id: "perf",     label: "Performance Lab",  icon: "◎", roles: ["admin","trading"], galaxy: "harmonic" },
+    /* Phase 3 (28 Aug): what the bot is doing right now + the owner HALT switch,
+       and the honest numbers made interactive. Both read only real data. */
+    { id: "engine",   label: "Live Engine",      icon: "⚡", roles: ["admin","trading"], galaxy: "harmonic" },
+    { id: "datalab",  label: "Data Lab",         icon: "⌬", roles: ["admin","trading"], galaxy: "harmonic" },
     { id: "botlab",   label: "The Bot Lab",      icon: "⚗", roles: ["admin"], galaxy: "harmonic" },
     { id: "academy",  label: "Harmonic Projects", icon: "✺", roles: ["admin"], galaxy: "harmonic" },
     { id: "clients",  label: "Clients",          icon: "❖", roles: ["admin"], galaxy: "offshore" },
